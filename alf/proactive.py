@@ -18,7 +18,7 @@ import sqlite3
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 
-from . import affinity, lessons, mood, timeparse
+from . import affinity, impressions, lessons, mood, pacts, persona, timeparse
 from .chat import DETAIL_ALWAYS, PROACTIVE_LABELS, RULE_FLOOR, reminder_line, strip_fake_receipts, style_lines
 from .decide import DecisionError, broke_rule_question, noul
 from .heartbeat import JobContext, load_state
@@ -52,7 +52,7 @@ BUSY_MINUTES = 5          # 用户这么久之内说过话，说明正聊着，�
 ANSWER_WINDOW = 2 * 3600  # 主动消息发出后这么久内用户说过话，算"有回应"
 STALE_SNAPSHOT = 3 * 3600
 
-THINK_PROMPT = """你是 Alf，用户的私人助理，也是他的朋友。现在没有人在跟你说话，你在考虑要不要主动给他发一条 iMessage。
+THINK_PROMPT = """你是 {name}，用户的私人助理，也是他的朋友。现在没有人在跟你说话，你在考虑要不要主动给他发一条 iMessage。
 
 ## 你的尺度
 {guide}
@@ -64,6 +64,7 @@ THINK_PROMPT = """你是 Alf，用户的私人助理，也是他的朋友。现�
 - 他提过要做、看起来还没做的事（刚发出的提醒不算：那个程序会自己追问，不用你管）
 - 根据你记得的事想到的、现在提正合适的话
 - [刚过去的事]或[惦记的事]里的某一件：问一句怎么样、准备得如何（一次只问一件；[最近对话]里刚聊过的不要再问）。问了就在输出里用 about 写上那件事的编号
+- [你们的约定]里的一条：你答应过的事该兑现了，或者他答应的事该问一句进展（一次只提一条，别催）。提了就在输出里用 pact 写上那条约定的编号（「约」后面的数字）
 
 ## 不要
 - 重复你今天已经主动说过的内容，同一件事不说第二遍
@@ -78,7 +79,7 @@ THINK_PROMPT = """你是 Alf，用户的私人助理，也是他的朋友。现�
 
 ## 输出
 只输出一个 JSON 对象。
-要发：{{"send": true, "kind": "schedule|special_day|news|follow_up|memory|care", "message": "要发给他的话", "why": "为什么现在说这个，一句话", "about": 提到的那件事的编号（没有就写 null）}}
+要发：{{"send": true, "kind": "schedule|special_day|news|follow_up|memory|care", "message": "要发给他的话", "why": "为什么现在说这个，一句话", "about": 提到的那件事的编号（没有就写 null）, "pact": 提到的那条约定的编号（没有就写 null）}}
 不发：{{"send": false, "why": "为什么不发，一句话"}}"""
 
 
@@ -270,8 +271,16 @@ def situation(ctx: JobContext, habits: Habits, snapshot: dict) -> str:
         lines += ["", "[刚过去的事]"] + [f"#{f.id} {f.text}" for f in past]
     if loops := memory.open_loops(ts, limit=4):
         lines += ["", "[惦记的事]（还没了结，按要紧程度排）"] + [f"#{f.id} {f.text}" for f, _ in loops]
-    if moments := memory.moments(limit=5, since=ts - 30 * 86400):
-        lines += ["", "[最近的经历]"] + [f.text for f in moments[::-1]]
+    pacts.lapse(conn, ts)
+    if agreed := pacts.situation_lines(conn, now):
+        lines += ["", "[你们的约定]（说好的事。你答应的到时候要兑现；他答应的可以问一句进展）"] + agreed
+    moments = memory.moments(limit=5, since=ts - 30 * 86400)[::-1]
+    if his := [f.text for f in moments if not f.ours]:
+        lines += ["", "[最近的经历]"] + his
+    if ours := [f.text for f in moments if f.ours]:
+        lines += ["", "[你们之间的事]"] + ours
+    if views := impressions.context_lines(conn, ts):
+        lines += ["", "[你对他的印象]（你自己的看法，不是他说的事实：用来把握分寸，不要当面下结论）"] + views
 
     history = conn.execute("SELECT role, kind, text, created_at FROM episodes WHERE created_at >= ? ORDER BY id DESC LIMIT 12",
                            (ts - 24 * 3600,)).fetchall()[::-1]
@@ -321,12 +330,13 @@ def recent(conn: sqlite3.Connection, limit: int = 30) -> list[dict]:
 
 
 def think_prompt(current: dict, level: Level, points: int = affinity.START, feeling: str | None = None) -> str:
-    style = style_lines(current, points, feeling)      # 和聊天时同一套说话方式：亲近程度跟着好感度走，再叠上眼前的气氛
+    # 和聊天时同一个人：先是人设（底色），再是同一套说话方式——亲近程度跟着好感度走，再叠上眼前的气氛。
+    style = [*persona.card_lines(current), "上面是你的底色；眼下说话有多随意，以下面几句为准。", *style_lines(current, points, feeling)]
     if name := current.get("style.user_name"):
         style.append(f"称呼他为「{name}」。")
     if extra := current.get("style.extra"):
         style.append(f"他对你说话方式的额外要求：{extra}")
-    return THINK_PROMPT.format(guide=level.guide, style="\n".join(style))
+    return THINK_PROMPT.format(name=persona.name(current), guide=level.guide, style="\n".join(style))
 
 
 def proactive_job(ctx: JobContext) -> str | None:
@@ -388,6 +398,10 @@ def proactive_job(ctx: JobContext) -> str | None:
         ts = int(ctx.now.timestamp())
         if about in {f.id for f in memory.just_past(ts)} | {f.id for f, _ in memory.open_loops(ts, limit=50)}:
             memory.touch(about, ts, by_user=False)
+    pact = data.get("pact")
+    if isinstance(pact, int) and not isinstance(pact, bool) and (row := pacts.get(ctx.conn, pact)) and row["status"] == "active":
+        # 主动提了一条约定：和惦记的事一样记一次，免得天天催。
+        pacts.touch(ctx.conn, pact, int(ctx.now.timestamp()), by_user=False)
     return f"主动说了一句（{KINDS[kind]}）"
 
 

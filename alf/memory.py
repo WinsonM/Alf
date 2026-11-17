@@ -11,7 +11,10 @@ Three layers, all in the one `facts` table (2026-11-17):
 - topic   (topic set):     groups of detail that keep growing (training weights, a course, a trip).
                            Only a one-line index is always sent; a group is sent whole when it is relevant.
                            A keyword search cannot do this job: "健身记录" shares no word with "绳索下压 22.5kg".
-- moment  (category):      dated things that happened. The latest few are sent; older ones are searched.
+- moment  (category):      dated things that happened. The latest few are sent; older ones come back when what he
+                           says now touches them (a full-text match), or when they mattered a lot (`importance`).
+                           `ours` marks things that happened between him and Alf rather than in his own life;
+                           `feeling` keeps how he said it felt, in his words.
 A fact with `expires_at` stops being current once that time passes ("11月20日有考试").
 
 Open loops (2026-11-17, after Anima Brain's time-aware follow-up ranking): things that are not settled yet and are
@@ -51,6 +54,10 @@ LOOP_QUIET = 20 * 3600    # it came up within this long: no need to raise it aga
 LOOP_MAX_ASKS = 2         # Alf raised it this many times and he did not pick it up: stop
 DEFAULT_IMPORTANCE = 5
 _SQUASH = re.compile(r"[\W_]+")
+# Bigrams too common to mean that two sentences are about the same thing (used when recalling older moments).
+_COMMON = frozenset("今天 昨天 明天 前天 后天 一个 我们 你们 他们 什么 怎么 可以 没有 这个 那个 时候 觉得 一下 还是 就是 不是 已经 现在 然后 "
+                    "因为 所以 但是 感觉 有点 真的 自己 知道 这样 那样 一起 之后 之前 以后 以前 最近 上次 那次 这次 还有 应该 可能 "
+                    "其实 起来 出来 一点 很多 一直 时间 事情 东西".split())
 
 
 def _importance(value) -> int | None:
@@ -101,13 +108,16 @@ class Fact:
     touched_at: int | None = None   # last time it came up in conversation
     asks: int = 0                   # times Alf raised it and he did not pick it up
     scope: str | None = None        # feedback only: where the rule applies. None = everywhere; chat | mail | proactive
+    ours: bool = False              # moment only: it happened between him and Alf
+    feeling: str | None = None      # moment only: how he said it felt, in his own words
 
     @classmethod
     def from_row(cls, r: sqlite3.Row) -> Fact:
         return cls(r["id"], r["category"], r["text"], r["recorded_at"], r["valid_to"],
                    r["superseded_by"], r["source"], bool(r["needs_confirmation"]),
                    r["topic"], r["slot"], r["expires_at"], r["aftermath"],
-                   r["quote"], bool(r["follow_up"]), r["importance"], r["touched_at"], r["asks"], r["scope"])
+                   r["quote"], bool(r["follow_up"]), r["importance"], r["touched_at"], r["asks"], r["scope"],
+                   bool(r["ours"]), r["feeling"])
 
     def recorded(self, tz) -> str:
         return f"{datetime.fromtimestamp(self.recorded_at, tz):%-m月%-d日}"
@@ -167,6 +177,30 @@ class Memory:
         rows = self.conn.execute(
             "SELECT * FROM facts WHERE valid_to IS NULL AND category = ? AND recorded_at >= ?"
             " ORDER BY recorded_at DESC, id DESC LIMIT ?", (MOMENT, since, limit))
+        return [Fact.from_row(r) for r in rows]
+
+    def moments_recalled(self, text: str, skip: set[int], limit: int = 3) -> list[Fact]:
+        """Older moments that what he just said touches on: "蓝山" brings back the hike from two months ago.
+        Plain full-text match, best first; `skip` holds the ones already shown."""
+        asked = {t for t in fts.tokens(text) if len(t) > 1 and not t.isdigit() and t not in _COMMON}
+        out = []
+        for f in self.search(text, limit=limit + len(skip) + 8, category=MOMENT) if asked else []:
+            shared = asked & set(fts.tokens(f.text))
+            # Any shared bigram is a match for the index, and "考试" alone would drag in every exam he ever sat.
+            # So: two shared words, or one that hardly occurs anywhere else in memory (a place, a name).
+            if f.id not in skip and (len(shared) >= 2 or any(self._rare(t) for t in shared)):
+                out.append(f)
+        return out[:limit]
+
+    def _rare(self, token: str) -> bool:
+        return self.conn.execute("SELECT COUNT(*) FROM facts_fts WHERE facts_fts MATCH ?", (f'"{token}"',)).fetchone()[0] <= 2
+
+    def moments_that_mattered(self, before: int, limit: int = 2, floor: int = 8) -> list[Fact]:
+        """Moments from before `before` that were a big deal (importance >= floor), newest first. A friend does not
+        forget the day you graduated just because it was more than a month ago."""
+        rows = self.conn.execute(
+            "SELECT * FROM facts WHERE valid_to IS NULL AND category = ? AND recorded_at < ? AND importance >= ?"
+            " ORDER BY recorded_at DESC, id DESC LIMIT ?", (MOMENT, before, floor, limit))
         return [Fact.from_row(r) for r in rows]
 
     def expire(self, now: int) -> int:
@@ -234,13 +268,14 @@ class Memory:
         rows = self.conn.execute("SELECT * FROM facts ORDER BY id DESC LIMIT ?", (limit,))
         return [Fact.from_row(r) for r in rows]
 
-    def search(self, text: str, limit: int = 8) -> list[Fact]:
+    def search(self, text: str, limit: int = 8, category: str | None = None) -> list[Fact]:
         q = fts.query(text)
         if not q:
             return []
         rows = self.conn.execute(
             "SELECT f.* FROM facts_fts JOIN facts f ON f.id = facts_fts.rowid"
-            " WHERE facts_fts MATCH ? AND f.valid_to IS NULL ORDER BY bm25(facts_fts) LIMIT ?", (q, limit))
+            " WHERE facts_fts MATCH ? AND f.valid_to IS NULL AND (? IS NULL OR f.category = ?) ORDER BY bm25(facts_fts) LIMIT ?",
+            (q, category, category, limit))
         return [Fact.from_row(r) for r in rows]
 
     def write(self, text: str, category: str, *, now: int, source: str = "text",
@@ -248,7 +283,7 @@ class Memory:
               confidence: float | None = None, needs_confirmation: bool = False,
               topic: str | None = None, slot: str | None = None, expires_at: int | None = None,
               quote: str | None = None, follow_up: bool = False, importance: int | None = None,
-              scope: str | None = None) -> WriteResult:
+              scope: str | None = None, ours: bool = False, feeling: str | None = None) -> WriteResult:
         topic = self.topic_name(topic) if topic and str(topic).strip() else None
         slot = " ".join(str(slot).split()) or None if slot and topic else None
         group = self.in_topic(topic, limit=200) if topic else []
@@ -283,11 +318,12 @@ class Memory:
         with self.conn:
             cur = self.conn.execute(
                 "INSERT INTO facts(category, text, valid_from, recorded_at, source, source_attachment,"
-                " source_episode, confidence, needs_confirmation, topic, slot, expires_at, quote, follow_up, importance, scope)"
-                " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                " source_episode, confidence, needs_confirmation, topic, slot, expires_at, quote, follow_up, importance, scope,"
+                " ours, feeling) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                 (category, text, now, now, source, attachment_id, episode_id, confidence, needs_confirmation, topic, slot,
                  expires_at, quote, bool(follow_up) and category != MOMENT, _importance(importance),
-                 scope if category == FEEDBACK else None))
+                 scope if category == FEEDBACK else None, bool(ours) and category == MOMENT,
+                 (" ".join(str(feeling).split())[:40] or None) if feeling and category == MOMENT else None))
             new_id = cur.lastrowid
             for f in outdated:
                 self.conn.execute("UPDATE facts SET valid_to = ?, superseded_by = ? WHERE id = ?", (now, new_id, f.id))
@@ -336,9 +372,9 @@ class Memory:
             # The corrected wording stays filed where the old one was, and stays an open loop if it was one.
             cur = self.conn.execute(
                 "INSERT INTO facts(category, text, valid_from, recorded_at, source, source_episode, topic, slot, expires_at,"
-                " follow_up, importance, touched_at, asks, scope) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                " follow_up, importance, touched_at, asks, scope, ours, feeling) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                 (old["category"], text, now, now, source, episode_id, old["topic"], old["slot"], old["expires_at"],
-                 old["follow_up"], old["importance"], old["touched_at"], old["asks"], old["scope"]))
+                 old["follow_up"], old["importance"], old["touched_at"], old["asks"], old["scope"], old["ours"], old["feeling"]))
             self.conn.execute("UPDATE facts SET valid_to = ?, superseded_by = ? WHERE id = ?", (now, cur.lastrowid, fact_id))
             self._index(cur.lastrowid)
         return Fact.from_row(old), self.get(cur.lastrowid)

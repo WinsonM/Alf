@@ -42,7 +42,8 @@ def test_model_sees_time_reminders_memory_and_the_message(make_chat):
     assert [t["function"]["name"] for t in request["tools"]] == [
         "create_reminder", "update_reminder", "cancel_reminder", "add_calendar_event", "add_apple_reminder", "undo_apple_item",
         "read_email", "draft_email_reply", "send_email_draft", "discard_email_draft", "remember",
-            "change_setting", "note_correction", "settle_rule_proposal", "recall", "update_memory", "forget_memory"]
+            "change_setting", "note_correction", "settle_rule_proposal",
+            "note_about_self", "withdraw_impression", "make_pact", "settle_pact", "recall", "update_memory", "forget_memory"]
     assert fake.context() == "\n".join([
         "[现在] 2026年9月22日 周二 10:00（Australia/Sydney）", "",
         "[待办提醒]", "#1 开会｜今天 9月22日（周二）15:00｜提前半小时（14:30）提醒", "",

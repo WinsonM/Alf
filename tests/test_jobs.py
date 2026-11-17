@@ -182,6 +182,7 @@ def test_digest_only_exists_when_a_generative_model_is_configured(cfg):
     assert [(j.name, j.label, j.schedule_text()) for j in built] == [
         ("reminders", "到期提醒", "每 10 秒"), ("followups", "提醒后的追问", "每 1 分钟"), ("calendar", "日历同步", "每 5 分钟"),
         ("calendar_alerts", "日程开始前提醒", "每 30 秒"), ("moments", "把当天的对话归纳成经历", "每天 21:20"),   # 比汇总早 10 分钟
+        ("impressions", "从当天的话里形成印象", "每天 21:25"),                                                          # 夹在两者之间
         ("digest", "今日记忆汇总", "每天 21:30"),
         ("sources", "信息汇总（MCP）", "每 30 分钟"), ("proactive", "主动找你（活跃）", "每 15 分钟")]
 

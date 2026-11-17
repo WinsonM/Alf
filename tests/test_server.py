@@ -298,7 +298,12 @@ def test_memory_can_be_listed_edited_and_forgotten(client, cfg):
     assert [(f["text"], f["current"], f["superseded_by"]) for f in sorted(history, key=lambda f: f["id"])] == [
         ("我对花生过敏", False, edited["id"]), ("对花生和虾都过敏", True, None)]
     assert client.delete(f"/api/memory/{edited['id']}").json() == {"forgot": "对花生和虾都过敏"}
-    assert client.get("/api/memory").json() == {"facts": [], "affinity": {
+    empty = client.get("/api/memory").json()
+    # 人设、印象、约定各有一栏；一开始人设是默认的那张卡片，另外两样是空的。
+    assert [(c["label"], c["changed"]) for c in empty.pop("persona")["card"]][:3] == [("名字", False), ("身份", False), ("性格", False)]
+    assert empty.pop("impressions") == {"formed": [], "hunches": [], "withdrawn": [], "form_days": 2}
+    assert empty.pop("pacts") == {"active": [], "settled": []}
+    assert empty == {"facts": [], "affinity": {
         "score": 50, "max": 100, "start": 50, "tier": "刚熟悉", "recent": [],
         "mood": {"state": "even", "label": "平常", "warm": 0.0, "tension": 0.0, "reason": None}},
         "lessons": {"rules": [], "examples": [], "settings": [], "proposals": [],

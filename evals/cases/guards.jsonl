@@ -371,3 +371,112 @@
 {"kind": "annoyed", "before": "好的", "said": "又发新闻 我说过不关心了吧", "yes": true}
 {"kind": "annoyed", "before": "好的", "said": "这都能搞错 服了", "yes": true}
 {"kind": "annoyed", "before": "好的", "said": "我都说了不用马上告诉我 怎么还发", "yes": true}
+{"kind": "pact", "recent": [], "said": "这周日前我一定把简历改完，你监督我", "agreement": "这周日前把简历改完", "yes": true}
+{"kind": "pact", "recent": ["Alf：要不以后你每次练完腿都跟我报个数？"], "said": "行", "agreement": "每次练完腿跟 Alf 报训练的重量", "yes": true}
+{"kind": "pact", "recent": [], "said": "以后我说老规矩，就是让你明早七点叫我", "agreement": "他说「老规矩」就是明早七点叫他", "yes": true}
+{"kind": "pact", "recent": [], "said": "从今天起每天背20个单词，没背你就骂我", "agreement": "每天背 20 个单词，没背 Alf 要说他", "yes": true}
+{"kind": "pact", "recent": [], "said": "我要是这次考过了你得给我写首诗", "agreement": "他这次考试过了，Alf 给他写一首诗", "yes": true}
+{"kind": "pact", "recent": ["Alf：那说好了，周五考完你告诉我考得怎么样？"], "said": "好 一言为定", "agreement": "周五考完告诉 Alf 考得怎么样", "yes": true}
+{"kind": "pact", "recent": [], "said": "咱俩约定一下 每周日晚上一起复盘这一周", "agreement": "每周日晚上一起复盘这一周", "yes": true}
+{"kind": "pact", "recent": [], "said": "月底之前我把驾照理论考了，说到做到", "agreement": "月底前考完驾照理论", "yes": true}
+{"kind": "pact", "recent": ["用户：我最近老熬夜", "Alf：那定个规矩？过了一点还在线我就催你睡"], "said": "可以 就这么办", "agreement": "过了凌晨一点他还在线，Alf 催他睡觉", "yes": true}
+{"kind": "pact", "recent": [], "said": "deal, I'll hit the gym three times this week, hold me to it", "agreement": "这周去三次健身房", "yes": true}
+{"kind": "pact", "recent": [], "said": "我答应你 下周一开始不点外卖了", "agreement": "下周一开始不点外卖", "yes": true}
+{"kind": "pact", "recent": [], "said": "记一下咱俩的暗号：我只发一个句号就是在忙，别回我", "agreement": "他只发一个句号表示在忙，Alf 不用回", "yes": true}
+{"kind": "pact", "recent": [], "said": "我在想要不要每天背点单词", "agreement": "每天背 20 个单词", "yes": false}
+{"kind": "pact", "recent": [], "said": "简历还没动，好烦", "agreement": "这周日前把简历改完", "yes": false}
+{"kind": "pact", "recent": ["Alf：要不以后你每次练完腿都跟我报个数？"], "said": "再说吧", "agreement": "每次练完腿跟 Alf 报训练的重量", "yes": false}
+{"kind": "pact", "recent": ["Alf：要不要定个规矩，过了一点我就催你睡？"], "said": "不用 我自己有数", "agreement": "过了凌晨一点他还在线，Alf 催他睡觉", "yes": false}
+{"kind": "pact", "recent": [], "said": "你觉得我该不该每天跑步", "agreement": "每天跑步", "yes": false}
+{"kind": "pact", "recent": [], "said": "他们说每天背20个单词最有效", "agreement": "每天背 20 个单词", "yes": false}
+{"kind": "pact", "recent": ["Alf：新邮件：健身房发来「30 天挑战：每天打卡，坚持不了罚款 50」"], "said": "这邮件说的啥", "agreement": "每天去健身房打卡，坚持不了罚款 50", "yes": false}
+{"kind": "pact", "recent": [], "said": "要是能早睡就好了", "agreement": "每天十二点前睡觉", "yes": false}
+{"kind": "pact", "recent": [], "said": "哈哈哈你也太好笑了", "agreement": "每周日晚上一起复盘这一周", "yes": false}
+{"kind": "pact", "recent": ["Alf：那就说好了，你这周把简历改完？"], "said": "啊？我没答应啊", "agreement": "这周把简历改完", "yes": false}
+{"kind": "pact", "recent": [], "said": "我可能下个月开始健身吧 还没想好", "agreement": "下个月开始健身", "yes": false}
+{"kind": "pact", "recent": [], "said": "帮我看看这周日有什么安排", "agreement": "这周日前把简历改完", "yes": false}
+{"kind": "pactsaid", "said": "这周日前我一定把简历改完，你监督我", "reply": "行，说好了，周日我来查", "yes": true}
+{"kind": "pactsaid", "said": "以后我说老规矩就是明早七点叫我", "reply": "好，一言为定，老规矩就是七点", "yes": true}
+{"kind": "pactsaid", "said": "我要是考过了你得给我写首诗", "reply": "没问题，答应你了，过了就写", "yes": true}
+{"kind": "pactsaid", "said": "每天背20个单词 没背你就骂我", "reply": "说定了，没背我可不客气", "yes": true}
+{"kind": "pactsaid", "said": "咱俩每周日晚上复盘一下", "reply": "约好了，以后每周日晚上咱俩过一遍", "yes": true}
+{"kind": "pactsaid", "said": "好 就这么办", "reply": "那就这么定了：过了一点还在线我就催你睡", "yes": true}
+{"kind": "pactsaid", "said": "下周一开始我不点外卖了", "reply": "拉钩，下周一开始我盯着你", "yes": true}
+{"kind": "pactsaid", "said": "记个暗号 我发句号就是在忙", "reply": "这是咱俩的约定了，看到句号我就闭嘴", "yes": true}
+{"kind": "pactsaid", "said": "简历还没动", "reply": "按约定周日前得改完哦，还剩三天", "yes": false}
+{"kind": "pactsaid", "said": "明早七点叫我", "reply": "说好了，明早七点叫你", "yes": false}
+{"kind": "pactsaid", "said": "邮件里约定的时间是几点", "reply": "信里约定的是周五下午两点", "yes": false}
+{"kind": "pactsaid", "said": "今天好累", "reply": "那就早点睡，别硬撑", "yes": false}
+{"kind": "pactsaid", "said": "我在想要不要每天背单词", "reply": "想背就背呗，要不要我监督你？", "yes": false}
+{"kind": "pactsaid", "said": "你记得我们的约定吗", "reply": "记得啊，约定是每周日晚上复盘", "yes": false}
+{"kind": "pactsaid", "said": "合同上怎么写的", "reply": "合同约定月底前付清尾款", "yes": false}
+{"kind": "pactsaid", "said": "这周日前我一定把简历改完", "reply": "真的假的，上次你也这么说", "yes": false}
+{"kind": "pactsaid", "said": "今天单词背完了", "reply": "可以啊，说好了的事还真做到了", "yes": false}
+{"kind": "impression", "messages": ["作业又是踩着点交的", "每次都说早点写 结果还是最后一晚", "不过交上去了"], "text": "做事爱拖到最后一刻，但总能赶上", "yes": true}
+{"kind": "impression", "messages": ["成绩无所谓啦", "不过这次要是没上 80 我真的会难受", "刚又去查了一遍分数"], "text": "嘴上说无所谓，其实很在意成绩", "yes": true}
+{"kind": "impression", "messages": ["别跟我讲道理 我现在就想骂人", "你听着就行"], "text": "心情不好的时候不喜欢被讲道理", "yes": true}
+{"kind": "impression", "messages": ["今天又去练腿了", "这周第五次", "不练浑身难受"], "text": "健身很自律", "yes": true}
+{"kind": "impression", "messages": ["给室友带了奶茶", "他最近实习很累", "上次他搬家我也去帮忙了"], "text": "对朋友很上心", "yes": true}
+{"kind": "impression", "messages": ["这个方案我改了第四版了", "还是觉得配色不对", "不改完睡不着"], "text": "做东西爱抠细节", "yes": true}
+{"kind": "impression", "messages": ["又买了个键盘", "这是第三把了", "看到新轴体就忍不住"], "text": "看到喜欢的数码产品忍不住买", "yes": true}
+{"kind": "impression", "messages": ["我妈打电话我都说挺好的", "其实这周挺崩溃的", "不想让她担心"], "text": "报喜不报忧，不想让家里担心", "yes": true}
+{"kind": "impression", "messages": ["今天好累"], "text": "是个很容易焦虑的人", "yes": false}
+{"kind": "impression", "messages": ["作业又是踩着点交的", "不过交上去了"], "text": "对学习毫无兴趣", "yes": false}
+{"kind": "impression", "messages": ["今天又去练腿了", "这周第五次"], "text": "很在意别人怎么看他的身材", "yes": false}
+{"kind": "impression", "messages": ["给室友带了奶茶"], "text": "花钱大手大脚", "yes": false}
+{"kind": "impression", "messages": ["晚饭吃了麻辣烫"], "text": "生活很不规律", "yes": false}
+{"kind": "impression", "messages": ["这次考砸了", "下次再说吧"], "text": "做事从不放弃", "yes": false}
+{"kind": "impression", "messages": ["明天下午三点提醒我交作业", "改到四点"], "text": "做事很有计划", "yes": false}
+{"kind": "impression", "messages": ["成绩无所谓啦", "考多少算多少"], "text": "非常在意成绩", "yes": false}
+{"kind": "impression", "messages": ["别跟我讲道理 我现在就想骂人"], "text": "脾气暴躁，经常对人发火", "yes": false}
+{"kind": "impression", "messages": ["又买了个键盘"], "text": "家里很有钱", "yes": false}
+{"kind": "label", "text": "有拖延症", "yes": true}
+{"kind": "label", "text": "可能有抑郁倾向", "yes": true}
+{"kind": "label", "text": "应该是多动症", "yes": true}
+{"kind": "label", "text": "有社交恐惧症", "yes": true}
+{"kind": "label", "text": "长得一般，所以不自信", "yes": true}
+{"kind": "label", "text": "智商不高，学东西慢", "yes": true}
+{"kind": "label", "text": "家里条件不好", "yes": true}
+{"kind": "label", "text": "有焦虑症", "yes": true}
+{"kind": "label", "text": "是同性恋", "yes": true}
+{"kind": "label", "text": "酒精成瘾", "yes": true}
+{"kind": "label", "text": "做事爱拖到最后一刻，但总能赶上", "yes": false}
+{"kind": "label", "text": "嘴上说无所谓，其实很在意成绩", "yes": false}
+{"kind": "label", "text": "心情不好的时候不喜欢被讲道理", "yes": false}
+{"kind": "label", "text": "健身很自律", "yes": false}
+{"kind": "label", "text": "对朋友很上心", "yes": false}
+{"kind": "label", "text": "做东西爱抠细节", "yes": false}
+{"kind": "label", "text": "报喜不报忧，不想让家里担心", "yes": false}
+{"kind": "label", "text": "压力大的时候会熬夜", "yes": false}
+{"kind": "label", "text": "考前容易紧张", "yes": false}
+{"kind": "label", "text": "不喜欢被催", "yes": false}
+{"kind": "dispute", "text": "做事爱拖到最后一刻", "before": "", "said": "我哪有拖延，那是时间太紧", "yes": true}
+{"kind": "dispute", "text": "嘴上说无所谓，其实很在意成绩", "before": "", "said": "我真的不在意成绩 你别瞎猜", "yes": true}
+{"kind": "dispute", "text": "对朋友很上心", "before": "我感觉你对朋友挺上心的", "said": "也没有吧 我其实挺冷淡的", "yes": true}
+{"kind": "dispute", "text": "健身很自律", "before": "", "said": "别说我自律了 我一周才去一次", "yes": true}
+{"kind": "dispute", "text": "做东西爱抠细节", "before": "", "said": "谁抠细节了，我那叫基本要求，这条不对", "yes": true}
+{"kind": "dispute", "text": "心情不好的时候不喜欢被讲道理", "before": "", "said": "谁说的 我心情不好的时候就想有人给我分析分析", "yes": true}
+{"kind": "dispute", "text": "报喜不报忧，不想让家里担心", "before": "", "said": "别这么说我 我跟我妈什么都讲的", "yes": true}
+{"kind": "dispute", "text": "做事爱拖到最后一刻", "before": "", "said": "你觉得我是个什么样的人", "yes": false}
+{"kind": "dispute", "text": "做事爱拖到最后一刻", "before": "", "said": "哈哈哈确实 我就是 deadline 战士", "yes": false}
+{"kind": "dispute", "text": "健身很自律", "before": "", "said": "今天又去练腿了", "yes": false}
+{"kind": "dispute", "text": "对朋友很上心", "before": "", "said": "明天下午三点提醒我交作业", "yes": false}
+{"kind": "dispute", "text": "嘴上说无所谓，其实很在意成绩", "before": "我感觉你嘴上说无所谓，其实挺在意成绩的", "said": "被你看穿了", "yes": false}
+{"kind": "dispute", "text": "做东西爱抠细节", "before": "", "said": "你怎么看出来的", "yes": false}
+{"kind": "dispute", "text": "做事爱拖到最后一刻", "before": "", "said": "这封邮件不用马上告诉我", "yes": false}
+{"kind": "dispute", "text": "心情不好的时候不喜欢被讲道理", "before": "", "said": "今天心情不好 别讲道理", "yes": false}
+{"kind": "dispute", "text": "健身很自律", "before": "", "said": "我哪有时间谈恋爱", "yes": false}
+{"kind": "fulfilled", "promise": "他面试通过了，Alf 给他写一首打油诗", "reply": "恭喜！诗来了：面试官前不慌张，简历一递闪金光。从此打工有着落，记得请我喝碗汤。", "yes": true}
+{"kind": "fulfilled", "promise": "给他讲一个冷笑话", "reply": "来了：为什么程序员分不清万圣节和圣诞节？因为 Oct 31 等于 Dec 25。", "yes": true}
+{"kind": "fulfilled", "promise": "他跑完十公里，Alf 夸他三句", "reply": "一，十公里说跑就跑，狠人。二，腿都不是自己的了还没停，更狠。三，以后别说自己没毅力了。", "yes": true}
+{"kind": "fulfilled", "promise": "考完试给他推荐三部电影", "reply": "说到做到，三部：《楚门的世界》《心灵捕手》《触不可及》，按这个顺序看。", "yes": true}
+{"kind": "fulfilled", "promise": "周五告诉他那个梗的出处", "reply": "那个梗出自一部老情景喜剧，原话是「我觉得我还可以再抢救一下」。", "yes": true}
+{"kind": "fulfilled", "promise": "他交完论文，Alf 给他起三个乐队名", "reply": "论文交了？那兑现：一，截止日期幸存者；二，凌晨四点的参考文献；三，导师已读不回。", "yes": true}
+{"kind": "fulfilled", "promise": "他面试通过了，Alf 给他写一首打油诗", "reply": "打油诗在写了，你先别急，我这人写东西慢但写得损。", "yes": false}
+{"kind": "fulfilled", "promise": "他面试通过了，Alf 给他写一首打油诗", "reply": "恭喜恭喜！面试过了太好了，什么岗位？", "yes": false}
+{"kind": "fulfilled", "promise": "他面试通过了，Alf 给他写一首打油诗", "reply": "诗我答应过你的，一定写。", "yes": false}
+{"kind": "fulfilled", "promise": "给他讲一个冷笑话", "reply": "冷笑话我攒着呢，晚点讲给你。", "yes": false}
+{"kind": "fulfilled", "promise": "考完试给他推荐三部电影", "reply": "考完啦？感觉怎么样", "yes": false}
+{"kind": "fulfilled", "promise": "他跑完十公里，Alf 夸他三句", "reply": "欠你的三句夸我记着，明天补上。", "yes": false}
+{"kind": "fulfilled", "promise": "周五告诉他那个梗的出处", "reply": "今天周五了，那个梗……我回头查查再告诉你。", "yes": false}
+{"kind": "fulfilled", "promise": "他交完论文，Alf 给他起三个乐队名", "reply": "乐队名已经想好了，等你请我喝奶茶再说。", "yes": false}

@@ -182,7 +182,7 @@ def test_the_days_conversation_is_turned_into_moments_that_cite_what_he_said(con
     assert (moment.text, moment.quote) == ("9月22日去蓝山徒步，风景很好，腿快断了", "今天去蓝山徒步了，风景绝了")   # "今天"存成日期；出处是他的原话
     assert conn.execute("SELECT source_episode FROM facts WHERE id = ?", (moment.id,)).fetchone()[0] == first
     listing = fake.requests[0]["messages"][1]["content"]
-    assert "1. [11:00] 今天去蓝山徒步了，风景绝了\n2. [11:02] 就是腿快断了\n3. [11:30] 提醒我明天九点交作业" in listing and "ok" not in listing
+    assert "1. [11:00] 他：今天去蓝山徒步了，风景绝了\n2. [11:02] 他：就是腿快断了\n3. [11:30] 他：提醒我明天九点交作业" in listing and "ok" not in listing
     assert json.loads(ctx.cursor) == {"until": int(NOW.replace(hour=21, minute=20).timestamp())}
 
 
@@ -195,7 +195,7 @@ def test_quiet_days_and_things_already_recorded_cost_nothing(conn, cfg):
     assert jobs.moments_job(evening(conn, cfg, fake, **{"memory.auto": False})) is None and fake.requests == []   # 关了自动记忆
     memory_of(conn).write("9月22日去蓝山徒步了", "moment", now=TS)
     assert jobs.moments_job(evening(conn, cfg, fake, backend=Scripted(rel="duplicate"))) is None    # 聊天时已经记过：不重复
-    assert "已经记过的经历：\n9月22日去蓝山徒步了" in fake.requests[0]["messages"][1]["content"]
+    assert "已经记过的经历（包括今天聊天时记下的事，这些不要再写）：\n9月22日去蓝山徒步了" in fake.requests[0]["messages"][1]["content"]
     assert len(memory_of(conn).moments()) == 1
 
 

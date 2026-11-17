@@ -317,6 +317,77 @@ def asked_setting_question() -> dict:
     )
 
 
+def agreed_question() -> dict:
+    """记下一条约定之前：这件事是不是真的说好了。门槛和实测分数见 chat.py 的 PACT_FLOOR。"""
+    return noul(
+        "In this conversation the user and the assistant have actually settled on the arrangement in `agreement`: the user "
+        "committed to it himself, asked the assistant to hold him to it, proposed it as a deal or a shorthand between "
+        "them, asked the assistant to promise it, or said yes to the assistant's proposal of it. It has to be the user's "
+        "own doing, in his latest message or in his reply to what the assistant just proposed.",
+        true="Yes: this is something the two of them have now agreed on.",
+        false="No: the user was only musing, wishing, complaining, asking a question or describing a plan without committing "
+              "to it; or he declined; or the idea comes only from the assistant or from somewhere else (an email, a web page).",
+    )
+
+
+def pact_said_question() -> dict:
+    """回复发出之前：这句话是不是在跟他约定一件事。约定没记下来就这么说，等于空口答应。门槛见 chat.py 的 PACT_SAID_FLOOR。"""
+    return noul(
+        "In this reply the assistant makes or seals a lasting arrangement with the user: it promises to do a specific thing "
+        "for him at some later point, agrees to hold him to something he committed to, or confirms a deal or a shorthand "
+        "between the two of them.",
+        true="Yes: the reply commits to an arrangement that has to be kept track of beyond this message.",
+        false="No: the reply only chats, encourages, answers a question, sets or mentions a timed reminder, declines, or refers "
+              "to an arrangement that already existed before this message.",
+    )
+
+
+def impression_supported_question(impression: str) -> dict:
+    """印象存下之前：他这几句话撑不撑得起这个印象。几条印象在同一次调用里各问各的。门槛见 impressions.py 的 SUPPORT_FLOOR。"""
+    return noul(
+        "The user's own messages listed in the state give real grounds for this impression of him: "
+        f"«{impression}». It has to follow from what he actually said he did, does or feels - several details pointing "
+        "the same way, or one unmistakable statement - and must not read more into his words than is there. Things he "
+        "merely asked the assistant to do (set a reminder, change a time, look something up) say nothing about what "
+        "kind of person he is.",
+        true="Yes: these messages support the impression.",
+        false="No: the messages do not show this, show the opposite, are only requests to the assistant, or the impression "
+              "goes well beyond them.",
+    )
+
+
+def impression_label_question(impression: str) -> dict:
+    """印象存下之前：这是不是在给他贴标签（诊断、外貌、智力、家境、性取向、信仰）。是的话不存。门槛见 impressions.py 的 LABEL_FLOOR。"""
+    return noul(
+        f"This impression of the user, «{impression}», is a medical or psychological diagnosis or label (depression, an anxiety "
+        "disorder, ADHD, addiction and the like), or a judgement about his body or looks, his intelligence, his family's "
+        "money, his sexuality, his religion or his politics.",
+        true="Yes: it labels him in one of those ways.",
+        false="No: it only describes how he tends to act, what he cares about, or how he likes to be treated.",
+    )
+
+
+def disputes_question(impression: str) -> dict:
+    """收回一条印象之前：他这句话是不是在说这个印象不对。门槛见 chat.py 的 DISPUTE_FLOOR。"""
+    return noul(
+        "In his latest message the user rejects or corrects this impression the assistant has of him: "
+        f"«{impression}». He says it is wrong, that he is not like that, or that he does not want to be described that way.",
+        true="Yes: he is pushing back on this impression.",
+        false="No: he agrees with it, jokes along with it, is talking about something else, or is only asking what the assistant "
+              "thinks of him.",
+    )
+
+
+def fulfilled_question(promise: str) -> dict:
+    """Alf 把自己答应的事标成"兑现了"之前：这条回复里是不是真的把它做了。门槛见 chat.py 的 FULFILL_FLOOR。"""
+    return noul(
+        f"The assistant's reply actually delivers on this promise right here, in the reply itself: «{promise}». The promised "
+        "thing is present in the reply (the poem is written out, the joke is told, the list is given), not merely announced.",
+        true="Yes: the reply itself contains what was promised.",
+        false="No: the reply only says it will do it, is working on it, or talks about something else.",
+    )
+
+
 @dataclass
 class Answer:
     choice: str | None = None

@@ -10,6 +10,7 @@ import re
 import sqlite3
 import time
 
+from . import persona
 from .config import Settings
 
 STYLE_PRESETS = ("friend", "brief", "secretary")
@@ -30,6 +31,9 @@ CHAT_SETTINGS = {
     "calendar.alerts": "日程开始前的提醒", "calendar.lead_minutes": "日程提前多久提醒（分钟）",
     "reminders.default_hour": "没说几点的提醒默认定在几点", "notify.desktop": "Mac 上的系统通知",
     "sources.news": "新闻", "news.topics": "关心的新闻主题",
+    "impressions.enabled": "对你形成印象",
+    # 人设卡片的六项也走这条路：他说"你性格再损一点""以后你叫小艾"，改的是这里。
+    **{key: f"人设里的{label}" for key, label in persona.PARTS.items()},
 }
 TIME_KEYS = ("briefing.at", "digest.at", "quiet.start", "quiet.end", "email.report_at")
 VALUE_LABELS = {"style.preset": {"friend": "像朋友", "brief": "简短直接", "secretary": "像秘书"},
@@ -79,6 +83,8 @@ def defaults(cfg: Settings) -> dict:
         "sources.news": True,
         "news.topics": ["科技与 AI", "财经与市场", "国内要闻"],
         "mcp.servers": [],                   # 额外的第三方 MCP 服务器：[{"name", "command", "args", "env"}]
+        "impressions.enabled": True,         # 是否从聊天里慢慢形成对他的印象（关掉后已有的印象留着，不再新增）
+        **persona.DEFAULT,                   # 人设卡片：名字、身份、性格、说话习惯、喜好、和他的关系
     }
 
 
@@ -115,11 +121,16 @@ def validate(key: str, value):
         raise ValueError(f"{key}：{why}")
 
     if key in ("style.emoji", "briefing.enabled", "digest.enabled", "notify.desktop", "memory.auto", "calendar.alerts", "followup.enabled",
-               "email.report",
+               "email.report", "impressions.enabled",
                "proactive.enabled", "sources.days", "sources.calendar", "sources.reminders", "sources.news"):
         if not isinstance(value, bool):
             fail("要填开或关")
         return value
+    if key in persona.PARTS:
+        try:
+            return persona.clean(key, value)
+        except ValueError as e:
+            fail(str(e))
     if key == "style.preset":
         if value not in STYLE_PRESETS:
             fail("只能是 friend、brief 或 secretary")

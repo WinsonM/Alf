@@ -211,6 +211,17 @@
   .group + .fact { border-top: 0; }
   .fact select.scope { padding: 5px 26px 5px 10px; font-size: 12.5px; border-radius: 999px; }
   .fact .arrow { color: var(--muted); padding: 0 4px; }
+  /* 人设、印象、约定、经历共用的几样：编辑框占满一行；苗头和了结的条目淡一点；小标签；按月折叠 */
+  .fact textarea.box { width: 100%; min-height: 76px; grid-column: 1; }
+  .fact .part { font-size: 12px; font-weight: 600; color: var(--muted); grid-column: 1; }
+  .fact.dim .fact-text { color: var(--muted); }
+  .fact .pill { display: inline-block; font-size: 11.5px; line-height: 1.5; padding: 0 8px; margin-right: 6px; border-radius: 999px;
+                border: 1px solid var(--hairline); color: var(--muted); vertical-align: 1px; }
+  details.month > summary { cursor: pointer; list-style: none; margin: 18px 0 0; padding-bottom: 4px; font-size: 13px; font-weight: 600; color: var(--muted); }
+  details.month > summary::-webkit-details-marker { display: none; }
+  details.month > summary::after { content: " ▸"; opacity: .6; } details.month[open] > summary::after { content: " ▾"; }
+  details.month > summary small { font-weight: 400; font-size: 12px; opacity: .85; margin-left: 8px; }
+  details.month > summary + .fact { border-top: 0; }
   /* 好感度：一根会长的条。满分 100，从 50 起步，所以一开始就是半满。 */
   .meter { height: 10px; border-radius: 999px; background: var(--glass); border: 1px solid var(--hairline); overflow: hidden; }
   .meter-fill { height: 100%; width: 0; border-radius: 999px; background: linear-gradient(90deg, var(--accent), #ff7eb6);
@@ -253,6 +264,11 @@
 
   <section id="view-memory" class="page" hidden>
     <div class="panel glass">
+      <h2>人设</h2>
+      <p class="lead">它是谁。每一项都可以直接改，聊天里说一句「你性格再损一点」也行；它说过的关于自己的话会记在下面，以后保持一致。</p>
+      <div id="persona"></div>
+    </div>
+    <div class="panel glass">
       <h2>好感度</h2>
       <p class="lead">Alf 跟你有多熟。聊到有意思的内容会加一分，它说话的语气跟着变。</p>
       <div class="meter-row"><strong id="warmScore">50</strong><span id="warmTier"></span></div>
@@ -260,9 +276,24 @@
       <div id="warmRecent" class="warm"></div>
     </div>
     <div class="panel glass">
+      <h2>它眼里的你</h2>
+      <p class="lead">它从你平时的话里看出来的，是它的看法，不是你说过的事实。只凭一天的话不算数，另一天又印证了才会用上；不对就删掉，它不会再这么看你。</p>
+      <div id="impressions"></div>
+    </div>
+    <div class="panel glass">
+      <h2>约定</h2>
+      <p class="lead">你们说好的事。你答应的，它会找合适的时候问一句；它答应的，到时候得兑现。</p>
+      <div id="pacts"></div>
+    </div>
+    <div class="panel glass">
       <h2>学到的</h2>
       <p class="lead">你说过的话怎样改变了它的做法。提的要求它会一直照做；针对某一次的纠正先存成例子，同类的攒到两次，它会在晚上问你要不要定成规矩。</p>
       <div id="lessons"></div>
+    </div>
+    <div class="panel glass">
+      <h2>经历</h2>
+      <p class="lead">发生过的事：你身上的，和你们之间的。聊到相关的人和地方，它会想起更早的。</p>
+      <div id="moments"></div>
     </div>
     <div class="panel glass">
       <h2>Alf 记得的事</h2>
@@ -743,6 +774,10 @@ async function loadFacts() {
     facts = data.facts;
     showWarmth(data.affinity);
     showLessons(data.lessons);
+    showPersona(data.persona);
+    showImpressions(data.impressions);
+    showPacts(data.pacts);
+    showMoments(facts.filter((f) => f.current && f.layer === 'moment'));
   } catch (e) { toast(friendly(e)); return; }
   $('factsAll').textContent = showOldFacts ? '只看现在的' : '显示已过时的';
   // 按 Alf 用它们的方式分组：常驻的每次聊天都带着；主题里的细节提到时才整组拿出来；经历带最近几条。
@@ -751,8 +786,7 @@ async function loadFacts() {
   group('一直记着', '每次聊天都带着', now.filter((f) => f.layer === 'core'));    // 他提的要求（layer 是 rule）在上面「学到的」里
   const topics = [...new Set(now.filter((f) => f.layer === 'topic').map((f) => f.topic))];
   for (const t of topics) group(t, '提到时整组想起来', now.filter((f) => f.layer === 'topic' && f.topic === t));
-  group('经历', '发生过的事', now.filter((f) => f.layer === 'moment'));
-  group('已过时的', '', facts.filter((f) => !f.current));
+  group('已过时的', '', facts.filter((f) => !f.current));   // 经历单独一栏（见 showMoments）
   $('facts').replaceChildren(...(out.length ? out : [el('p', 'lead', '还没有记忆。跟 Alf 聊聊自己，它会慢慢记下来。')]));
 }
 // —— 学到的：等你点头的规矩、你提的要求、你纠正过的、聊天里改的设置 ——
@@ -797,6 +831,113 @@ function showLessons(L) {
   }));
   $('lessons').replaceChildren(...(out.length ? out : [el('p', 'lead', '还没有。在聊天里跟它说「以后别……」「这封不用马上告诉我」「邮件汇总改到晚上八点」，它听进去的会列在这里。')]));
 }
+// —— 人设、它眼里的你、约定、经历：四栏共用的小零件 ——
+const doThen = async (fn, done) => { try { await fn(); if (done) toast(done); } catch (e) { toast(friendly(e)); } loadFacts(); };
+function infoRow(text, meta, buttons, cls) {
+  const r = el('div', 'fact' + (cls ? ' ' + cls : '')), control = el('div', 'control');
+  r.append(el('div', 'fact-text', text), el('small', null, meta.filter(Boolean).join(' · ')));
+  control.append(...buttons); r.append(control);
+  return r;
+}
+const heading = (title, hint) => { const h = el('div', 'group', title); if (hint) h.append(el('small', null, hint)); return h; };
+// 把一行里的文字换成编辑框；save(value) 负责存。multiline 用多行框（人设的一段话），否则单行。
+function editInPlace(row, value, limit, multiline, save) {
+  const text = row.querySelector('.fact-text'), control = row.querySelector('.control');
+  const box = el(multiline ? 'textarea' : 'input', multiline ? 'box' : null); if (!multiline) box.type = 'text';
+  box.value = value; box.maxLength = limit;
+  const ok = el('button', 'btn primary', '保存'), cancel = el('button', 'btn', '取消');
+  text.replaceWith(box); control.replaceChildren(ok, cancel); box.focus();
+  const commit = () => { const v = box.value.trim(); if (!v || v === value) { loadFacts(); return; } doThen(() => save(v), '已更新'); };
+  ok.onclick = commit; cancel.onclick = loadFacts;
+  box.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') loadFacts();
+    if (e.key === 'Enter' && !multiline && !e.isComposing && e.keyCode !== 229) commit();
+  });
+}
+function showPersona(P) {
+  if (!P) return;
+  const out = [];
+  for (const c of P.card) {
+    const r = el('div', 'fact'), control = el('div', 'control');
+    const edit = el('button', 'btn', '改');
+    r.append(el('div', 'part', c.label), el('div', 'fact-text', c.text || '（空着）'));
+    edit.onclick = () => editInPlace(r, c.text, c.limit, c.key !== 'persona.name', (v) => api('PATCH', '/api/prefs', { [c.key]: v }));
+    control.append(edit);
+    if (c.changed) {
+      const reset = el('button', 'btn', '恢复默认');
+      reset.onclick = async () => { if (await confirmDialog(`把「${c.label}」恢复成默认的？`, c.default, '恢复')) doThen(() => api('PATCH', '/api/prefs', { [c.key]: c.default }), '已恢复'); };
+      control.append(reset);
+    }
+    r.append(control); out.push(r);
+  }
+  if (P.notes.length) {
+    out.push(heading('它说过的关于自己的话', '以后照着说；不想让它这么说就删掉'));
+    out.push(...P.notes.map((n) => {
+      const drop = el('button', 'btn', '删掉');
+      drop.onclick = () => doThen(() => api('DELETE', `/api/persona/notes/${n.id}`), '已删掉');
+      return infoRow(n.text, [day(n.at) + '说的'], [drop]);
+    }));
+  }
+  $('persona').replaceChildren(...out);
+}
+function showImpressions(I) {
+  if (!I) return;
+  const out = [];
+  const row = (x, dim) => {
+    const wrong = el('button', 'btn', '不对');
+    wrong.onclick = async () => { if (await confirmDialog('这个印象不对？', `「${x.text}」——删掉之后它不会再这么看你。`, '删掉')) doThen(() => api('DELETE', `/api/impressions/${x.id}`), '已收回'); };
+    const edit = el('button', 'btn', '改');
+    const quotes = x.evidence.map((e) => `「${e.quote}」`).join('');
+    const r = infoRow(x.text, [dim ? '只有一天的话，还不算数' : `${x.days} 天的话印证过`, x.faded ? '很久没再印证，暂时不用' : '', quotes ? `依据：${quotes}` : ''], [edit, wrong], dim || x.faded ? 'dim' : '');
+    edit.onclick = () => editInPlace(r, x.text, 60, false, (v) => api('PATCH', `/api/impressions/${x.id}`, { text: v }));
+    return r;
+  };
+  if (I.formed.length) out.push(...I.formed.map((x) => row(x, false)));
+  if (I.hunches.length) out.push(heading('还在观察', `另一天又印证了才算数（要 ${I.form_days} 天）`), ...I.hunches.map((x) => row(x, true)));
+  if (I.withdrawn.length) out.push(heading('你说过不对的', '不会再形成'), ...I.withdrawn.map((x) => infoRow(x.text, [x.note ? `你说：${x.note}` : ''], [], 'old')));
+  $('impressions').replaceChildren(...(out.length ? out : [el('p', 'lead', '还没有。多聊几天，它会慢慢对你有些看法；每一条都会写明依据的是你哪几句话。')]));
+}
+function showPacts(P) {
+  if (!P) return;
+  const out = [];
+  const meta = (x) => {
+    const m = [x.standing ? '一直有效' : ''];
+    if (x.due_at) { const d = new Date(x.due_at * 1000); m.push(`期限 ${d.getMonth() + 1}月${d.getDate()}日`); }
+    m.push(day(x.at) + '说好的', x.said ? `你当时说：「${x.said}」` : '');
+    return m;
+  };
+  for (const who of ['user', 'alf', 'both']) {
+    const rows = P.active.filter((x) => x.who === who);
+    if (!rows.length) continue;
+    out.push(heading(rows[0].who_label, who === 'user' ? '它会找合适的时候问一句' : who === 'alf' ? '到时候它得兑现' : '习惯和暗号'));
+    out.push(...rows.map((x) => {
+      const kept = el('button', 'btn', x.standing ? '不用了' : '兑现了'), drop = el('button', 'btn', '作废');
+      kept.onclick = () => doThen(() => api('POST', `/api/pacts/${x.id}`, { outcome: x.standing ? 'dropped' : 'kept' }), '已了结');
+      drop.onclick = async () => { if (await confirmDialog('这条约定不算了？', x.text, '作废')) doThen(() => api('POST', `/api/pacts/${x.id}`, { outcome: 'dropped' }), '已作废'); };
+      return infoRow(x.text, meta(x), x.standing ? [kept] : [kept, drop]);
+    }));
+  }
+  if (P.settled.length) out.push(heading('了结的', ''), ...P.settled.map((x) => infoRow(x.text, [x.who_label, x.status_label, x.outcome ? `你说：「${x.outcome}」` : ''], [], 'dim')));
+  $('pacts').replaceChildren(...(out.length ? out : [el('p', 'lead', '还没有。跟它说「这周日前我一定把简历改完，你监督我」「以后我说老规矩就是明早七点叫我」，说好的事会列在这里。')]));
+}
+// 经历按月排：这个月的摊开，更早的折起来。
+function showMoments(rows) {
+  const out = [], months = new Map();
+  for (const f of rows) {
+    const d = new Date(f.recorded_at * 1000), key = `${d.getFullYear()}年${d.getMonth() + 1}月`;
+    if (!months.has(key)) months.set(key, []);
+    months.get(key).push(f);
+  }
+  let first = true;
+  for (const [key, list] of months) {
+    const box = el('details', 'month'), sum = el('summary', null, key);
+    sum.append(el('small', null, `${list.length} 件`));
+    box.open = first; first = false;
+    box.append(sum, ...list.map(factRow));
+    out.push(box);
+  }
+  $('moments').replaceChildren(...(out.length ? out : [el('p', 'lead', '还没有。跟它讲讲今天去了哪、见了谁、考得怎么样，它会记下来，每晚也会把当天聊到的事归纳一遍。')]));
+}
 function showWarmth(a) {
   if (!a) return;
   $('warmScore').textContent = a.score;
@@ -812,8 +953,10 @@ function showWarmth(a) {
 function factRow(f) {
   const row = el('div', 'fact' + (f.current ? '' : ' old'));
   const text = el('div', 'fact-text', f.text);
+  if (f.ours) text.prepend(el('span', 'pill', '你们之间'));
   const d = new Date(f.recorded_at * 1000);
   const meta = [f.label, `${d.getMonth() + 1}月${d.getDate()}日记下`];
+  if (f.feeling) meta.push(`你说：${f.feeling}`);
   if (f.source === 'voice') meta.push(f.unconfirmed ? '语音听来的，还没确认' : '语音');
   if (f.current && f.expires_at) { const e = new Date(f.expires_at * 1000); meta.push(`到 ${e.getMonth() + 1}月${e.getDate()}日为止`); }
   if (f.open_loop) meta.push('惦记着，会找机会问一句');

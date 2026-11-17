@@ -9,7 +9,7 @@ import logging
 import re
 from datetime import datetime, timedelta
 
-from . import followup, lessons, prefs, sources, timeparse
+from . import followup, impressions, lessons, persona, prefs, sources, timeparse
 from .agent import duration, format_reminders
 from .calendar_sync import calendar_alerts_job, calendar_job
 from .config import Settings
@@ -17,7 +17,7 @@ from .connectors import Connector, Item, sender_name
 from .decide import inbox_questions
 from .heartbeat import Job, JobContext, load_state
 from .llm import LLMError
-from .memory import MOMENT, Memory
+from .memory import MOMENT, Memory, was_said
 from .notify import notify_desktop
 from .prefs import in_quiet_hours
 from .reminders import Reminder, Reminders
@@ -48,7 +48,7 @@ def reminders_job(ctx: JobContext) -> str | None:
     return f"发出 {fired} 条提醒" if fired else None
 
 
-BRIEFING_PROMPT = """你是 Alf，用户的私人助理，也是他的朋友。现在是早上，你在给他写今天早报的开场白。
+BRIEFING_PROMPT = """你是 {name}，用户的私人助理，也是他的朋友。现在是早上，你在给他写今天早报的开场白。
 
 写一到三句话，从这些里挑真正值得说的：今天是什么特别的日子；和他关心的主题有关的重大新闻（最多一条，
 一句话说清）；结合今天的日程给一个具体的小建议。今天的日程清单会由程序附在你的话后面，不用逐条念。
@@ -78,7 +78,7 @@ def briefing_job(ctx: JobContext) -> str | None:
         style = proactive.think_prompt(ctx.prefs, proactive.LEVELS["normal"]).split("## 怎么说\n")[1].split("\n只用纯文本")[0]
         try:
             data = ctx.llm.json("briefing", [
-                {"role": "system", "content": BRIEFING_PROMPT.format(style=style) + lessons.block(ctx.conn, "proactive")},
+                {"role": "system", "content": BRIEFING_PROMPT.format(name=persona.name(ctx.prefs), style=style) + lessons.block(ctx.conn, "proactive")},
                 {"role": "user", "content": "\n".join(
                     [f"[现在] {ctx.now.year}年{ctx.now.month}月{ctx.now.day}日 周{'一二三四五六日'[ctx.now.weekday()]} {ctx.now:%H:%M}", ""]
                     + proactive.describe_snapshot(snapshot, ctx.now)
@@ -172,8 +172,9 @@ def digest_job(ctx: JobContext) -> str | None:
     since = state.get("until") or int(midnight.timestamp())
     facts = Memory(ctx.conn, ctx.decider, ctx.cfg.decision_threshold).recorded_since(since)
     ask = propose_rule(ctx, state)          # 同类的纠正攒够了：问他要不要定成规矩
+    seen = impressions.digest_lines(ctx.conn, int(ctx.now.timestamp()))   # 新形成的印象：是推断，更要给他看一眼
     ctx.cursor = json.dumps(state)
-    if not facts and not ask:
+    if not facts and not ask and not seen:
         return None
     parts = []
     if facts:
@@ -186,10 +187,12 @@ def digest_job(ctx: JobContext) -> str | None:
         # 记下"第几条是哪条记忆"，用户回复"第2条不对"时对话那边要用。
         state.update(until=int(ctx.now.timestamp()), ids=[f.id for f in facts])
         ctx.cursor = json.dumps(state)
+    if seen:
+        parts.append(seen)
     if ask:
-        parts.append(("另外，" if facts else "") + ask)
+        parts.append(("另外，" if facts or seen else "") + ask)
     ctx.post("digest", "\n\n".join(parts))
-    done = ([f"汇总了 {len(facts)} 条新记忆"] if facts else []) + (["提议了一条规矩"] if ask else [])
+    done = ([f"汇总了 {len(facts)} 条新记忆"] if facts else []) + (["说了新形成的印象"] if seen else []) + (["提议了一条规矩"] if ask else [])
     return "，".join(done)
 
 
@@ -243,18 +246,23 @@ def propose_rule(ctx: JobContext, state: dict) -> str | None:
     return None
 
 
-MOMENTS_PROMPT = """下面是用户今天发给私人助理的话，每句前面有编号。请从里面找出"发生过的、以后值得提起的事"，写成经历，输出 JSON。
+MOMENTS_PROMPT = """下面是用户今天和私人助理 Alf 的对话，他说的每句话前面有编号。请从里面找出"发生过的、以后值得提起的事"，写成经历，输出 JSON。
 
-什么算经历：他去了哪、见了谁、做成了什么、考得怎样、遇到了什么事——朋友过几天会问起"上次那个……怎么样了"的那种。
+两种经历：
+- 他身上发生的事：他去了哪、见了谁、做成了什么、考得怎样、遇到了什么事——朋友过几天会问起"上次那个……怎么样了"的那种。
+- 他和 Alf 之间发生的事（ours 填 true）：他夸了 Alf 或者冲它发了火、两个人之间的一个梗是怎么来的、Alf 帮他办成或办砸了一件事、
+  他第一次跟 Alf 讲起一件很私人的事。平常的一问一答、办一件事，不算。
 不算的：让助理办的事（提醒、记录、查东西）、报的数字、闲聊和应答、还没发生的打算、问句。
 
 怎么写：
-- 每条一句话，写上日期（今天的日期会给你），带上他自己说的感受或结果；只写他说了的，不替他补充、不猜结果。
-- from 填这条经历出自哪几句话的编号，至少一个。几句话说的是同一件事，合成一条。
+- 每条一句话，写上日期（今天的日期会给你），带上他自己说的结果；只写他说了的，不替他补充、不猜结果。主语是他，省略；提到助理就写 Alf。
+- from 填这条经历出自他的哪几句话的编号，至少一个。几句话说的是同一件事，合成一条。Alf 说的话只用来看上下文，不能当出处。
+- feeling 填他自己说的感受，从他的话里照抄几个字（「腿快断了」「爽」）；他没说感受就留空，不要替他概括。
+- importance 填这件事对他有多大，1 到 10：日常的小事 3–5，考试、面试、旅行 6–7，毕业、分手、搬家这种 8 以上。
 - "已经记过的经历"里有的，不要再写。
 - 多数日子没有值得记的，那就输出空列表。最多 3 条。
 
-输出格式：{"moments": [{"text": "……", "from": [编号, 编号]}]}"""
+输出格式：{"moments": [{"text": "……", "from": [编号, 编号], "ours": false, "feeling": "", "importance": 5}]}"""
 MOMENTS_MIN_MESSAGES = 3      # 今天他说的话少于这么多句，就不去归纳了
 MOMENTS_MAX_MESSAGES = 80
 
@@ -274,17 +282,27 @@ def moments_job(ctx: JobContext) -> str | None:
     since = state.get("until") or int(midnight.timestamp())
     ts = int(ctx.now.timestamp())
     ctx.cursor = json.dumps({"until": ts})
-    rows = [r for r in ctx.conn.execute(
-        "SELECT id, text, created_at FROM episodes WHERE role = 'user' AND created_at > ? AND created_at <= ? ORDER BY id LIMIT ?",
-        (since, ts, MOMENTS_MAX_MESSAGES)).fetchall() if len(r["text"].strip()) >= 4]
+    spoken = ctx.conn.execute(
+        "SELECT id, role, text, created_at FROM episodes WHERE created_at > ? AND created_at <= ? AND (role = 'user' OR kind = 'chat')"
+        " ORDER BY id", (since, ts)).fetchall()
+    rows = [r for r in spoken if r["role"] == "user" and len(r["text"].strip()) >= 4][:MOMENTS_MAX_MESSAGES]
     if len(rows) < MOMENTS_MIN_MESSAGES:
         return None
     memory = Memory(ctx.conn, ctx.decider, ctx.cfg.decision_threshold)
-    known = [f.text for f in memory.moments(limit=10, since=ts - 3 * 86400)]
-    listing = "\n".join(f"{i}. [{datetime.fromtimestamp(r['created_at'], ctx.now.tzinfo):%H:%M}] {r['text'][:300]}" for i, r in enumerate(rows, 1))
+    known = list(dict.fromkeys([f.text for f in memory.moments(limit=10, since=ts - 3 * 86400)]
+                               + [f.text for f in memory.recorded_since(since)][-20:]))   # 今天聊天时已经记下的事，不再记成经历
+    # 他的话带编号，是出处；Alf 的话不带编号，只为了看得懂"你们之间的事"（他那句"你也太靠谱了"是在夸哪一件）。
+    number = {r["id"]: i for i, r in enumerate(rows, 1)}
+    lines = []
+    for r in spoken:
+        if r["id"] in number:
+            lines.append(f"{number[r['id']]}. [{datetime.fromtimestamp(r['created_at'], ctx.now.tzinfo):%H:%M}] 他：{r['text'][:300]}")
+        elif r["role"] == "alf" and lines:
+            lines.append(f"   Alf：{r['text'][:120]}")
+    listing = "\n".join(lines[:3 * MOMENTS_MAX_MESSAGES])
     data = ctx.llm.json("memory.moments", [
         {"role": "system", "content": MOMENTS_PROMPT},
-        {"role": "user", "content": f"今天：{ctx.now.year}年{ctx.now.month}月{ctx.now.day}日\n\n已经记过的经历：\n"
+        {"role": "user", "content": f"今天：{ctx.now.year}年{ctx.now.month}月{ctx.now.day}日\n\n已经记过的经历（包括今天聊天时记下的事，这些不要再写）：\n"
                                     + ("\n".join(known) or "（没有）") + f"\n\n他今天说的话：\n{listing}"},
     ], max_tokens=600, temperature=0)
     added = 0
@@ -296,8 +314,12 @@ def moments_job(ctx: JobContext) -> str | None:
         if not text or len(text) > 200 or not cited:
             continue                                   # 说不出出自哪句话的，不记
         source = rows[cited[0] - 1]
+        # 感受得是他自己的话：在出处的那几句里找得到才留，免得模型替他概括出一种心情。
+        feeling = " ".join(str(item.get("feeling") or "").split())[:40]
+        felt = feeling if was_said(feeling, *(rows[n - 1]["text"] for n in cited)) else None
         result = memory.write(timeparse.absolutize(text, ctx.now), MOMENT, now=ts, episode_id=source["id"],
-                              quote=" ".join(source["text"].split())[:120])
+                              quote=" ".join(source["text"].split())[:120], ours=item.get("ours") is True,
+                              feeling=felt, importance=item.get("importance"))
         added += result.status != "duplicate"
     return f"归纳了 {added} 条经历" if added else None
 
@@ -590,6 +612,10 @@ def build_jobs(cfg: Settings, connectors: list[Connector], current: dict | None 
         at = prefs.hhmm(p["digest.at"])
         early = (datetime.combine(datetime(2000, 1, 2), at) - timedelta(minutes=10)).time()
         jobs.append(Job("moments", "把当天的对话归纳成经历", moments_job, daily_at=early))
+        if p.get("impressions.enabled", True):
+            # 排在归纳经历和汇总之间：当晚形成的印象赶得上在汇总里告诉他。
+            middle = (datetime.combine(datetime(2000, 1, 2), at) - timedelta(minutes=5)).time()
+            jobs.append(Job("impressions", "从当天的话里形成印象", impressions.impressions_job, daily_at=middle))
     if cfg.llm is not None and p["digest.enabled"]:   # 自动记忆只在有生成式模型时才有
         jobs.append(Job("digest", "今日记忆汇总", digest_job, daily_at=prefs.hhmm(p["digest.at"])))
     if any(p.get(f"sources.{name}") for name in sources.BUILTIN) or p.get("mcp.servers"):

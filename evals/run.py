@@ -115,11 +115,13 @@ def run_guards(args) -> int:
     reminder is created at a time the user never said); for claim/accepted it only costs a re-check, and for
     interesting (the affinity point) a miss costs nothing but a point."""
     from alf.affinity import INTEREST_FLOOR
-    from alf.chat import (ACCEPT_FLOOR, ANNOYED_FLOOR, CLAIM_FLOOR, HARD_FLOOR, LOOP_FLOOR, RULE_FLOOR, SEND_FLOOR, SETTING_FLOOR,
-                          TARGET_FLOOR, TIME_SAID_FLOOR)
-    from alf.decide import (accepted_question, against_safeguard_question, annoyed_question, asked_setting_question, broke_rule_question, claim_question,
-                            confirm_send_question, inbox_questions, interesting_question, raised_question, same_note_question,
-                            spoke_of_question, target_question, time_said_question)
+    from alf.chat import (ACCEPT_FLOOR, ANNOYED_FLOOR, CLAIM_FLOOR, DISPUTE_FLOOR, FULFILL_FLOOR, HARD_FLOOR, LOOP_FLOOR, PACT_FLOOR, PACT_SAID_FLOOR,
+                          RULE_FLOOR, SEND_FLOOR, SETTING_FLOOR, TARGET_FLOOR, TIME_SAID_FLOOR)
+    from alf.decide import (accepted_question, against_safeguard_question, agreed_question, annoyed_question, asked_setting_question,
+                            broke_rule_question, claim_question, confirm_send_question, disputes_question, fulfilled_question, impression_label_question,
+                            impression_supported_question, inbox_questions, interesting_question, pact_said_question, raised_question,
+                            same_note_question, spoke_of_question, target_question, time_said_question)
+    from alf.impressions import LABEL_FLOOR, SUPPORT_FLOOR
     from alf.jobs import KIND_FLOOR, UNWANTED_FLOOR
     from alf.memory import SUPERSEDE_FLOOR
 
@@ -163,21 +165,45 @@ def run_guards(args) -> int:
         "mailrule": (None, lambda c: inbox_questions(rules=True)["needs_now" if c["ask"] == "now" else "unwanted"], lambda c: (
             {"from": c["from"], "subject": c["subject"], "body_start": c["body"], "user_instructions_about_email": c["rules"]},
             f"[{c['ask']}] {c['subject']} ← {c['rules'][0]}")),
+        # 约定：这件事是不是真的说好了（是才记）；回复是不是在跟他约定一件事（没记下来就这么说要打回）。
+        "pact": (PACT_FLOOR, agreed_question, lambda c: (
+            {"recent_conversation": c["recent"], "user_latest_message": c["said"], "agreement": c["agreement"]}, f"「{c['said']}」→ {c['agreement']}")),
+        "pactsaid": (PACT_SAID_FLOOR, pact_said_question, lambda c: (
+            {"user_latest_message": c["said"], "assistant_reply": c["reply"]}, f"{c['said']} / {c['reply']}")),
+        # Alf 把自己答应的事标成兑现之前：回复里是不是真的做了。
+        "fulfilled": (FULFILL_FLOOR, lambda c: fulfilled_question(c["promise"]), lambda c: ({"assistant_reply": c["reply"]}, f"{c['promise']} ← {c['reply']}")),
+        # 印象：他的话撑不撑得起它；它是不是在贴标签；他是不是在说它不对。
+        "impression": (SUPPORT_FLOOR, lambda c: impression_supported_question(c["text"]), lambda c: (
+            {"user_messages": c["messages"]}, f"{c['text']} ← {' / '.join(c['messages'])}")),
+        "label": (LABEL_FLOOR, lambda c: impression_label_question(c["text"]), lambda c: ({}, c["text"])),
+        "dispute": (DISPUTE_FLOOR, lambda c: disputes_question(c["text"]), lambda c: (
+            {"assistant_previous_message": c.get("before", ""), "user_latest_message": c["said"]}, f"「{c['said']}」→ {c['text']}")),
     }
     failed, total, unsafe = 0, 0, 0
+    scores: dict[str, dict[bool, list[float]]] = {}
     for _ in range(args.reps):
         for case in load("guards"):
+            if args.kind and case["kind"] not in args.kind.split(","):
+                continue
             floor, question, build = setups[case["kind"]]
             if case["kind"] == "mailrule":
                 floor = 0.6 if case["ask"] == "now" else UNWANTED_FLOOR
             state, label = build(case)
-            q = question(case) if case["kind"] in ("spoke", "raised", "broke", "hardrule", "mailkind", "mailrule") else question()   # 这几类的问题里带着具体内容
+            q = question(case) if case["kind"] in ("spoke", "raised", "broke", "hardrule", "mailkind", "mailrule",
+                                                   "impression", "label", "dispute", "fulfilled") else question()   # 这几类的问题里带着具体内容
             p = decider.ask(f"eval.{case['kind']}", state, {"q": q})["q"].noul
+            scores.setdefault(case["kind"], {True: [], False: []})[case["yes"]].append(p)
+            if args.kind:
+                print(f"  {case['kind']:<11}{p:.2f} {'是' if case['yes'] else '否'}  {label[:80]}")
             total += 1
             if (p >= floor) != case["yes"]:
                 failed += 1
                 unsafe += p >= floor and case["kind"] in ("target", "replace", "send", "said")
                 print(f"✗ {case['kind']:<8}{p:.2f} (floor {floor}, want {'yes' if case['yes'] else 'no'})  {label[:70]}")
+    if args.kind:      # 校门槛时用：每一类里"该是"和"不该是"的两堆分数各落在哪
+        for kind, by in scores.items():
+            yes, no = by[True], by[False]
+            print(f"  {kind:<11}是：{min(yes):.2f}–{max(yes):.2f}（{len(yes)}）  不是：{min(no):.2f}–{max(no):.2f}（{len(no)}）")
     print(f"guards: {total - failed}/{total} passed · {unsafe} unsafe (would have deleted, overwritten, sent or scheduled something it should not)")
     report_cost(conn)
     return 1 if unsafe else 0
@@ -223,6 +249,7 @@ def main() -> int:
     parser.add_argument("--threshold", type=float, default=0.6, help="confidence Alf needs before acting")
     parser.add_argument("--backend", choices=["jev", "deepseek"], default="jev", help="who answers the closed questions")
     parser.add_argument("--offline", action="store_true", help="use keyword rules instead of Jev (runner check only)")
+    parser.add_argument("--kind", default="", help="guards only: run just these kinds (comma-separated) and print each kind's score ranges")
     args = parser.parse_args()
     return {"timeparse": run_timeparse, "routing": run_routing, "memory": run_memory, "guards": run_guards}[args.suite](args)
 

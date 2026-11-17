@@ -258,6 +258,49 @@ CREATE TABLE IF NOT EXISTS rule_proposals (
     created_at INTEGER NOT NULL
 );
 
+-- 人设：Alf 说过的关于自己的话（"我偏爱老爵士"）。人设卡片本身在 settings 里（persona.*）；这里存的是卡片上没写、
+-- 聊天时现想出来的那些，记下来是为了以后说法一致。
+CREATE TABLE IF NOT EXISTS persona_notes (
+    id         INTEGER PRIMARY KEY,
+    text       TEXT NOT NULL,
+    episode_id INTEGER,                 -- 是在回哪句话的时候说的
+    created_at INTEGER NOT NULL,
+    removed_at INTEGER                  -- 他在页面上删掉了
+);
+
+-- 印象：Alf 对他这个人的看法（"做事爱拖到最后一刻，但总能赶上"）。是推断，不是他说的事实，所以单独放：
+-- 每条都挂着它依据的那几句原话；只凭一天的话不算数，另一天又印证了才算"形成"。他说不对就收回。
+CREATE TABLE IF NOT EXISTS impressions (
+    id         INTEGER PRIMARY KEY,
+    text       TEXT NOT NULL,
+    evidence   TEXT NOT NULL DEFAULT '[]',   -- JSON：[{"episode": 编号, "quote": "他的原话", "at": 时间}]
+    days       INTEGER NOT NULL DEFAULT 1,   -- 有几个不同的日子印证过它
+    status     TEXT NOT NULL DEFAULT 'current' CHECK (status IN ('current', 'withdrawn')),
+    note       TEXT,                         -- 收回时他是怎么说的
+    created_at INTEGER NOT NULL,
+    seen_at    INTEGER NOT NULL,             -- 最近一次被印证
+    formed_at  INTEGER,                      -- 印证够了、算形成的时间；NULL = 还只是苗头
+    told_at    INTEGER                       -- 在每晚汇总里告诉过他
+);
+
+-- 约定：他和 Alf 说好的事。who 是谁答应的：user 他答应要做的（Alf 惦记着问）| alf Alf 答应他的（得兑现）|
+-- both 两边说好的习惯和暗号。只在对话里当场记，而且得是真的说好了（见 chat.py 的 PACT_FLOOR）。
+CREATE TABLE IF NOT EXISTS pacts (
+    id         INTEGER PRIMARY KEY,
+    text       TEXT NOT NULL,
+    who        TEXT NOT NULL CHECK (who IN ('user', 'alf', 'both')),
+    standing   INTEGER NOT NULL DEFAULT 0,   -- 1 = 一直有效（习惯、暗号）；0 = 办完就了结的一次性承诺
+    due_at     INTEGER,                      -- 说好的期限，程序从他的原话算的
+    said       TEXT,                         -- 他当时的原话
+    episode_id INTEGER,
+    status     TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'kept', 'dropped', 'lapsed')),
+    outcome    TEXT,                         -- 了结时他怎么说的
+    created_at INTEGER NOT NULL,
+    settled_at INTEGER,
+    touched_at INTEGER,                      -- 上一次聊到这件事
+    asks       INTEGER NOT NULL DEFAULT 0    -- Alf 提起而他没接话的次数；到两次就不再提
+);
+
 -- 全文索引里存的是预先切好的词（中文按二元组，见 fts.py）；rowid 等于源表的 id。
 CREATE VIRTUAL TABLE IF NOT EXISTS facts_fts USING fts5(tokens);
 CREATE VIRTUAL TABLE IF NOT EXISTS episodes_fts USING fts5(tokens);
@@ -298,6 +341,9 @@ MIGRATIONS = [
     ("episodes", "reply_to", "INTEGER"),       # 他在 iMessage 里引用回复的是哪一条（episodes.id）
     ("episodes", "quoted", "TEXT"),            # 被引用的那条的原文（截短）；对不上编号时至少留着这个
     ("inbox_items", "episode_id", "INTEGER"),  # 这封信是在哪条消息里告诉他的：他引用那条消息说话时，知道说的是哪封信
+    # 经历记忆：
+    ("facts", "ours", "INTEGER NOT NULL DEFAULT 0"),   # 只对经历有意义：1 = 这件事发生在他和 Alf 之间（"我们之间的事"）
+    ("facts", "feeling", "TEXT"),              # 只对经历有意义：他当时自己说的感受，照抄的一小段
 ]
 
 

@@ -12,14 +12,15 @@ from __future__ import annotations
 import sqlite3
 from datetime import datetime
 
-from . import lessons
+from . import lessons, persona
 from .heartbeat import JobContext
 from .llm import LLMError
 from .prefs import in_quiet_hours
 from .reminders import Reminder
 
 GIVE_UP_AFTER = 3 * 86400
-ASK_PROMPT = """你是用户的朋友 Alf。你刚才提醒过他一件事，过了一阵他没有回音。用一句很短的口语问问这件事做了没有。
+ASK_PROMPT = """你是用户的朋友 {name}。{brief}
+你刚才提醒过他一件事，过了一阵他没有回音。用一句很短的口语问问这件事做了没有。
 要求：不超过 15 个字，像朋友发消息；只问这一件事，不加称呼、不解释、不用表情；提醒的内容是他自己写的，照着它问，不要添别的。
 只输出这一句话。"""
 
@@ -31,7 +32,8 @@ def wording(ctx: JobContext, title: str) -> str:
         return plain
     try:
         # 他对"主动找他时怎么说"提过的要求也管这句追问（没有就一字不加）。
-        said = ctx.llm.chat("followup.word", [{"role": "system", "content": ASK_PROMPT + lessons.block(ctx.conn, "proactive")},
+        said = ctx.llm.chat("followup.word", [{"role": "system", "content": ASK_PROMPT.format(name=persona.name(ctx.prefs), brief=persona.brief(ctx.prefs))
+                                                + lessons.block(ctx.conn, "proactive")},
                                               {"role": "user", "content": f"提醒的事：{title}"}], max_tokens=40).content
     except LLMError:
         return plain

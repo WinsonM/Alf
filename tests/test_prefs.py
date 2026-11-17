@@ -68,7 +68,7 @@ def test_heartbeat_follows_schedule_changes_without_a_restart(cfg, monkeypatch):
     hb = Heartbeat(live, lambda current: jobs.build_jobs(live, [], current), make_decider=lambda c: Decider(OfflineBackend(), c))
     assert [(j.name, j.schedule_text()) for j in hb.jobs] == [
         ("reminders", "每 10 秒"), ("followups", "每 1 分钟"), ("calendar", "每 5 分钟"), ("calendar_alerts", "每 30 秒"),
-        ("briefing", "每天 08:00"), ("moments", "每天 21:20"), ("digest", "每天 21:30"), ("sources", "每 30 分钟"), ("proactive", "每 15 分钟")]
+        ("briefing", "每天 08:00"), ("moments", "每天 21:20"), ("impressions", "每天 21:25"), ("digest", "每天 21:30"), ("sources", "每 30 分钟"), ("proactive", "每 15 分钟")]
     hb.tick(NOW)
     prefs.save(hb._conn, live, {"briefing.enabled": False, "digest.at": "22:15", "reminders.check_every": 30,
                                 "proactive.level": "chatty", "sources.days": False, "sources.calendar": False, "sources.reminders": False, "sources.news": False,
@@ -76,7 +76,7 @@ def test_heartbeat_follows_schedule_changes_without_a_restart(cfg, monkeypatch):
     hb.tick(NOW + timedelta(seconds=5))
     assert [(j.name, j.label, j.schedule_text()) for j in hb.jobs] == [
         ("reminders", "到期提醒", "每 30 秒"), ("moments", "把当天的对话归纳成经历", "每天 22:05"),      # 跟着汇总的时间一起挪
-        ("digest", "今日记忆汇总", "每天 22:15"), ("proactive", "主动找你（很活跃）", "每 10 分钟")]
+        ("impressions", "从当天的话里形成印象", "每天 22:10"), ("digest", "今日记忆汇总", "每天 22:15"), ("proactive", "主动找你（很活跃）", "每 10 分钟")]
 
 
 def test_desktop_notifications_can_be_switched_off(conn, cfg, monkeypatch):

@@ -24,7 +24,7 @@ from fastapi.responses import HTMLResponse, JSONResponse
 from pydantic import BaseModel, Field
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 
-from . import affinity, apple, asr, connectors, db, doctor, feedback, lessons, prefs, proactive, timeline
+from . import affinity, apple, asr, connectors, db, doctor, feedback, impressions, lessons, pacts, persona, prefs, proactive, timeline
 from .agent import Reply, Turn
 from .chat import CATEGORY_LABELS, make_agent
 from .config import MAIL_PROVIDERS, Settings, env_file, normalize_handle, update_dotenv
@@ -76,6 +76,14 @@ class FactIn(BaseModel):
 
 class ProposalIn(BaseModel):
     accept: bool
+
+
+class ImpressionIn(BaseModel):
+    text: str = Field(min_length=1, max_length=impressions.TEXT_CHARS)
+
+
+class PactIn(BaseModel):
+    outcome: str = Field(pattern="^(kept|dropped)$")
 
 
 def read_env(path: Path) -> dict[str, str]:
@@ -412,16 +420,23 @@ def create_app(cfg: Settings, backend: Backend, *, llm_backend: LLMBackend | Non
                 "current": f.valid_to is None, "superseded_by": f.superseded_by,
                 "layer": layer, "topic": f.topic, "expires_at": f.expires_at, "past": f.aftermath is not None,
                 # quote：他当时的原话；open_loop：还没了结、Alf 惦记着要问一句的事
-                "quote": f.quote, "open_loop": f.valid_to is None and f.category != MOMENT and (f.follow_up or f.expires_at is not None)}
+                "quote": f.quote, "open_loop": f.valid_to is None and f.category != MOMENT and (f.follow_up or f.expires_at is not None),
+                # 只对经历有意义：是不是发生在他和 Alf 之间、他当时说的感受、这件事有多大
+                "ours": f.ours, "feeling": f.feeling, "importance": f.importance if f.category == MOMENT else None}
 
     @app.get("/api/memory")
     def get_memory(all: bool = False) -> dict:
         with lock:
             memory().expire(int(datetime.now(cfg.tz).timestamp()))
             facts = memory().history(limit=500) if all else memory().current(limit=500)
-            warmth = affinity.view(conn, int(datetime.now(cfg.tz).timestamp()))
-            learned = lessons.view(conn, int(datetime.now(cfg.tz).timestamp()))
-        return {"facts": [fact_view(f) for f in facts], "affinity": warmth, "lessons": learned}
+            now = int(datetime.now(cfg.tz).timestamp())
+            warmth = affinity.view(conn, now)
+            learned = lessons.view(conn, now)
+            who = persona.view(conn, prefs.load(conn, cfg))
+            seen = impressions.view(conn, now)
+            agreed = pacts.view(conn, now)
+        return {"facts": [fact_view(f) for f in facts], "affinity": warmth, "lessons": learned,
+                "persona": who, "impressions": seen, "pacts": agreed}
 
     @app.patch("/api/memory/{fact_id}")
     def edit_fact(fact_id: int, body: FactIn) -> dict:
@@ -467,6 +482,37 @@ def create_app(cfg: Settings, backend: Backend, *, llm_backend: LLMBackend | Non
                 rule = memory().write(proposal["text"], FEEDBACK, now=now, scope=lessons.scope_of(proposal["scope"])).fact.id
             lessons.settle_proposal(conn, proposal_id, rule_id=rule)
         return {"ok": True, "rule_id": rule}
+
+    # --- 人设里它说过的话、它对他的印象、约定：在页面上删、改、了结 ---------------------------
+
+    @app.delete("/api/persona/notes/{note_id}")
+    def drop_persona_note(note_id: int) -> dict:
+        with lock:
+            if not persona.remove_note(conn, note_id, int(datetime.now(cfg.tz).timestamp())):
+                raise HTTPException(404, "没有这一条")
+        return {"ok": True}
+
+    @app.patch("/api/impressions/{impression_id}")
+    def edit_impression(impression_id: int, body: ImpressionIn) -> dict:
+        with lock:
+            if not impressions.rewrite(conn, impression_id, body.text):
+                raise HTTPException(404, "没有这条印象")
+        return {"ok": True}
+
+    @app.delete("/api/impressions/{impression_id}")
+    def drop_impression(impression_id: int) -> dict:
+        """在页面上说一条印象不对：收回，以后不再形成同样的。"""
+        with lock:
+            if not impressions.withdraw(conn, impression_id, int(datetime.now(cfg.tz).timestamp()), "在记忆页上删掉的"):
+                raise HTTPException(404, "没有这条印象")
+        return {"ok": True}
+
+    @app.post("/api/pacts/{pact_id}")
+    def settle_pact(pact_id: int, body: PactIn) -> dict:
+        with lock:
+            if not pacts.settle(conn, pact_id, body.outcome, int(datetime.now(cfg.tz).timestamp()), "在记忆页上了结的"):
+                raise HTTPException(404, "没有这条约定")
+        return {"ok": True}
 
     @app.delete("/api/memory/{fact_id}")
     def forget_fact(fact_id: int) -> dict:
