@@ -1,0 +1,1060 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>Alf</title>
+<style>
+  :root {
+    --bg: #eef1f8; --ink: #101828; --muted: #667085;
+    --glass: rgba(255, 255, 255, .58); --glass-strong: rgba(255, 255, 255, .82);
+    --stroke: rgba(255, 255, 255, .75); --hairline: rgba(16, 24, 40, .08);
+    --accent: #0a84ff; --on-accent: #fff; --danger: #ff3b30; --ok: #34c759; --warn: #ff9f0a;
+    --blob-a: #a5c8ff; --blob-b: #ffd1e3; --blob-c: #c9f2e3;
+    --shadow: 0 12px 32px rgba(16, 24, 40, .10), 0 1px 2px rgba(16, 24, 40, .06);
+    --spring: cubic-bezier(.2, .9, .25, 1.15);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0b0d13; --ink: #f2f4f7; --muted: #98a2b3;
+      --glass: rgba(38, 42, 54, .52); --glass-strong: rgba(44, 48, 62, .86);
+      --stroke: rgba(255, 255, 255, .11); --hairline: rgba(255, 255, 255, .08);
+      --blob-a: #1d3b6e; --blob-b: #5a2545; --blob-c: #14463a;
+      --shadow: 0 12px 32px rgba(0, 0, 0, .45), 0 1px 2px rgba(0, 0, 0, .3);
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body {
+    background: var(--bg); color: var(--ink); overflow: hidden;
+    font: 16px/1.5 -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Helvetica Neue", sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  /* 玻璃要有东西可透才看得出来，所以背景放几团柔和的色块。 */
+  body::before {
+    content: ""; position: fixed; inset: -20%; z-index: -1; pointer-events: none;
+    background:
+      radial-gradient(38% 34% at 18% 22%, var(--blob-a), transparent 70%),
+      radial-gradient(34% 30% at 84% 30%, var(--blob-b), transparent 70%),
+      radial-gradient(40% 36% at 55% 88%, var(--blob-c), transparent 70%);
+    filter: blur(40px); opacity: .75;
+  }
+  .glass {
+    background: var(--glass); border: 1px solid var(--stroke); box-shadow: var(--shadow);
+    -webkit-backdrop-filter: blur(26px) saturate(180%); backdrop-filter: blur(26px) saturate(180%);
+  }
+  button { font: inherit; color: inherit; border: 0; background: none; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+  button:focus-visible, textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .app { position: relative; height: 100dvh; max-width: 780px; margin: 0 auto; }
+
+  .bar {
+    position: absolute; z-index: 5; top: 12px; left: 12px; right: 12px;
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    padding: 10px 12px 10px 14px; border-radius: 24px;
+  }
+  .brand { display: flex; align-items: center; gap: 11px; min-width: 0; }
+  .logo {
+    width: 36px; height: 36px; border-radius: 12px; flex: none; display: grid; place-items: center;
+    font-weight: 700; color: var(--on-accent); background: linear-gradient(140deg, #5ac8fa, var(--accent) 60%, #5e5ce6);
+  }
+  .brand h1 { margin: 0; font-size: 17px; line-height: 1.2; font-weight: 650; }
+  .brand p { margin: 0; font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .pill {
+    display: inline-flex; align-items: center; gap: 7px; padding: 7px 13px; border-radius: 999px; font-size: 13px;
+    background: var(--glass-strong); border: 1px solid var(--stroke); transition: transform .25s var(--spring);
+  }
+  .pill:active { transform: scale(.95); }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); }
+  .dot.ok { background: var(--ok); box-shadow: 0 0 0 3px color-mix(in srgb, var(--ok) 22%, transparent); }
+  .dot.warn { background: var(--warn); } .dot.down { background: var(--danger); }
+
+  #timeline {
+    position: absolute; inset: 0; overflow-y: auto; overscroll-behavior: contain;
+    padding: 92px 16px 124px; scrollbar-width: thin;
+    /* 内容滚到顶栏和输入栏外侧时淡出，不在玻璃条的上下缘露出半截气泡。 */
+    -webkit-mask-image: linear-gradient(to bottom, transparent 6px, #000 40px, #000 calc(100% - 40px), transparent calc(100% - 6px));
+    mask-image: linear-gradient(to bottom, transparent 6px, #000 40px, #000 calc(100% - 40px), transparent calc(100% - 6px));
+  }
+  .day { text-align: center; font-size: 12px; color: var(--muted); margin: 18px 0 10px; }
+  .row { display: flex; flex-direction: column; align-items: flex-start; margin: 6px 0; animation: pop .38s var(--spring) both; }
+  .row.me { align-items: flex-end; }
+  .bubble, .card {
+    max-width: min(82%, 560px); padding: 9px 14px; border-radius: 20px;
+    white-space: pre-wrap; overflow-wrap: anywhere;
+  }
+  .row.alf .bubble { border-bottom-left-radius: 7px; }
+  .row.me .bubble { background: var(--accent); color: var(--on-accent); border-bottom-right-radius: 7px; box-shadow: 0 6px 18px color-mix(in srgb, var(--accent) 30%, transparent); }
+  .card { border-radius: 18px; padding: 11px 14px 12px; border-left: 3px solid var(--tone, var(--accent)); }
+  .card.reminder { --tone: var(--warn); } .card.email { --tone: var(--accent); } .card.briefing { --tone: var(--ok); }
+  .card-head { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; color: var(--muted); margin-bottom: 3px; }
+  .card-title { font-weight: 600; } .card-rest { font-size: 13.5px; color: var(--muted); margin-top: 1px; }
+  .card.briefing .card-rest { color: inherit; font-size: inherit; font-variant-numeric: tabular-nums; }
+  .meta { font-size: 11px; color: var(--muted); margin: 3px 6px 0; }
+  .pending .bubble { opacity: .6; }
+  .typing { display: inline-flex; gap: 4px; padding: 14px 16px; }
+  .typing i { width: 6px; height: 6px; border-radius: 50%; background: var(--muted); animation: blink 1.1s infinite both; }
+  .typing i:nth-child(2) { animation-delay: .15s; } .typing i:nth-child(3) { animation-delay: .3s; }
+
+  .empty { margin: 14vh auto 0; max-width: 420px; text-align: center; color: var(--muted); }
+  .empty h2 { color: var(--ink); font-size: 22px; margin: 0 0 6px; font-weight: 650; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 18px; }
+  .chip { padding: 8px 14px; border-radius: 999px; font-size: 14px; transition: transform .25s var(--spring); }
+  .chip:active { transform: scale(.95); }
+
+  .composer {
+    position: absolute; z-index: 5; left: 12px; right: 12px; bottom: max(12px, env(safe-area-inset-bottom));
+    display: flex; align-items: flex-end; gap: 8px; padding: 8px; border-radius: 28px;
+  }
+  .composer textarea {
+    flex: 1; min-width: 0; resize: none; border: 0; background: transparent; color: inherit; font: inherit;
+    padding: 9px 6px; max-height: 148px; outline: none;
+  }
+  .composer textarea::placeholder { color: var(--muted); }
+  .round {
+    width: 40px; height: 40px; flex: none; border-radius: 50%; display: grid; place-items: center;
+    transition: transform .25s var(--spring), background .2s, opacity .2s;
+  }
+  .round:active { transform: scale(.9); }
+  .round svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  #mic { background: var(--glass-strong); border: 1px solid var(--stroke); }
+  #mic.recording { background: var(--danger); color: #fff; border-color: transparent; animation: pulse 1.2s infinite; }
+  #send { background: var(--accent); color: var(--on-accent); }
+  #send:disabled { opacity: .35; cursor: default; }
+
+  .scrim { position: fixed; inset: 0; z-index: 20; background: rgba(8, 10, 16, .38); opacity: 0; transition: opacity .25s; }
+  .sheet {
+    position: fixed; z-index: 21; left: 50%; top: 50%; width: min(460px, calc(100vw - 32px)); max-height: min(78vh, 640px);
+    overflow-y: auto; padding: 20px; border-radius: 26px; background: var(--glass-strong);
+    transform: translate(-50%, -50%) scale(.92); opacity: 0; transition: transform .35s var(--spring), opacity .2s;
+  }
+  .open.scrim { opacity: 1; } .open.sheet { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+  .sheet h2 { margin: 0 0 2px; font-size: 19px; } .sheet .sub { margin: 0 0 14px; font-size: 13px; color: var(--muted); }
+  .sheet h3 { margin: 18px 0 6px; font-size: 12px; font-weight: 600; color: var(--muted); }
+  .job { display: grid; grid-template-columns: 1fr auto; gap: 2px 10px; padding: 10px 0; border-top: 1px solid var(--hairline); }
+  .job:first-of-type { border-top: 0; }
+  .job b { font-weight: 600; } .job small { color: var(--muted); font-size: 12.5px; grid-column: 1; }
+  .job .err, small.err { color: var(--danger); }
+  .job button { grid-row: 1 / span 2; grid-column: 2; align-self: center; font-size: 13px; }
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .stat { padding: 10px; border-radius: 16px; background: var(--glass); border: 1px solid var(--stroke); text-align: center; }
+  .stat b { display: block; font-size: 20px; font-variant-numeric: tabular-nums; } .stat span { font-size: 12px; color: var(--muted); }
+  .close { margin-top: 18px; width: 100%; justify-content: center; padding: 10px; }
+
+  .toast {
+    position: fixed; z-index: 30; left: 50%; bottom: 104px; max-width: calc(100vw - 48px); padding: 9px 16px; border-radius: 999px;
+    font-size: 14px; background: var(--glass-strong); transform: translate(-50%, 14px); opacity: 0; pointer-events: none;
+    transition: transform .35s var(--spring), opacity .2s;
+  }
+  .toast.open { transform: translate(-50%, 0); opacity: 1; }
+  [hidden] { display: none !important; }
+
+  /* —— 顶栏里的页面切换 —— */
+  .tabs { display: flex; gap: 2px; padding: 3px; border-radius: 999px; background: var(--glass-strong); border: 1px solid var(--stroke); }
+  .tabs button { padding: 6px 14px; border-radius: 999px; font-size: 14px; color: var(--muted); transition: background .2s, color .2s; }
+  .tabs button[aria-selected="true"] { background: var(--accent); color: var(--on-accent); }
+  @media (max-width: 520px) { .brand p { display: none; } .tabs button { padding: 6px 10px; } #statusText { display: none; } }
+
+  /* —— 记忆页和设置页 —— */
+  .page { position: absolute; inset: 0; overflow-y: auto; padding: 92px 16px 40px; scrollbar-width: thin;
+    -webkit-mask-image: linear-gradient(to bottom, transparent 6px, #000 40px); mask-image: linear-gradient(to bottom, transparent 6px, #000 40px); }
+  .panel { padding: 18px; border-radius: 24px; margin: 0 auto 14px; max-width: 640px; animation: pop .35s var(--spring) both; }
+  .panel h2 { margin: 0 0 2px; font-size: 18px; } .panel .lead { margin: 0 0 12px; font-size: 13px; color: var(--muted); }
+  .panel h3 { margin: 20px 0 2px; font-size: 12px; font-weight: 600; color: var(--muted); }
+  .chips.left { justify-content: flex-start; margin-top: 4px; }
+  .chip[aria-pressed="true"] { background: var(--accent); color: var(--on-accent); border-color: transparent; }
+  .entry { padding: 9px 0; border-top: 1px solid var(--hairline); font-size: 14px; }
+  .entry:first-child { border-top: 0; } .entry small { display: block; color: var(--muted); font-size: 12.5px; }
+  .entry .tag { display: inline-block; font-size: 12px; padding: 1px 8px; border-radius: 999px; margin-right: 6px; border: 1px solid var(--hairline); }
+  .entry .tag.sent { background: color-mix(in srgb, var(--ok) 20%, transparent); border-color: transparent; }
+  .entry .tag.held { background: color-mix(in srgb, var(--warn) 20%, transparent); border-color: transparent; }
+  .field { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 4px 14px; padding: 11px 0; border-top: 1px solid var(--hairline); }
+  .field:first-of-type { border-top: 0; }
+  .field label, .field .name { font-weight: 550; } .field small { grid-column: 1; color: var(--muted); font-size: 12.5px; }
+  .field small.err { color: var(--danger); }
+  .field.stack { grid-template-columns: 1fr; } .field.stack > :not(label):not(small) { width: 100%; }
+  .field.soon { opacity: .5; } .field.soon .tag { font-size: 12px; padding: 3px 9px; border-radius: 999px; border: 1px solid var(--hairline); }
+  .field .control { grid-row: 1 / span 2; grid-column: 2; display: flex; align-items: center; gap: 10px; }
+  input[type="text"], input[type="password"], input[type="time"], select, textarea.box {
+    font: inherit; color: inherit; padding: 8px 12px; border-radius: 12px; border: 1px solid var(--hairline);
+    background: var(--glass); outline: none; min-width: 0; }
+  input:focus-visible, select:focus-visible, textarea.box:focus-visible { border-color: var(--accent); }
+  textarea.box { resize: vertical; min-height: 64px; }
+  .switch { position: relative; width: 46px; height: 28px; flex: none; border-radius: 999px; background: var(--hairline); transition: background .2s; }
+  .switch::after { content: ""; position: absolute; top: 3px; left: 3px; width: 22px; height: 22px; border-radius: 50%; background: #fff;
+    box-shadow: 0 1px 3px rgba(0,0,0,.3); transition: transform .3s var(--spring); }
+  .switch[aria-checked="true"] { background: var(--ok); } .switch[aria-checked="true"]::after { transform: translateX(18px); }
+  .seg { display: inline-flex; padding: 3px; gap: 2px; border-radius: 12px; background: var(--glass); border: 1px solid var(--hairline); }
+  .seg button { padding: 6px 12px; border-radius: 9px; font-size: 14px; color: var(--muted); }
+  .seg button[aria-checked="true"] { background: var(--glass-strong); color: var(--ink); box-shadow: 0 1px 4px rgba(0,0,0,.12); }
+  .btn { display: inline-flex; align-items: center; justify-content: center; padding: 8px 16px; border-radius: 999px; font-size: 14px;
+    background: var(--glass-strong); border: 1px solid var(--stroke); transition: transform .25s var(--spring), opacity .2s; }
+  .btn:active { transform: scale(.95); } .btn:disabled { opacity: .4; cursor: default; }
+  .btn.primary { background: var(--accent); color: var(--on-accent); border-color: transparent; }
+  .btn.danger { background: var(--danger); color: #fff; border-color: transparent; }
+  .actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+  .pair { display: flex; flex-wrap: wrap; gap: 8px; } .pair input { flex: 1 1 200px; min-width: 0; }
+  input[type="email"] { font: inherit; color: inherit; padding: 8px 12px; border-radius: 12px; border: 1px solid var(--hairline); background: color-mix(in srgb, var(--fg) 4%, transparent); }
+  .check { display: grid; grid-template-columns: 22px 1fr; gap: 0 8px; padding: 8px 0; border-top: 1px solid var(--hairline); font-size: 14px; }
+  .check:first-child { border-top: 0; } .check small { grid-column: 2; color: var(--muted); font-size: 12.5px; overflow-wrap: anywhere; }
+  .check .mark.ok { color: var(--ok); } .check .mark.bad { color: var(--danger); } .check .mark { font-weight: 700; }
+  .notice { margin-top: 10px; padding: 9px 12px; border-radius: 12px; font-size: 13px; background: color-mix(in srgb, var(--warn) 16%, transparent); }
+  code.path { font: 12.5px ui-monospace, "SF Mono", Menlo, monospace; overflow-wrap: anywhere; user-select: all; }
+  .fact { display: grid; grid-template-columns: 1fr auto; gap: 2px 10px; padding: 11px 0; border-top: 1px solid var(--hairline); }
+  .fact:first-of-type { border-top: 0; } .fact small { color: var(--muted); font-size: 12px; grid-column: 1; }
+  .fact.old .fact-text { text-decoration: line-through; color: var(--muted); }
+  .fact .control { grid-row: 1 / span 2; grid-column: 2; display: flex; gap: 6px; align-items: center; }
+  .fact input[type="text"] { width: 100%; }
+  .group { margin: 18px 0 0; padding-bottom: 4px; font-size: 13px; font-weight: 600; color: var(--muted); display: flex; gap: 8px; align-items: baseline; }
+  .group:first-child { margin-top: 2px; } .group small { font-weight: 400; font-size: 12px; opacity: .85; }
+  .group + .fact { border-top: 0; }
+  .fact select.scope { padding: 5px 26px 5px 10px; font-size: 12.5px; border-radius: 999px; }
+  .fact .arrow { color: var(--muted); padding: 0 4px; }
+  /* 好感度：一根会长的条。满分 100，从 50 起步，所以一开始就是半满。 */
+  .meter { height: 10px; border-radius: 999px; background: var(--glass); border: 1px solid var(--hairline); overflow: hidden; }
+  .meter-fill { height: 100%; width: 0; border-radius: 999px; background: linear-gradient(90deg, var(--accent), #ff7eb6);
+                transition: width .7s cubic-bezier(.2, .8, .2, 1); }
+  .meter-row { display: flex; align-items: baseline; gap: 10px; margin: 0 0 8px; }
+  .meter-row strong { font-size: 26px; font-weight: 650; font-variant-numeric: tabular-nums; letter-spacing: -.02em; }
+  .meter-row span { color: var(--muted); font-size: 14px; }
+  .warm { margin-top: 12px; font-size: 13px; color: var(--muted); } .warm div { padding: 3px 0; }
+  .dialog { position: fixed; z-index: 41; left: 50%; top: 50%; width: min(360px, calc(100vw - 40px)); padding: 20px; border-radius: 24px;
+    background: var(--glass-strong); transform: translate(-50%, -50%) scale(.92); opacity: 0; transition: transform .35s var(--spring), opacity .2s; }
+  .dialog.open { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+  .dialog h3 { margin: 0 0 6px; font-size: 17px; } .dialog p { margin: 0 0 16px; color: var(--muted); font-size: 14px; overflow-wrap: anywhere; }
+  .dialog .actions { justify-content: flex-end; margin: 0; }
+  #dialogScrim { z-index: 40; }
+  .overlay { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; background: rgba(8, 10, 16, .38); }
+  .overlay div { padding: 16px 24px; border-radius: 20px; }
+
+  /* 入场动画只动位置和大小，不动透明度：窗口被挡住时浏览器会暂停动画，
+     如果从"透明"开始，一暂停内容就一直看不见（在 Alf.app 的 WebKit 里实际遇到过）。 */
+  @keyframes pop { from { transform: translateY(10px) scale(.96); } }
+  @keyframes blink { 0%, 80%, 100% { opacity: .25; } 40% { opacity: 1; } }
+  @keyframes pulse { 50% { box-shadow: 0 0 0 9px color-mix(in srgb, var(--danger) 0%, transparent); } 0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--danger) 45%, transparent); } }
+  @media (prefers-reduced-motion: reduce) { *, *::before { animation: none !important; transition: none !important; } }
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="bar glass">
+    <div class="brand">
+      <div class="logo" aria-hidden="true">A</div>
+      <div style="min-width:0"><h1>Alf</h1><p id="mode">连接中…</p></div>
+    </div>
+    <nav class="tabs" role="tablist" aria-label="页面">
+      <button role="tab" data-view="chat" aria-selected="true">聊天</button>
+      <button role="tab" data-view="memory" aria-selected="false">记忆</button>
+      <button role="tab" data-view="settings" aria-selected="false">设置</button>
+    </nav>
+    <button id="statusBtn" class="pill" aria-haspopup="dialog"><span id="dot" class="dot"></span><span id="statusText">状态</span></button>
+  </header>
+
+  <section id="view-memory" class="page" hidden>
+    <div class="panel glass">
+      <h2>好感度</h2>
+      <p class="lead">Alf 跟你有多熟。聊到有意思的内容会加一分，它说话的语气跟着变。</p>
+      <div class="meter-row"><strong id="warmScore">50</strong><span id="warmTier"></span></div>
+      <div class="meter" role="progressbar" aria-valuemin="0" aria-valuemax="100" id="warmMeter"><div id="warmBar" class="meter-fill"></div></div>
+      <div id="warmRecent" class="warm"></div>
+    </div>
+    <div class="panel glass">
+      <h2>学到的</h2>
+      <p class="lead">你说过的话怎样改变了它的做法。提的要求它会一直照做；针对某一次的纠正先存成例子，同类的攒到两次，它会在晚上问你要不要定成规矩。</p>
+      <div id="lessons"></div>
+    </div>
+    <div class="panel glass">
+      <h2>Alf 记得的事</h2>
+      <p class="lead">聊天里提到的事会自动记在这里。不对的可以直接改，不想让它记的可以忘掉。</p>
+      <div id="facts"></div>
+      <div class="actions"><button id="factsAll" class="btn">显示已过时的</button></div>
+    </div>
+  </section>
+
+  <section id="view-settings" class="page" hidden>
+    <div class="panel glass">
+      <h2>连接</h2>
+      <p class="lead">Alf 运行需要的账号和权限。改了这里的三项要重启才生效，下面的按钮会帮你重启。</p>
+      <div class="field stack"><label for="envDeepseek">DeepSeek key</label><small id="envDeepseekState"></small>
+        <input id="envDeepseek" type="password" autocomplete="off" placeholder="粘贴新的 key 来替换；留空表示不改"></div>
+      <div class="field stack"><label for="envJev">Jev key（可选）</label><small id="envJevState"></small>
+        <input id="envJev" type="password" autocomplete="off" placeholder="粘贴新的 key 来替换；留空表示不改"></div>
+      <div class="field stack"><label for="envOwner">你的 iMessage 地址</label><small>Alf 只听这个地址的话，提醒也发到这里。手机号带国家码，如 +61412345678。</small>
+        <input id="envOwner" type="text" autocomplete="off" placeholder="+61412345678 或 Apple ID 邮箱"></div>
+      <div id="envPending" class="notice" hidden>有改动还没生效，需要重启。</div>
+      <div class="actions"><button id="envSave" class="btn primary">保存并重启</button><button id="doctorRun" class="btn">检查一遍</button>
+        <button id="testMessage" class="btn">发一条测试消息</button></div>
+      <div id="checks" style="margin-top:12px"></div>
+      <div id="privacyHelp" hidden>
+        <div class="notice">读「信息」数据库需要「完全磁盘访问权限」。点下面的按钮打开设置页，按 <b>+</b>，再按 <b>⌘⇧G</b> 粘贴这个路径并添加，然后回来点"保存并重启"：<br><code class="path" id="pythonPath"></code></div>
+        <div class="actions"><button id="openPrivacy" class="btn">打开权限设置</button></div>
+      </div>
+    </div>
+
+    <div class="panel glass">
+      <h2>邮箱</h2>
+      <p class="lead">Alf 每隔几分钟看一次收件箱。需要你处理的信，它会告诉你谁发的、要你做什么、什么时候截止，有截止时间的顺手建好提醒；广告不打扰，夜里收到的早上再说。回信由它起草，你回"发"才会发出。这里填的是邮箱给的<b>授权码 / 应用专用密码</b>，不是登录密码；改了要重启。</p>
+      <div class="field stack"><label for="mailGmailUser">Gmail</label><small id="mailGmailState">Google 账号 → 安全性 → 两步验证 → 应用专用密码</small>
+        <div class="pair"><input id="mailGmailUser" type="email" autocomplete="off" placeholder="you@gmail.com"><input id="mailGmailPass" type="password" autocomplete="off" placeholder="应用专用密码；留空表示不改"></div></div>
+      <div class="field stack"><label for="mail163User">163 邮箱</label><small id="mail163State">网页版 设置 → POP3/SMTP/IMAP → 开启 IMAP/SMTP 服务，拿到授权码</small>
+        <div class="pair"><input id="mail163User" type="email" autocomplete="off" placeholder="you@163.com"><input id="mail163Pass" type="password" autocomplete="off" placeholder="授权码；留空表示不改"></div></div>
+      <div class="field stack"><label for="mailQqUser">QQ 邮箱</label><small id="mailQqState">网页版 设置 → 账号 → 开启 IMAP/SMTP 服务，生成授权码</small>
+        <div class="pair"><input id="mailQqUser" type="email" autocomplete="off" placeholder="12345@qq.com"><input id="mailQqPass" type="password" autocomplete="off" placeholder="授权码；留空表示不改"></div></div>
+      <div class="field"><label for="mailEvery">多久查一次新邮件</label><small>改了立刻生效</small>
+        <div class="control"><select id="mailEvery"><option value="120">2 分钟</option><option value="300">5 分钟</option><option value="900">15 分钟</option><option value="1800">30 分钟</option></select></div></div>
+      <div class="field"><label>每天汇总没急着说的邮件</label><small>要紧的信（等回复、快截止、退信、异常登录）会立刻用一两句话告诉你；其余的攒到这个时间一起说，广告和通知只报个数</small>
+        <div class="control"><input type="time" data-pref-time="email.report_at" aria-label="邮件汇总时间"><button class="switch" role="switch" data-pref="email.report" aria-label="每天汇总邮件"></button></div></div>
+      <div class="actions"><button id="mailSave" class="btn primary">保存并重启</button><button id="mailTest" class="btn">测试连接</button></div>
+      <div id="mailChecks" style="margin-top:12px"></div>
+    </div>
+
+    <div class="panel glass">
+      <h2>说话风格</h2>
+      <p class="lead">改了下一句话就生效。</p>
+      <div class="field"><span class="name">语气</span><small id="styleHint"></small>
+        <div class="control"><div class="seg" id="stylePreset" role="radiogroup" aria-label="语气">
+          <button role="radio" data-value="friend">像朋友</button><button role="radio" data-value="brief">简短直接</button><button role="radio" data-value="secretary">像秘书</button></div></div></div>
+      <div class="field"><label for="styleName">怎么称呼你</label><small>留空就不特意称呼</small>
+        <div class="control"><input id="styleName" type="text" maxlength="20" style="width:150px"></div></div>
+      <div class="field"><span class="name">用表情符号</span><small>关掉后回复里不出现 😄 这类符号</small>
+        <div class="control"><button class="switch" role="switch" data-pref="style.emoji" aria-label="用表情符号"></button></div></div>
+      <div class="field stack"><label for="styleExtra">额外要求</label><small>用你自己的话写，比如"别老追问我""提醒时带上地点"。</small>
+        <textarea id="styleExtra" class="box" maxlength="500"></textarea></div>
+    </div>
+
+    <div class="panel glass">
+      <h2>主动消息</h2>
+      <p class="lead">没人说话时，Alf 每隔一阵想一次要不要找你。先过硬规则（安静时段、每天上限、最小间隔），再由 DeepSeek 按人设和手头的信息决定说什么，最后由 Jev 给"现在发合不合适"打分，过了活跃度对应的门槛才发。</p>
+      <div class="field"><span class="name">主动找你</span><small id="levelHint"></small>
+        <div class="control"><button class="switch" role="switch" data-pref="proactive.enabled" aria-label="主动找你"></button></div></div>
+      <div class="field stack"><span class="name">活跃度</span><small>越活跃，门槛越低、每天能说的越多。最近几条都没人理时，间隔会自动加倍。</small>
+        <div><div class="seg" id="levelSeg" role="radiogroup" aria-label="活跃度">
+          <button role="radio" data-value="quiet">安静</button><button role="radio" data-value="normal">适中</button><button role="radio" data-value="active">活跃</button><button role="radio" data-value="chatty">很活跃</button></div></div></div>
+      <div class="field"><span class="name">安静时段</span><small>这段时间不主动说话；你自己设的提醒照常响</small>
+        <div class="control"><input type="time" data-pref-time="quiet.start" aria-label="安静时段开始"><span>到</span><input type="time" data-pref-time="quiet.end" aria-label="安静时段结束"></div></div>
+
+      <h3>它参考的信息（通过 MCP 汇总，每半小时一次）</h3>
+      <div class="field"><span class="name">日历</span><small id="srcCalendar">这台 Mac「日历」里的日程：有变动会告诉你，开始前提醒；你说"加到日历"它会直接写进去</small>
+        <div class="control"><button class="switch" role="switch" data-pref="sources.calendar" aria-label="日历"></button></div></div>
+      <div class="field"><span class="name">提醒事项</span><small id="srcReminders">「提醒事项」App 里快到期的条目；你说"加到提醒事项"它会直接写进去</small>
+        <div class="control"><button class="switch" role="switch" data-pref="sources.reminders" aria-label="提醒事项"></button></div></div>
+      <div id="calendarConnect" class="actions" hidden style="margin:0 0 10px"><button id="calendarConnectBtn" class="btn primary">授权日历和提醒事项</button></div>
+      <div class="field"><span class="name">今天是什么日子</span><small id="srcDays">农历、节气、节日、公共假期</small>
+        <div class="control"><button class="switch" role="switch" data-pref="sources.days" aria-label="今天是什么日子"></button></div></div>
+      <div class="field"><span class="name">新闻</span><small id="srcNews">只取标题；只有和下面主题有关的大事才会提</small>
+        <div class="control"><button class="switch" role="switch" data-pref="sources.news" aria-label="新闻"></button></div></div>
+      <div class="field stack"><span class="name">关心的新闻主题</span><div class="chips left" id="newsTopics"></div></div>
+
+      <h3>固定的播报</h3>
+      <div class="field"><span class="name">每天早报</span><small>一段梳理和建议，加上当天的日程和提醒；没什么可说就不发</small>
+        <div class="control"><input type="time" data-pref-time="briefing.at" aria-label="早报时间"><button class="switch" role="switch" data-pref="briefing.enabled" aria-label="每天早报"></button></div></div>
+      <div class="field"><span class="name">每晚记忆汇总</span><small>"今天我记下了这些"，回复就能纠正；没记新东西就不发</small>
+        <div class="control"><input type="time" data-pref-time="digest.at" aria-label="汇总时间"><button class="switch" role="switch" data-pref="digest.enabled" aria-label="每晚记忆汇总"></button></div></div>
+      <div class="field"><label for="checkEvery">多久检查一次到期提醒</label><small>也就是提醒最多会晚这么久</small>
+        <div class="control"><select id="checkEvery"><option value="5">5 秒</option><option value="10">10 秒</option><option value="30">30 秒</option><option value="60">1 分钟</option></select></div></div>
+      <div class="field"><span class="name">同时弹 Mac 通知</span><small>提醒到点时，除了发 iMessage 也在这台 Mac 上弹通知</small>
+        <div class="control"><button class="switch" role="switch" data-pref="notify.desktop" aria-label="同时弹 Mac 通知"></button></div></div>
+      <div class="field"><span class="name">日程开始前提醒</span><small>日历上的日程快开始时叫你；全天日程不提醒</small>
+        <div class="control"><select id="calendarLead" aria-label="提前多久"><option value="5">提前 5 分钟</option><option value="10">提前 10 分钟</option><option value="15">提前 15 分钟</option><option value="30">提前 30 分钟</option><option value="60">提前 1 小时</option></select>
+          <button class="switch" role="switch" data-pref="calendar.alerts" aria-label="日程开始前提醒"></button></div></div>
+      <div class="field"><span class="name">提醒后追问</span><small>提醒发出后你一直没说话，过一阵问一句"做了吗"；第二天早报再提一次，之后不再追</small>
+        <div class="control"><select id="followupAfter" aria-label="多久后追问"><option value="15">15 分钟后</option><option value="30">30 分钟后</option><option value="60">1 小时后</option><option value="120">2 小时后</option></select>
+          <button class="switch" role="switch" data-pref="followup.enabled" aria-label="提醒后追问"></button></div></div>
+
+      <h3>你觉得有没有用</h3>
+      <p class="lead" id="feedbackLine">对 Alf 主动发的消息长按点 👎（或回一句"没用"）就会计入。</p>
+
+      <h3>最近的判断</h3>
+      <div id="proactiveLog"></div>
+    </div>
+
+    <div class="panel glass">
+      <h2>记忆和提醒</h2>
+      <div class="field"><span class="name">自动记忆</span><small>从聊天里自动记下关于你的长期信息；关掉后只在你纠正时才改记忆</small>
+        <div class="control"><button class="switch" role="switch" data-pref="memory.auto" aria-label="自动记忆"></button></div></div>
+      <div class="field"><label for="defaultHour">没说几点时，默认提醒时间</label><small>比如"明天提醒我交作业"</small>
+        <div class="control"><select id="defaultHour"></select></div></div>
+    </div>
+  </section>
+
+  <main id="timeline">
+    <div id="list" aria-live="polite"></div>
+    <div id="pendingBox"></div>
+  </main>
+
+  <footer class="composer glass">
+    <button id="mic" class="round" aria-label="语音输入" title="语音输入" hidden>
+      <svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg>
+    </button>
+    <textarea id="input" rows="1" placeholder="给 Alf 发消息…" enterkeyhint="send" aria-label="消息"></textarea>
+    <button id="send" class="round" aria-label="发送" disabled>
+      <svg viewBox="0 0 24 24"><path d="M12 19V5M6 11l6-6 6 6"/></svg>
+    </button>
+  </footer>
+</div>
+
+<div id="scrim" class="scrim" hidden></div>
+<section id="sheet" class="sheet glass" role="dialog" aria-modal="true" aria-labelledby="sheetTitle" hidden>
+  <h2 id="sheetTitle">运行状态</h2>
+  <p class="sub" id="sheetSub"></p>
+  <div class="stats" id="stats"></div>
+  <h3>周期任务</h3>
+  <div id="jobs"></div>
+  <h3>外部接入</h3>
+  <div id="connectors"></div>
+  <button id="sheetClose" class="pill close">关闭</button>
+</section>
+<div id="dialogScrim" class="scrim" hidden></div>
+<section id="dialog" class="dialog glass" role="alertdialog" aria-modal="true" aria-labelledby="dialogTitle" hidden>
+  <h3 id="dialogTitle"></h3><p id="dialogText"></p>
+  <div class="actions"><button id="dialogCancel" class="btn">取消</button><button id="dialogOk" class="btn danger"></button></div>
+</section>
+<div id="restarting" class="overlay" hidden><div class="glass">正在重启 Alf…</div></div>
+<div id="toast" class="toast glass" role="status"></div>
+
+<script>
+// 所有来自服务器的文字（包括别人发来的邮件主题）都只用 textContent 写进页面，绝不拼 HTML。
+const $ = (id) => document.getElementById(id);
+const tl = $('timeline'), list = $('list'), pendingBox = $('pendingBox');
+const input = $('input'), sendBtn = $('send'), micBtn = $('mic');
+const KINDS = { reminder: ['🔔', '提醒'], email: ['📧', '新邮件'], briefing: ['☀️', '今日安排'], digest: ['📝', '今日记忆'] };
+const BRAINS = { deepseek: 'DeepSeek 对话', jev: 'Jev 决策 · 模板回复', offline: '离线规则模式（不是真的模型）', unconfigured: '还没配置模型的 key' };
+const SUGGESTIONS = ['明天下午三点提醒我交作业', '我今天有什么安排', '记住：我对花生过敏'];
+const seen = new Set();
+let cursor = 0, inflight = null, lastDay = '', busy = false, sheetTimer = null, toastTimer = null;
+
+function el(tag, cls, text) {
+  const n = document.createElement(tag);
+  if (cls) n.className = cls;
+  if (text != null) n.textContent = text;
+  return n;
+}
+const clock = (d) => d.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit', hour12: false });
+function dayLabel(d) {
+  const days = Math.round((new Date().setHours(0, 0, 0, 0) - new Date(d).setHours(0, 0, 0, 0)) / 864e5);
+  return days === 0 ? '今天' : days === 1 ? '昨天' : `${d.getMonth() + 1}月${d.getDate()}日`;
+}
+function ago(ts, now) {
+  if (!ts) return '还没运行过';
+  const s = Math.max(0, now - ts);
+  if (s < 10) return '刚刚';
+  if (s < 60) return `${s} 秒前`;
+  if (s < 3600) return `${Math.floor(s / 60)} 分钟前`;
+  if (s < 86400) return `${Math.floor(s / 3600)} 小时前`;
+  const d = new Date(ts * 1000);
+  return `${d.getMonth() + 1}月${d.getDate()}日 ${clock(d)}`;
+}
+const nearBottom = () => tl.scrollHeight - tl.scrollTop - tl.clientHeight < 160;
+const toBottom = (smooth) => tl.scrollTo({ top: tl.scrollHeight, behavior: smooth ? 'smooth' : 'auto' });
+
+function toast(message) {
+  const t = $('toast');
+  t.textContent = message;
+  t.classList.add('open');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('open'), 3600);
+}
+
+function render(item) {
+  if (seen.has(item.id)) return;
+  seen.add(item.id);
+  $('empty')?.remove();
+  const when = new Date(item.ts * 1000), day = when.toDateString();
+  if (day !== lastDay) { lastDay = day; list.append(el('div', 'day', dayLabel(when))); }
+  const row = el('div', 'row ' + (item.role === 'user' ? 'me' : 'alf'));
+  const kind = KINDS[item.kind];
+  if (kind) {
+    const card = el('div', 'card glass ' + item.kind), head = el('div', 'card-head');
+    head.append(el('span', null, kind[0]), el('span', null, kind[1]));
+    // 卡片第一行是标题（提醒内容、邮件主题），其余是说明。
+    const cut = item.text.indexOf('\n');
+    card.append(head, el('div', 'card-title', cut < 0 ? item.text : item.text.slice(0, cut)));
+    if (cut >= 0) card.append(el('div', 'card-rest', item.text.slice(cut + 1)));
+    row.append(card);
+  } else {
+    row.append(el('div', 'bubble' + (item.role === 'user' ? '' : ' glass'), item.text));
+  }
+  row.append(el('div', 'meta', (item.source === 'voice' ? '🎙 ' : '') + clock(when)));
+  list.append(row);
+}
+
+function showEmpty() {
+  const box = el('div', 'empty');
+  box.id = 'empty';
+  box.append(el('h2', null, '你好，我是 Alf'), el('div', null, '设提醒、记事情、查安排，直接说就行。'));
+  const chips = el('div', 'chips');
+  for (const s of SUGGESTIONS) {
+    const chip = el('button', 'chip glass', s);
+    chip.onclick = () => { input.value = s; autosize(); input.focus(); };
+    chips.append(chip);
+  }
+  box.append(chips);
+  list.append(box);
+}
+
+// 时间线只有这一条读取路径：按 id 往后要。发消息、收提醒、收邮件都靠它把新行带回来。
+function poll() {
+  if (inflight) return inflight;
+  inflight = (async () => {
+    const first = cursor === 0;
+    const r = await fetch(`/api/timeline?after=${cursor}`);
+    if (!r.ok) throw new Error('timeline ' + r.status);
+    const { items } = await r.json();
+    const stick = first || nearBottom();
+    for (const item of items) { render(item); cursor = Math.max(cursor, item.id); }
+    if (first && !items.length && !$('empty')) showEmpty();
+    if (items.length && stick) toBottom(!first);
+  })().finally(() => { inflight = null; });
+  return inflight;
+}
+// 等正在路上的那次读完，再读一次：保证拿到的是"此刻之后"的结果。
+async function refresh() {
+  if (inflight) await inflight.catch(() => {});
+  return poll();
+}
+
+function setPending(userText) {
+  pendingBox.replaceChildren();
+  if (userText != null) {
+    const mine = el('div', 'row me pending');
+    mine.append(el('div', 'bubble', userText));
+    pendingBox.append(mine);
+  }
+  const wait = el('div', 'row alf'), dots = el('div', 'bubble glass typing');
+  dots.append(el('i'), el('i'), el('i'));
+  wait.append(dots);
+  pendingBox.append(wait);
+  $('empty')?.remove();
+  toBottom(true);
+}
+async function finish() {
+  await refresh().catch(() => {});
+  pendingBox.replaceChildren();
+  toBottom(true);
+  busy = false;
+  updateSend();
+}
+async function failure(r) {
+  try { const body = await r.json(); return typeof body.detail === 'string' ? body.detail : `出错了（${r.status}）`; }
+  catch { return `出错了（${r.status}）`; }
+}
+
+async function send() {
+  const text = input.value.trim();
+  if (!text || busy) return;
+  busy = true;
+  input.value = '';
+  autosize();
+  updateSend();
+  setPending(text);
+  try {
+    const r = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text }) });
+    if (!r.ok) throw new Error(await failure(r));
+  } catch (e) {
+    toast(e instanceof TypeError ? '连不上 Alf，服务还在运行吗？' : e.message);
+    input.value = text;   // 没发出去的话还给用户，不让它丢
+    autosize();
+  }
+  await finish();
+  input.focus();
+}
+
+function autosize() { input.style.height = 'auto'; input.style.height = Math.min(input.scrollHeight, 148) + 'px'; }
+function updateSend() { sendBtn.disabled = busy || !input.value.trim(); }
+input.addEventListener('input', () => { autosize(); updateSend(); });
+input.addEventListener('keydown', (e) => {
+  // 输入法正在选字时回车是"上屏"，不是发送（keyCode 229 是 Safari 的写法）。
+  if (e.key === 'Enter' && !e.shiftKey && !e.isComposing && e.keyCode !== 229) { e.preventDefault(); send(); }
+});
+sendBtn.onclick = send;
+
+// —— 语音：点一下开始，再点一下结束并发送 ——
+let recorder = null, chunks = [], recTimer = null;
+if (navigator.mediaDevices?.getUserMedia && window.MediaRecorder) micBtn.hidden = false;
+micBtn.onclick = async () => {
+  if (recorder) { recorder.stop(); return; }
+  if (busy) return;
+  let stream;
+  try { stream = await navigator.mediaDevices.getUserMedia({ audio: true }); }
+  catch { toast('用不了麦克风，请在浏览器里允许访问'); return; }
+  chunks = [];
+  recorder = new MediaRecorder(stream);
+  recorder.ondataavailable = (e) => { if (e.data.size) chunks.push(e.data); };
+  recorder.onstop = () => {
+    clearTimeout(recTimer);
+    stream.getTracks().forEach((t) => t.stop());
+    const type = (recorder.mimeType || 'audio/webm').split(';')[0];
+    recorder = null;
+    micBtn.classList.remove('recording');
+    micBtn.setAttribute('aria-label', '语音输入');
+    sendVoice(new Blob(chunks, { type }));
+  };
+  recorder.start();
+  micBtn.classList.add('recording');
+  micBtn.setAttribute('aria-label', '结束录音并发送');
+  recTimer = setTimeout(() => recorder?.stop(), 60000);   // 忘了点结束也不会一直录下去
+};
+async function sendVoice(blob) {
+  if (!blob.size) { toast('没录到声音'); return; }
+  busy = true;
+  updateSend();
+  setPending(null);
+  try {
+    const r = await fetch('/api/voice', { method: 'POST', headers: { 'Content-Type': blob.type }, body: blob });
+    if (!r.ok) throw new Error(await failure(r));
+    const out = await r.json();
+    if (!out.transcript) toast('没听清，再说一次？');
+  } catch (e) {
+    toast(e instanceof TypeError ? '连不上 Alf，服务还在运行吗？' : e.message);
+  }
+  await finish();
+}
+
+// —— 状态 ——
+async function loadStatus() {
+  try {
+    const r = await fetch('/api/status');
+    if (!r.ok) throw new Error();
+    const s = await r.json();
+    const failing = s.jobs.filter((j) => j.ok === false);
+    const down = s.channels.filter((c) => c.configured && c.ok === false);
+    const issues = failing.length + down.length;
+    $('mode').textContent = BRAINS[s.brain] || s.brain;
+    $('dot').className = 'dot ' + (!s.heartbeat.alive ? 'down' : issues || s.brain === 'unconfigured' ? 'warn' : 'ok');
+    $('statusText').textContent = !s.heartbeat.alive ? '心跳停了' : issues ? `${issues} 项异常` : '运行中';
+    return s;
+  } catch {
+    $('dot').className = 'dot down';
+    $('statusText').textContent = '连不上';
+    $('mode').textContent = '服务没有响应';
+    return null;
+  }
+}
+async function fillSheet() {
+  const s = await loadStatus();
+  if (!s) { $('sheetSub').textContent = '连不上 Alf 服务。'; return; }
+  $('sheetSub').textContent = `${BRAINS[s.brain] || s.brain} · 每 ${s.heartbeat.tick} 秒醒一次 · ${s.tz}`;
+  const stats = [[s.counts.reminders, '待办提醒'], [s.counts.facts, '条记忆'], [s.counts.inbox, '封已看邮件']];
+  $('stats').replaceChildren(...stats.map(([n, label]) => {
+    const box = el('div', 'stat');
+    box.append(el('b', null, n), el('span', null, label));
+    return box;
+  }));
+  $('jobs').replaceChildren(...s.jobs.map((j) => {
+    const row = el('div', 'job');
+    row.append(el('b', null, j.label));
+    const state = j.ok === false ? ' · 失败' : j.ok ? ' · 正常' : '';
+    row.append(el('small', null, `${j.schedule} · ${ago(j.last_run, s.now)}${state}`));
+    if (j.error) row.append(el('small', 'err', j.error));
+    else if (j.result) row.append(el('small', null, '最近：' + j.result));
+    const run = el('button', 'pill', '立即运行');
+    run.onclick = async () => {
+      run.disabled = true;
+      await fetch(`/api/jobs/${encodeURIComponent(j.name)}/run`, { method: 'POST' }).catch(() => {});
+      setTimeout(() => { fillSheet(); refresh().catch(() => {}); }, s.heartbeat.tick * 1000 + 800);
+    };
+    row.append(run);
+    return row;
+  }));
+  const channels = s.channels.map((c) => {
+    const row = el('div', 'job');
+    row.append(el('b', null, c.label));
+    if (!c.configured) row.append(el('small', null, '未接入：在 .env 里填 ALF_IMESSAGE_OWNER 后重启'));
+    else if (c.ok === false) row.append(el('small', 'err', c.error));
+    else row.append(el('small', null, c.ok ? `收发正常 · 上次收到消息 ${ago(c.last_inbound, s.now).replace('还没运行过', '还没有')}` : '刚启动'));
+    return row;
+  });
+  const sources = s.connectors.map((c) => {
+    const row = el('div', 'job');
+    row.append(el('b', null, c.label));
+    row.append(el('small', null, c.configured ? '已接入（只读）' : '未接入：在 .env 里填 ALF_EMAIL_* 后重启'));
+    return row;
+  });
+  $('connectors').replaceChildren(...channels, ...sources);
+}
+function openSheet() {
+  $('scrim').hidden = $('sheet').hidden = false;
+  requestAnimationFrame(() => { $('scrim').classList.add('open'); $('sheet').classList.add('open'); });
+  fillSheet();
+  sheetTimer = setInterval(fillSheet, 5000);
+  $('sheetClose').focus();
+}
+function closeSheet() {
+  clearInterval(sheetTimer);
+  $('scrim').classList.remove('open');
+  $('sheet').classList.remove('open');
+  setTimeout(() => { $('scrim').hidden = $('sheet').hidden = true; }, 260);
+  $('statusBtn').focus();
+}
+$('statusBtn').onclick = openSheet;
+$('sheetClose').onclick = closeSheet;
+$('scrim').onclick = closeSheet;
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !$('sheet').hidden) closeSheet(); });
+
+// —— 页面切换 ——
+const VIEWS = ['chat', 'memory', 'settings'];
+function show(view) {
+  if (!VIEWS.includes(view)) view = 'chat';
+  document.querySelectorAll('.tabs button').forEach((b) => b.setAttribute('aria-selected', b.dataset.view === view));
+  tl.hidden = document.querySelector('.composer').hidden = view !== 'chat';
+  $('view-memory').hidden = view !== 'memory';
+  $('view-settings').hidden = view !== 'settings';
+  if (location.hash.slice(1) !== view) history.replaceState(null, '', '#' + view);
+  if (view === 'memory') loadFacts();
+  if (view === 'settings') loadSettings();
+  if (view === 'chat') { toBottom(false); input.focus(); }
+}
+document.querySelectorAll('.tabs button').forEach((b) => { b.onclick = () => show(b.dataset.view); });
+
+async function api(method, url, body) {
+  const r = await fetch(url, { method, headers: body === undefined ? {} : { 'Content-Type': 'application/json' }, body: body === undefined ? undefined : JSON.stringify(body) });
+  if (!r.ok) throw new Error(await failure(r));
+  return r.json();
+}
+const friendly = (e) => (e instanceof TypeError ? '连不上 Alf，服务还在运行吗？' : e.message);
+
+// 自己的确认框：居中的玻璃卡片 + 压暗的背景，危险操作用红色实心按钮。
+function confirmDialog(title, text, okLabel) {
+  return new Promise((resolve) => {
+    $('dialogTitle').textContent = title; $('dialogText').textContent = text; $('dialogOk').textContent = okLabel;
+    $('dialogScrim').hidden = $('dialog').hidden = false;
+    requestAnimationFrame(() => { $('dialogScrim').classList.add('open'); $('dialog').classList.add('open'); });
+    const done = (answer) => {
+      $('dialogScrim').classList.remove('open'); $('dialog').classList.remove('open');
+      setTimeout(() => { $('dialogScrim').hidden = $('dialog').hidden = true; }, 260);
+      document.removeEventListener('keydown', onKey);
+      resolve(answer);
+    };
+    const onKey = (e) => { if (e.key === 'Escape') done(false); };
+    document.addEventListener('keydown', onKey);
+    $('dialogOk').onclick = () => done(true);
+    $('dialogCancel').onclick = $('dialogScrim').onclick = () => done(false);
+    $('dialogCancel').focus();
+  });
+}
+
+// —— 记忆 ——
+let showOldFacts = false;
+async function loadFacts() {
+  let facts;
+  try {
+    const data = await api('GET', '/api/memory' + (showOldFacts ? '?all=true' : ''));
+    facts = data.facts;
+    showWarmth(data.affinity);
+    showLessons(data.lessons);
+  } catch (e) { toast(friendly(e)); return; }
+  $('factsAll').textContent = showOldFacts ? '只看现在的' : '显示已过时的';
+  // 按 Alf 用它们的方式分组：常驻的每次聊天都带着；主题里的细节提到时才整组拿出来；经历带最近几条。
+  const now = facts.filter((f) => f.current), out = [];
+  const group = (title, hint, rows) => { if (rows.length) { const h = el('div', 'group', title); h.append(el('small', null, hint)); out.push(h, ...rows.map(factRow)); } };
+  group('一直记着', '每次聊天都带着', now.filter((f) => f.layer === 'core'));    // 他提的要求（layer 是 rule）在上面「学到的」里
+  const topics = [...new Set(now.filter((f) => f.layer === 'topic').map((f) => f.topic))];
+  for (const t of topics) group(t, '提到时整组想起来', now.filter((f) => f.layer === 'topic' && f.topic === t));
+  group('经历', '发生过的事', now.filter((f) => f.layer === 'moment'));
+  group('已过时的', '', facts.filter((f) => !f.current));
+  $('facts').replaceChildren(...(out.length ? out : [el('p', 'lead', '还没有记忆。跟 Alf 聊聊自己，它会慢慢记下来。')]));
+}
+// —— 学到的：等你点头的规矩、你提的要求、你纠正过的、聊天里改的设置 ——
+const day = (ts) => { const d = new Date(ts * 1000); return `${d.getMonth() + 1}月${d.getDate()}日`; };
+function showLessons(L) {
+  if (!L) return;
+  const out = [];
+  const group = (title, hint, rows) => { if (rows.length) { const h = el('div', 'group', title); h.append(el('small', null, hint)); out.push(h, ...rows); } };
+  const act = async (fn, done) => { try { await fn(); if (done) toast(done); } catch (e) { toast(friendly(e)); } loadFacts(); };
+  const row = (text, meta, buttons) => {
+    const r = el('div', 'fact'), control = el('div', 'control');
+    r.append(el('div', 'fact-text', text), el('small', null, meta.filter(Boolean).join(' · ')));
+    control.append(...buttons); r.append(control);
+    return r;
+  };
+  group('等你点头', '从几次纠正里归纳的，你同意才算数', L.proposals.map((p) => {
+    const yes = el('button', 'btn primary', '定下来'), no = el('button', 'btn', '不用');
+    yes.onclick = () => act(() => api('POST', `/api/lessons/proposals/${p.id}`, { accept: true }), '定成规矩了');
+    no.onclick = () => act(() => api('POST', `/api/lessons/proposals/${p.id}`, { accept: false }));
+    return row(p.text, [p.scope_label, `出自 ${p.count} 次纠正`, day(p.at) + '提的'], [yes, no]);
+  }));
+  group('你提的要求', '它会一直照做', L.rules.map((f) => {
+    // 范围可以直接改：模型有时会把"只管邮件"的要求记成"哪里都管"。
+    const scope = el('select', 'scope'); scope.setAttribute('aria-label', '这条要求管哪里');
+    for (const [key, label] of Object.entries(L.scopes)) { const o = el('option', null, label); o.value = key; scope.append(o); }
+    scope.value = f.scope;
+    scope.onchange = () => act(() => api('PATCH', `/api/memory/${f.id}`, { scope: scope.value }), '已更新');
+    const forget = el('button', 'btn', '忘掉');
+    forget.onclick = async () => { if (await confirmDialog('不再照这条要求做？', f.text, '忘掉')) act(() => api('DELETE', `/api/memory/${f.id}`), '已忘掉'); };
+    return row(f.text, [day(f.recorded_at) + '记下', f.source === 'voice' ? '语音' : '', f.quote ? `你当时说：「${f.quote}」` : ''], [scope, forget]);
+  }));
+  group('你纠正过的', '判断同类情况时会参考', L.examples.map((x) => {
+    const undo = el('button', 'btn', '撤销');
+    undo.onclick = () => act(() => api('DELETE', `/api/lessons/examples/${x.id}`), '已撤销');
+    const text = x.area === 'mail' ? `「${x.about}」这类信：以后${x.wish}` : `「${x.about}」`;
+    return row(text, [x.area_label, day(x.at), `你说：${x.said}`], [undo]);
+  }));
+  group('在聊天里改的设置', '设置页上也能改', L.settings.map((c) => {
+    const back = el('button', 'btn', '改回去');
+    back.onclick = () => act(() => api('POST', `/api/lessons/settings/${c.id}/undo`), '已改回去');
+    return row(`${c.label}：${c.old} → ${c.new}`, [day(c.at), c.quote ? `你当时说：「${c.quote}」` : ''], [back]);
+  }));
+  $('lessons').replaceChildren(...(out.length ? out : [el('p', 'lead', '还没有。在聊天里跟它说「以后别……」「这封不用马上告诉我」「邮件汇总改到晚上八点」，它听进去的会列在这里。')]));
+}
+function showWarmth(a) {
+  if (!a) return;
+  $('warmScore').textContent = a.score;
+  // 档位后面跟一句眼前的气氛：好感度是长期的，这一句过一两天自己会变
+  const m = a.mood;
+  $('warmTier').textContent = `/ ${a.max} · ${a.tier}` + (m && m.state !== 'even' ? ` · ${m.label}` : '');
+  $('warmMeter').setAttribute('aria-valuenow', a.score);
+  requestAnimationFrame(() => { $('warmBar').style.width = `${a.score / a.max * 100}%`; });
+  const rows = a.recent.map((r) => { const d = new Date(r.at * 1000); return el('div', null, `+1 · ${d.getMonth() + 1}月${d.getDate()}日 · ${r.note}`); });
+  if (m && m.reason) rows.unshift(el('div', null, `这两天收着点，因为你说过：「${m.reason}」。过两三天自己会好。`));
+  $('warmRecent').replaceChildren(...(rows.length ? rows : [el('div', null, `从 ${a.start} 分起步，还没有加过分。`)]));
+}
+function factRow(f) {
+  const row = el('div', 'fact' + (f.current ? '' : ' old'));
+  const text = el('div', 'fact-text', f.text);
+  const d = new Date(f.recorded_at * 1000);
+  const meta = [f.label, `${d.getMonth() + 1}月${d.getDate()}日记下`];
+  if (f.source === 'voice') meta.push(f.unconfirmed ? '语音听来的，还没确认' : '语音');
+  if (f.current && f.expires_at) { const e = new Date(f.expires_at * 1000); meta.push(`到 ${e.getMonth() + 1}月${e.getDate()}日为止`); }
+  if (f.open_loop) meta.push('惦记着，会找机会问一句');
+  if (f.quote) meta.push(`你当时说：「${f.quote}」`);
+  if (!f.current) meta.push(f.superseded_by ? '已被新的说法替换' : f.past ? '日子已经过了' : '已忘掉');
+  row.append(text, el('small', null, meta.join(' · ')));
+  if (!f.current) return row;
+  const control = el('div', 'control'), edit = el('button', 'btn', '改'), forget = el('button', 'btn', '忘掉');
+  edit.onclick = () => {
+    const box = el('input'); box.type = 'text'; box.value = f.text; box.maxLength = 200;
+    const save = el('button', 'btn primary', '保存'), cancel = el('button', 'btn', '取消');
+    text.replaceWith(box); control.replaceChildren(save, cancel); box.focus();
+    cancel.onclick = loadFacts;
+    const commit = async () => {
+      const value = box.value.trim();
+      if (!value || value === f.text) { loadFacts(); return; }
+      try { await api('PATCH', `/api/memory/${f.id}`, { text: value }); toast('已更新'); } catch (e) { toast(friendly(e)); }
+      loadFacts();
+    };
+    save.onclick = commit;
+    box.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.isComposing && e.keyCode !== 229) commit(); if (e.key === 'Escape') loadFacts(); });
+  };
+  forget.onclick = async () => {
+    if (!await confirmDialog('忘掉这条记忆？', f.text, '忘掉')) return;
+    try { await api('DELETE', `/api/memory/${f.id}`); toast('已忘掉'); } catch (e) { toast(friendly(e)); }
+    loadFacts();
+  };
+  control.append(edit, forget);
+  row.append(control);
+  return row;
+}
+$('factsAll').onclick = () => { showOldFacts = !showOldFacts; loadFacts(); };
+
+// —— 设置：改了立刻生效的部分 ——
+const STYLE_HINTS = { friend: '口语、简短；有多随意跟着好感度走', brief: '一句话说清，不闲聊', secretary: '礼貌、有条理，会列选项' };
+let prefsNow = {};
+async function savePref(key, value) {
+  try {
+    prefsNow = (await api('PATCH', '/api/prefs', { [key]: value })).prefs;
+    toast('已保存');
+    // 改了信息来源就马上重新汇总一次，不等半小时。
+    if (key.startsWith('sources.') || key === 'news.topics') api('POST', '/api/jobs/sources/run').catch(() => {});
+  } catch (e) { toast(friendly(e)); }
+  paintPrefs();
+}
+function paintPrefs() {
+  document.querySelectorAll('[data-pref]').forEach((b) => b.setAttribute('aria-checked', String(!!prefsNow[b.dataset.pref])));
+  document.querySelectorAll('[data-pref-time]').forEach((i) => { i.value = prefsNow[i.dataset.prefTime]; });
+  document.querySelectorAll('#stylePreset button').forEach((b) => b.setAttribute('aria-checked', String(b.dataset.value === prefsNow['style.preset'])));
+  $('styleHint').textContent = STYLE_HINTS[prefsNow['style.preset']] || '';
+  $('styleName').value = prefsNow['style.user_name'] ?? '';
+  $('styleExtra').value = prefsNow['style.extra'] ?? '';
+  $('checkEvery').value = String(prefsNow['reminders.check_every']);
+  $('calendarLead').value = String(prefsNow['calendar.lead_minutes']);
+  $('followupAfter').value = String(prefsNow['followup.after_minutes']);
+  $('mailEvery').value = String(prefsNow['email.every']);
+  $('defaultHour').value = String(prefsNow['reminders.default_hour']);
+  document.querySelectorAll('#levelSeg button').forEach((b) => b.setAttribute('aria-checked', String(b.dataset.value === prefsNow['proactive.level'])));
+  $('newsTopics').replaceChildren(...NEWS_TOPICS.map((topic) => {
+    const chip = el('button', 'chip glass', topic);
+    const chosen = (prefsNow['news.topics'] || []).includes(topic);
+    chip.setAttribute('aria-pressed', String(chosen));
+    chip.onclick = () => savePref('news.topics', chosen ? prefsNow['news.topics'].filter((t) => t !== topic) : [...prefsNow['news.topics'], topic]);
+    return chip;
+  }));
+  paintLevelHint();
+}
+const NEWS_TOPICS = ['科技与 AI', '财经与市场', '国内要闻', '澳洲本地'];
+const OUTCOMES = { sent: '发了', held: '想说但忍住了', silent: '没开口' };
+let proactiveNow = null;
+function paintLevelHint() {
+  const level = proactiveNow?.levels?.[prefsNow['proactive.level']];
+  if (!prefsNow['proactive.enabled']) { $('levelHint').textContent = '已关闭：只发你设的提醒和固定播报'; return; }
+  $('levelHint').textContent = level ? `${level.label}：一天最多 ${level.per_day} 条，两条之间至少隔 ${level.gap_minutes} 分钟`
+    + (proactiveNow.quiet_now ? '。现在是安静时段' : '') + (proactiveNow.gated_by_jev ? '' : '。没配 Jev，不做打分把关') : '';
+}
+async function loadProactive() {
+  try { proactiveNow = await api('GET', '/api/proactive'); } catch (e) { return; }
+  paintLevelHint();
+  const state = proactiveNow.sources.state;
+  const describe = (name, fallback) => (state[name] && state[name] !== 'ok' ? '出问题了：' + state[name] : fallback);
+  $('srcCalendar').textContent = describe('calendar', '这台 Mac「日历」里的日程：有变动会告诉你，开始前提醒；你说"加到日历"它会直接写进去');
+  $('srcCalendar').className = state.calendar && state.calendar !== 'ok' ? 'err' : '';
+  $('srcReminders').textContent = describe('reminders', '「提醒事项」App 里快到期的条目；你说"加到提醒事项"它会直接写进去');
+  $('srcReminders').className = state.reminders && state.reminders !== 'ok' ? 'err' : '';
+  const needs = (name) => state[name] && state[name] !== 'ok' && prefsNow['sources.' + name];
+  $('calendarConnect').hidden = !(needs('calendar') || needs('reminders'));
+  const fb = proactiveNow.feedback;
+  $('feedbackLine').textContent = fb && fb.sent
+    ? `过去 ${fb.days} 天 Alf 主动发了 ${fb.sent} 条，你觉得没用的 ${fb.down} 条（${Math.round((fb.useless_rate || 0) * 100)}%）` + (fb.up ? `，点赞 ${fb.up} 条` : '') + '。长按消息点 👎，或回一句"没用"，就会计入。'
+    : '过去 7 天还没有主动消息。对 Alf 主动发的消息长按点 👎（或回一句"没用"）就会计入。';
+  $('srcDays').textContent = describe('days', '农历、节气、节日、公共假期');
+  $('srcNews').textContent = describe('news', '只取标题；只有和下面主题有关的大事才会提');
+  if (!proactiveNow.log.length) { $('proactiveLog').replaceChildren(el('p', 'lead', '还没有判断记录。开着的话，过一会儿就会有。')); return; }
+  $('proactiveLog').replaceChildren(...proactiveNow.log.slice(0, 12).map((e) => {
+    const row = el('div', 'entry'), d = new Date(e.ts * 1000);
+    const head = el('div');
+    head.append(el('span', 'tag ' + e.outcome, OUTCOMES[e.outcome] || e.outcome),
+                el('span', null, `${dayLabel(d)} ${clock(d)}` + (e.kind_label ? ` · ${e.kind_label}` : '') + (e.score == null ? '' : ` · 把握 ${Math.round(e.score * 100)}%`)));
+    row.append(head);
+    if (e.message) row.append(el('div', null, e.message));
+    if (e.why) row.append(el('small', null, '理由：' + e.why));
+    return row;
+  }));
+}
+document.querySelectorAll('#levelSeg button').forEach((b) => { b.onclick = () => savePref('proactive.level', b.dataset.value); });
+$('calendarConnectBtn').onclick = async () => {
+  $('calendarConnectBtn').disabled = true;
+  toast('系统会弹出授权框，请点允许');
+  try {
+    const r = await api('POST', '/api/calendar/connect');
+    toast(r.ok && r.reminders_ok ? `已接上日历和提醒事项，今明两天有 ${r.events} 条日程` : (r.error || r.reminders_error));
+  } catch (e) { toast(friendly(e)); }
+  $('calendarConnectBtn').disabled = false;
+  setTimeout(loadProactive, 4000);
+};
+document.querySelectorAll('[data-pref]').forEach((b) => { b.onclick = () => savePref(b.dataset.pref, !prefsNow[b.dataset.pref]); });
+document.querySelectorAll('[data-pref-time]').forEach((i) => { i.onchange = () => { if (i.value) savePref(i.dataset.prefTime, i.value); }; });
+document.querySelectorAll('#stylePreset button').forEach((b) => { b.onclick = () => savePref('style.preset', b.dataset.value); });
+$('styleName').onchange = () => savePref('style.user_name', $('styleName').value);
+$('styleExtra').onchange = () => savePref('style.extra', $('styleExtra').value);
+$('checkEvery').onchange = () => savePref('reminders.check_every', Number($('checkEvery').value));
+$('calendarLead').onchange = () => savePref('calendar.lead_minutes', Number($('calendarLead').value));
+$('followupAfter').onchange = () => savePref('followup.after_minutes', Number($('followupAfter').value));
+$('mailEvery').onchange = () => savePref('email.every', Number($('mailEvery').value));
+$('defaultHour').onchange = () => savePref('reminders.default_hour', Number($('defaultHour').value));
+for (let h = 0; h < 24; h++) { const o = el('option', null, `${String(h).padStart(2, '0')}:00`); o.value = h; $('defaultHour').append(o); }
+
+// —— 设置：连接（.env 里的三项，要重启）——
+let setupNow = null;
+function paintSetup() {
+  const env = setupNow.env;
+  $('envDeepseekState').textContent = env.DEEPSEEK_API_KEY.set ? `已填（${env.DEEPSEEK_API_KEY.length} 位）` : '还没填。在 platform.deepseek.com 申请';
+  $('envJevState').textContent = env.TYPESAFE_API_KEY.set ? `已填（${env.TYPESAFE_API_KEY.length} 位）。用来做快速判断` : '没填。那些快速判断会交给 DeepSeek';
+  $('envOwner').value = env.ALF_IMESSAGE_OWNER.value || '';
+  $('envDeepseek').value = $('envJev').value = '';
+  $('envPending').hidden = !setupNow.pending_restart;
+  $('pythonPath').textContent = setupNow.python;
+  for (const [name, id] of MAILBOXES) {
+    $(`mail${id}User`).value = env[`ALF_${name}_USER`].value || '';
+    $(`mail${id}Pass`).value = '';
+    const code = env[`ALF_${name}_PASSWORD`];
+    if (code.set) $(`mail${id}State`).textContent = `授权码已填（${code.length} 位）` + (env[`ALF_${name}_USER`].set ? '' : '，还差邮箱地址');
+  }
+}
+// 设置页里的三个邮箱：环境变量名里的写法 → 页面元素 id 里的写法
+const MAILBOXES = [['GMAIL', 'Gmail'], ['163', '163'], ['QQ', 'Qq']];
+async function loadSettings() {
+  try {
+    const [p, setup] = await Promise.all([api('GET', '/api/prefs'), api('GET', '/api/setup')]);
+    prefsNow = p.prefs; setupNow = setup;
+    paintPrefs(); paintSetup();
+    loadProactive();
+  } catch (e) { toast(friendly(e)); }
+}
+async function waitForRestart() {
+  $('restarting').hidden = false;
+  await new Promise((r) => setTimeout(r, 1500));          // 先等旧进程退出
+  for (let i = 0; i < 60; i++) {
+    try { if ((await fetch('/api/status')).ok) break; } catch { /* 还没起来 */ }
+    await new Promise((r) => setTimeout(r, 700));
+  }
+  $('restarting').hidden = true;
+}
+$('envSave').onclick = async () => {
+  const body = {};
+  if ($('envDeepseek').value.trim()) body.DEEPSEEK_API_KEY = $('envDeepseek').value;
+  if ($('envJev').value.trim()) body.TYPESAFE_API_KEY = $('envJev').value;
+  if ($('envOwner').value.trim() !== (setupNow?.env.ALF_IMESSAGE_OWNER.value || '')) body.ALF_IMESSAGE_OWNER = $('envOwner').value;
+  $('envSave').disabled = true;
+  try {
+    if (Object.keys(body).length) await api('POST', '/api/setup', body);
+    await api('POST', '/api/restart');
+    await waitForRestart();
+    await loadSettings(); loadStatus(); runDoctor();
+    toast('已重启');
+  } catch (e) { toast(friendly(e)); }
+  $('envSave').disabled = false;
+};
+$('mailSave').onclick = async () => {
+  const body = {};
+  for (const [name, id] of MAILBOXES) {
+    const user = $(`mail${id}User`).value.trim(), code = $(`mail${id}Pass`).value;
+    if (user !== (setupNow?.env[`ALF_${name}_USER`].value || '')) body[`ALF_${name}_USER`] = user;
+    if (code.trim()) body[`ALF_${name}_PASSWORD`] = code;
+  }
+  if (!Object.keys(body).length) { toast('没有改动'); return; }
+  $('mailSave').disabled = true;
+  try {
+    await api('POST', '/api/setup', body);
+    await api('POST', '/api/restart');
+    await waitForRestart();
+    await loadSettings(); loadStatus();
+    toast('已保存并重启，可以点"测试连接"了');
+  } catch (e) { toast(friendly(e)); }
+  $('mailSave').disabled = false;
+};
+$('mailTest').onclick = async () => {
+  $('mailTest').disabled = true;
+  $('mailChecks').replaceChildren(el('p', 'lead', '登录中…（只登录，不读信的内容，也不发任何东西）'));
+  try {
+    const { mailboxes } = await api('POST', '/api/email/test');
+    if (!mailboxes.length) $('mailChecks').replaceChildren(el('p', 'lead', '还没有接入的邮箱。填好地址和授权码，点"保存并重启"。'));
+    else $('mailChecks').replaceChildren(...mailboxes.flatMap((m) => [['收信', m.receive], ['发信', m.send]].map(([what, result]) => {
+      const row = el('div', 'check'), ok = result === 'ok';
+      row.append(el('span', 'mark ' + (ok ? 'ok' : 'bad'), ok ? '✓' : '✗'), el('span', null, `${m.label}（${m.user}）${what}`));
+      if (!ok) row.append(el('small', null, result));
+      return row;
+    })));
+  } catch (e) { $('mailChecks').replaceChildren(el('p', 'lead', friendly(e))); }
+  $('mailTest').disabled = false;
+};
+async function runDoctor() {
+  $('doctorRun').disabled = true;
+  $('checks').replaceChildren(el('p', 'lead', '检查中…（会真实调用一次模型，几秒钟）'));
+  try {
+    const { checks } = await api('GET', '/api/doctor');
+    $('checks').replaceChildren(...checks.map((c) => {
+      const row = el('div', 'check');
+      row.append(el('span', 'mark ' + (c.ok === true ? 'ok' : c.ok === false ? 'bad' : ''), c.ok === true ? '✓' : c.ok === false ? '✗' : '–'), el('span', null, c.title));
+      if (c.detail) row.append(el('small', null, c.detail));
+      return row;
+    }));
+    $('privacyHelp').hidden = !checks.some((c) => c.ok === false && c.detail.includes('完全磁盘访问权限'));
+  } catch (e) { $('checks').replaceChildren(el('p', 'lead', friendly(e))); }
+  $('doctorRun').disabled = false;
+}
+$('doctorRun').onclick = runDoctor;
+$('testMessage').onclick = async () => {
+  try { await api('POST', '/api/test-message'); toast('已发出，看看手机'); refresh().catch(() => {}); } catch (e) { toast(friendly(e)); }
+};
+$('openPrivacy').onclick = () => api('POST', '/api/open-privacy-settings').catch((e) => toast(friendly(e)));
+
+// 页面在后台时不轮询，回到前台立刻补一次。
+setInterval(() => { if (!document.hidden) poll().catch(() => {}); }, 3000);
+setInterval(() => { if (!document.hidden) loadStatus(); }, 15000);
+document.addEventListener('visibilitychange', () => { if (!document.hidden) { poll().catch(() => {}); loadStatus(); } });
+poll().catch(() => toast('连不上 Alf，服务还在运行吗？'));
+loadStatus();
+show(location.hash.slice(1) || 'chat');
+window.addEventListener('hashchange', () => show(location.hash.slice(1)));
+</script>
+</body>
+</html>

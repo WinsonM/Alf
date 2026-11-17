@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleName</key><string>Alf</string>
+    <key>CFBundleDisplayName</key><string>Alf</string>
+    <key>CFBundleIdentifier</key><string>com.alf.app</string>
+    <key>CFBundleExecutable</key><string>Alf</string>
+    <key>CFBundleIconFile</key><string>AppIcon</string>
+    <key>CFBundlePackageType</key><string>APPL</string>
+    <key>CFBundleShortVersionString</key><string>0.1</string>
+    <key>CFBundleVersion</key><string>1</string>
+    <key>LSMinimumSystemVersion</key><string>13.0</string>
+    <key>NSHighResolutionCapable</key><true/>
+    <key>NSMicrophoneUsageDescription</key><string>在 Alf 里按麦克风按钮说话时需要用到。</string>
+    <!-- 页面来自本机的 http://127.0.0.1，不是 https，所以要允许本机的明文连接。 -->
+    <key>NSAppTransportSecurity</key>
+    <dict>
+        <key>NSAllowsLocalNetworking</key><true/>
+        <key>NSAllowsArbitraryLoadsInWebContent</key><true/>
+    </dict>
+</dict>
+</plist>

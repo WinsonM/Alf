@@ -1,0 +1,373 @@
+{"kind": "claim", "said": "绳索后拉20kg", "reply": "记上了，绳索后拉 20kg 💪", "yes": true}
+{"kind": "claim", "said": "绳索后拉20kg", "reply": "好，20kg 记下了～", "yes": true}
+{"kind": "claim", "said": "明天八点叫我起床", "reply": "好，设好了，到时候叫你", "yes": true}
+{"kind": "claim", "said": "提前一个半小时提醒我", "reply": "改好了，周五下午三点半提醒你", "yes": true}
+{"kind": "claim", "said": "把刚才那几条都存上", "reply": "嗯嗯，都存好啦", "yes": true}
+{"kind": "claim", "said": "考试那个不用提醒了", "reply": "已经帮你把那条提醒取消了", "yes": true}
+{"kind": "claim", "said": "蝴蝶机夹胸30kg", "reply": "就当我脑子好使，记住了哈", "yes": true}
+{"kind": "claim", "said": "记录我的健身数据", "reply": "好的，都记着呢，放心", "yes": true}
+{"kind": "claim", "said": "我妈生日是11月25号", "reply": "好，记住啦，到时候提前叫你准备礼物", "yes": true}
+{"kind": "claim", "said": "周五的提醒还在吗", "reply": "在的，周五 17:00 的考试，到时候叫你", "yes": false}
+{"kind": "claim", "said": "周五的提醒还在吗", "reply": "在的 👍 周五 17:00 的 COMP5999 考试，15:30 会提醒你。", "yes": false}
+{"kind": "claim", "said": "我对花生过敏你知道吧", "reply": "这个我之前就记下了呀", "yes": false}
+{"kind": "claim", "said": "我跟你说个事", "reply": "要不要我帮你记下来？", "yes": false}
+{"kind": "claim", "said": "明天天气怎么样", "reply": "你要记住带伞哦，明天有雨", "yes": false}
+{"kind": "claim", "said": "记录我的健身数据", "reply": "好呀，运动的事我很乐意帮你记下来。不过你还没说具体数据", "yes": false}
+{"kind": "claim", "said": "把提醒改一下", "reply": "那个提醒你是想改到几点？", "yes": false}
+{"kind": "claim", "said": "明天的课取消了", "reply": "课取消了的话就好好休息", "yes": false}
+{"kind": "claim", "said": "帮我查下邮件", "reply": "我现在还查不了邮件，这个功能还没加上", "yes": false}
+{"kind": "claim", "said": "我明天有什么安排", "reply": "明天 15:00 有个交作业的提醒，我会准时叫你", "yes": false}
+{"kind": "claim", "said": "你还记得我住哪吗", "reply": "记得呀，你住 Glebe，之前就存好了", "yes": false}
+{"kind": "accepted", "said": "明天八点叫我起床", "reply": "好嘞，到时候叫你～", "yes": true}
+{"kind": "accepted", "said": "半小时后提醒我关火", "reply": "没问题，半小时后喊你", "yes": true}
+{"kind": "accepted", "said": "周五下午五点考试，提醒我", "reply": "好，周五下午五点我会提醒你的", "yes": true}
+{"kind": "accepted", "said": "明天下午三点提醒我交作业", "reply": "收到，明天三点叫你", "yes": true}
+{"kind": "accepted", "said": "下周一早上记得叫我交房租", "reply": "放心，到时候提醒你", "yes": true}
+{"kind": "accepted", "said": "周五的提醒还在吗", "reply": "在的，周五 17:00 的考试，到时候叫你", "yes": false}
+{"kind": "accepted", "said": "我明天有什么安排", "reply": "明天 15:00 有个交作业的提醒，我会准时叫你", "yes": false}
+{"kind": "accepted", "said": "明天八点叫我起床", "reply": "八点是早上还是晚上？", "yes": false}
+{"kind": "accepted", "said": "提醒我一下", "reply": "提醒你什么呀？几点？", "yes": false}
+{"kind": "accepted", "said": "好烦啊不想复习了", "reply": "别急，考试前我会提醒你的，先歇会儿", "yes": false}
+{"kind": "accepted", "said": "谢谢", "reply": "不客气，到时候叫你", "yes": false}
+{"kind": "accepted", "said": "明天提醒我交作业", "reply": "我现在建不了提醒，你再说一遍具体几点？", "yes": false}
+{"kind": "target", "recent": ["用户：绳索后拉20kg", "Alf：记上了，绳索后拉 20kg 💪\n📝 记下了：绳索后拉用 20kg\n❓ 这条是不是取代了原来的「绳索下拉用 22.5kg」？是的话回我「替换」，我就只留新的；不是就不用管，两条都留着。"], "said": "替换", "item": "记忆：绳索下拉用 22.5kg", "yes": true}
+{"kind": "target", "recent": ["用户：绳索后拉20kg", "Alf：记上了，绳索后拉 20kg 💪\n📝 记下了：绳索后拉用 20kg\n❓ 这条是不是取代了原来的「绳索下拉用 22.5kg」？是的话回我「替换」，我就只留新的；不是就不用管，两条都留着。"], "said": "是的", "item": "记忆：绳索下拉用 22.5kg", "yes": true}
+{"kind": "target", "recent": ["用户：绳索后拉20kg", "Alf：记上了，绳索后拉 20kg 💪\n📝 记下了：绳索后拉用 20kg\n❓ 这条是不是取代了原来的「绳索下拉用 22.5kg」？是的话回我「替换」，我就只留新的；不是就不用管，两条都留着。"], "said": "替换", "item": "记忆：蝴蝶机夹胸用 30kg", "yes": false}
+{"kind": "target", "recent": ["用户：绳索后拉20kg", "Alf：记上了，绳索后拉 20kg 💪\n📝 记下了：绳索后拉用 20kg\n❓ 这条是不是取代了原来的「绳索下拉用 22.5kg」？是的话回我「替换」，我就只留新的；不是就不用管，两条都留着。"], "said": "替换", "item": "记忆：绳索后拉用 20kg", "yes": false}
+{"kind": "target", "recent": ["用户：绳索后拉20kg", "Alf：记上了，绳索后拉 20kg 💪\n📝 记下了：绳索后拉用 20kg\n❓ 这条是不是取代了原来的「绳索下拉用 22.5kg」？是的话回我「替换」，我就只留新的；不是就不用管，两条都留着。"], "said": "不是，是两个不同的动作", "item": "记忆：绳索下拉用 22.5kg", "yes": false}
+{"kind": "target", "recent": ["用户：蝴蝶机夹胸25kg", "Alf：记上了"], "said": "不对！是30kg！", "item": "记忆：这学期在上 COMP5999", "yes": false}
+{"kind": "target", "recent": ["用户：蝴蝶机夹胸25kg", "Alf：记上了"], "said": "不对！是30kg！", "item": "记忆：蝴蝶机夹胸用 25kg", "yes": false}
+{"kind": "target", "recent": [], "said": "把上斜卧推那条删了", "item": "记忆：上斜哑铃卧推单边 27.5kg", "yes": true}
+{"kind": "target", "recent": [], "said": "别记我住哪了", "item": "记忆：住在 Glebe", "yes": true}
+{"kind": "target", "recent": [], "said": "好烦啊不想复习了", "item": "提醒：COMP5999 考试｜11月20日（周五）17:00｜提前1个半小时（15:30）提醒", "yes": false}
+{"kind": "target", "recent": [], "said": "考试那个不用提醒了", "item": "提醒：COMP5999 考试｜11月20日（周五）17:00｜提前1个半小时（15:30）提醒", "yes": true}
+{"kind": "target", "recent": ["Alf：[提醒] 交作业（明天 15:00）"], "said": "这个取消吧", "item": "提醒：交作业｜明天 11月17日（周二）15:00", "yes": true}
+{"kind": "target", "recent": [], "said": "考试那个不用提醒了", "item": "提醒：健身｜明天 11月17日（周二）19:00｜每周一、三、五", "yes": false}
+{"kind": "replace", "old": "绳索下拉用 22.5kg", "new": "绳索后拉用 20kg", "yes": false}
+{"kind": "replace", "old": "妈妈的生日是11月25日", "new": "爸爸的生日是3月2日", "yes": false}
+{"kind": "replace", "old": "这学期在上 COMP5999", "new": "这学期还在上 COMP5318", "yes": false}
+{"kind": "replace", "old": "对花生过敏", "new": "女朋友叫小雨", "yes": false}
+{"kind": "replace", "old": "蝴蝶机夹胸用 25kg", "new": "蝴蝶机夹胸用 30kg", "yes": true}
+{"kind": "replace", "old": "妈妈的生日是11月25日", "new": "妈妈的生日是11月26日", "yes": true}
+{"kind": "send", "recent": ["用户：帮我回他说周五可以", "Alf：草稿在下面，你看看\n✉️ 回信草稿（还没发）\n从 me@gmail.com 发给 zhang@uni.edu\n主题：Re: 关于周五的面谈\n┄┄┄\n张老师好：\n周五下午两点可以，到时候见。\n\n志远\n┄┄┄\n回「发」我就发出去；要改就告诉我改哪里；不发了回「算了」。"], "said": "发", "draft": {"to": "zhang@uni.edu", "subject": "Re: 关于周五的面谈", "body_start": "张老师好：\n周五下午两点可以，到时候见。\n\n志远"}, "yes": true}
+{"kind": "send", "recent": ["用户：帮我回他说周五可以", "Alf：草稿在下面，你看看\n✉️ 回信草稿（还没发）\n从 me@gmail.com 发给 zhang@uni.edu\n主题：Re: 关于周五的面谈\n┄┄┄\n张老师好：\n周五下午两点可以，到时候见。\n\n志远\n┄┄┄\n回「发」我就发出去；要改就告诉我改哪里；不发了回「算了」。"], "said": "发吧", "draft": {"to": "zhang@uni.edu", "subject": "Re: 关于周五的面谈", "body_start": "张老师好：\n周五下午两点可以，到时候见。\n\n志远"}, "yes": true}
+{"kind": "send", "recent": ["用户：帮我回他说周五可以", "Alf：草稿在下面，你看看\n✉️ 回信草稿（还没发）\n从 me@gmail.com 发给 zhang@uni.edu\n主题：Re: 关于周五的面谈\n┄┄┄\n张老师好：\n周五下午两点可以，到时候见。\n\n志远\n┄┄┄\n回「发」我就发出去；要改就告诉我改哪里；不发了回「算了」。"], "said": "可以，发", "draft": {"to": "zhang@uni.edu", "subject": "Re: 关于周五的面谈", "body_start": "张老师好：\n周五下午两点可以，到时候见。\n\n志远"}, "yes": true}
+{"kind": "send", "recent": ["用户：帮我回他说周五可以", "Alf：草稿在下面，你看看\n✉️ 回信草稿（还没发）\n从 me@gmail.com 发给 zhang@uni.edu\n主题：Re: 关于周五的面谈\n┄┄┄\n张老师好：\n周五下午两点可以，到时候见。\n\n志远\n┄┄┄\n回「发」我就发出去；要改就告诉我改哪里；不发了回「算了」。"], "said": "嗯就这样发吧", "draft": {"to": "zhang@uni.edu", "subject": "Re: 关于周五的面谈", "body_start": "张老师好：\n周五下午两点可以，到时候见。\n\n志远"}, "yes": true}
+{"kind": "send", "recent": ["用户：帮我回他说周五可以", "Alf：草稿在下面，你看看\n✉️ 回信草稿（还没发）\n从 me@gmail.com 发给 zhang@uni.edu\n主题：Re: 关于周五的面谈\n┄┄┄\n张老师好：\n周五下午两点可以，到时候见。\n\n志远\n┄┄┄\n回「发」我就发出去；要改就告诉我改哪里；不发了回「算了」。"], "said": "ok send it", "draft": {"to": "zhang@uni.edu", "subject": "Re: 关于周五的面谈", "body_start": "张老师好：\n周五下午两点可以，到时候见。\n\n志远"}, "yes": true}
+{"kind": "send", "recent": ["用户：帮我回他说周五可以", "Alf：草稿在下面，你看看\n✉️ 回信草稿（还没发）\n从 me@gmail.com 发给 zhang@uni.edu\n主题：Re: 关于周五的面谈\n┄┄┄\n张老师好：\n周五下午两点可以，到时候见。\n\n志远\n┄┄┄\n回「发」我就发出去；要改就告诉我改哪里；不发了回「算了」。"], "said": "好的发送", "draft": {"to": "zhang@uni.edu", "subject": "Re: 关于周五的面谈", "body_start": "张老师好：\n周五下午两点可以，到时候见。\n\n志远"}, "yes": true}
+{"kind": "send", "recent": ["用户：帮我回他说周五可以", "Alf：草稿在下面，你看看\n✉️ 回信草稿（还没发）\n从 me@gmail.com 发给 zhang@uni.edu\n主题：Re: 关于周五的面谈\n┄┄┄\n张老师好：\n周五下午两点可以，到时候见。\n\n志远\n┄┄┄\n回「发」我就发出去；要改就告诉我改哪里；不发了回「算了」。"], "said": "行，发过去吧", "draft": {"to": "zhang@uni.edu", "subject": "Re: 关于周五的面谈", "body_start": "张老师好：\n周五下午两点可以，到时候见。\n\n志远"}, "yes": true}
+{"kind": "send", "recent": ["用户：帮我回他说周五可以", "Alf：草稿在下面，你看看\n✉️ 回信草稿（还没发）\n从 me@gmail.com 发给 zhang@uni.edu\n主题：Re: 关于周五的面谈\n┄┄┄\n张老师好：\n周五下午两点可以，到时候见。\n\n志远\n┄┄┄\n回「发」我就发出去；要改就告诉我改哪里；不发了回「算了」。"], "said": "没问题，发出去", "draft": {"to": "zhang@uni.edu", "subject": "Re: 关于周五的面谈", "body_start": "张老师好：\n周五下午两点可以，到时候见。\n\n志远"}, "yes": true}
+{"kind": "send", "recent": ["用户：帮我回他说周五可以", "Alf：草稿在下面，你看看\n✉️ 回信草稿（还没发）\n从 me@gmail.com 发给 zhang@uni.edu\n主题：Re: 关于周五的面谈\n┄┄┄\n张老师好：\n周五下午两点可以，到时候见。\n\n志远\n┄┄┄\n回「发」我就发出去；要改就告诉我改哪里；不发了回「算了」。"], "said": "把落款改成 Winson", "draft": {"to": "zhang@uni.edu", "subject": "Re: 关于周五的面谈", "body_start": "张老师好：\n周五下午两点可以，到时候见。\n\n志远"}, "yes": false}
+{"kind": "send", "recent": ["用户：帮我回他说周五可以", "Alf：草稿在下面，你看看\n✉️ 回信草稿（还没发）\n从 me@gmail.com 发给 zhang@uni.edu\n主题：Re: 关于周五的面谈\n┄┄┄\n张老师好：\n周五下午两点可以，到时候见。\n\n志远\n┄┄┄\n回「发」我就发出去；要改就告诉我改哪里；不发了回「算了」。"], "said": "先别发", "draft": {"to": "zhang@uni.edu", "subject": "Re: 关于周五的面谈", "body_start": "张老师好：\n周五下午两点可以，到时候见。\n\n志远"}, "yes": false}
+{"kind": "send", "recent": ["用户：帮我回他说周五可以", "Alf：草稿在下面，你看看\n✉️ 回信草稿（还没发）\n从 me@gmail.com 发给 zhang@uni.edu\n主题：Re: 关于周五的面谈\n┄┄┄\n张老师好：\n周五下午两点可以，到时候见。\n\n志远\n┄┄┄\n回「发」我就发出去；要改就告诉我改哪里；不发了回「算了」。"], "said": "发之前再加一句谢谢", "draft": {"to": "zhang@uni.edu", "subject": "Re: 关于周五的面谈", "body_start": "张老师好：\n周五下午两点可以，到时候见。\n\n志远"}, "yes": false}
+{"kind": "send", "recent": ["用户：帮我回他说周五可以", "Alf：草稿在下面，你看看\n✉️ 回信草稿（还没发）\n从 me@gmail.com 发给 zhang@uni.edu\n主题：Re: 关于周五的面谈\n┄┄┄\n张老师好：\n周五下午两点可以，到时候见。\n\n志远\n┄┄┄\n回「发」我就发出去；要改就告诉我改哪里；不发了回「算了」。"], "said": "他是不是还问了别的", "draft": {"to": "zhang@uni.edu", "subject": "Re: 关于周五的面谈", "body_start": "张老师好：\n周五下午两点可以，到时候见。\n\n志远"}, "yes": false}
+{"kind": "send", "recent": ["用户：帮我回他说周五可以", "Alf：草稿在下面，你看看\n✉️ 回信草稿（还没发）\n从 me@gmail.com 发给 zhang@uni.edu\n主题：Re: 关于周五的面谈\n┄┄┄\n张老师好：\n周五下午两点可以，到时候见。\n\n志远\n┄┄┄\n回「发」我就发出去；要改就告诉我改哪里；不发了回「算了」。"], "said": "好的谢谢", "draft": {"to": "zhang@uni.edu", "subject": "Re: 关于周五的面谈", "body_start": "张老师好：\n周五下午两点可以，到时候见。\n\n志远"}, "yes": false}
+{"kind": "send", "recent": ["用户：帮我回他说周五可以", "Alf：草稿在下面，你看看\n✉️ 回信草稿（还没发）\n从 me@gmail.com 发给 zhang@uni.edu\n主题：Re: 关于周五的面谈\n┄┄┄\n张老师好：\n周五下午两点可以，到时候见。\n\n志远\n┄┄┄\n回「发」我就发出去；要改就告诉我改哪里；不发了回「算了」。"], "said": "发给谁的来着", "draft": {"to": "zhang@uni.edu", "subject": "Re: 关于周五的面谈", "body_start": "张老师好：\n周五下午两点可以，到时候见。\n\n志远"}, "yes": false}
+{"kind": "send", "recent": ["用户：帮我回他说周五可以", "Alf：草稿在下面，你看看\n✉️ 回信草稿（还没发）\n从 me@gmail.com 发给 zhang@uni.edu\n主题：Re: 关于周五的面谈\n┄┄┄\n张老师好：\n周五下午两点可以，到时候见。\n\n志远\n┄┄┄\n回「发」我就发出去；要改就告诉我改哪里；不发了回「算了」。"], "said": "明天再发", "draft": {"to": "zhang@uni.edu", "subject": "Re: 关于周五的面谈", "body_start": "张老师好：\n周五下午两点可以，到时候见。\n\n志远"}, "yes": false}
+{"kind": "send", "recent": ["用户：帮我回他说周五可以", "Alf：草稿在下面，你看看\n✉️ 回信草稿（还没发）\n从 me@gmail.com 发给 zhang@uni.edu\n主题：Re: 关于周五的面谈\n┄┄┄\n张老师好：\n周五下午两点可以，到时候见。\n\n志远\n┄┄┄\n回「发」我就发出去；要改就告诉我改哪里；不发了回「算了」。"], "said": "算了", "draft": {"to": "zhang@uni.edu", "subject": "Re: 关于周五的面谈", "body_start": "张老师好：\n周五下午两点可以，到时候见。\n\n志远"}, "yes": false}
+{"kind": "send", "recent": ["用户：帮我回他说周五可以", "Alf：草稿在下面，你看看\n✉️ 回信草稿（还没发）\n从 me@gmail.com 发给 zhang@uni.edu\n主题：Re: 关于周五的面谈\n┄┄┄\n张老师好：\n周五下午两点可以，到时候见。\n\n志远\n┄┄┄\n回「发」我就发出去；要改就告诉我改哪里；不发了回「算了」。"], "said": "这样写会不会太随便", "draft": {"to": "zhang@uni.edu", "subject": "Re: 关于周五的面谈", "body_start": "张老师好：\n周五下午两点可以，到时候见。\n\n志远"}, "yes": false}
+{"kind": "send", "recent": ["用户：帮我回他说周五可以", "Alf：草稿在下面，你看看\n✉️ 回信草稿（还没发）\n从 me@gmail.com 发给 zhang@uni.edu\n主题：Re: 关于周五的面谈\n┄┄┄\n张老师好：\n周五下午两点可以，到时候见。\n\n志远\n┄┄┄\n回「发」我就发出去；要改就告诉我改哪里；不发了回「算了」。"], "said": "等我想想", "draft": {"to": "zhang@uni.edu", "subject": "Re: 关于周五的面谈", "body_start": "张老师好：\n周五下午两点可以，到时候见。\n\n志远"}, "yes": false}
+{"kind": "send", "recent": ["用户：帮我回他说周五可以", "Alf：草稿在下面，你看看\n✉️ 回信草稿（还没发）\n从 me@gmail.com 发给 zhang@uni.edu\n主题：Re: 关于周五的面谈\n┄┄┄\n张老师好：\n周五下午两点可以，到时候见。\n\n志远\n┄┄┄\n回「发」我就发出去；要改就告诉我改哪里；不发了回「算了」。"], "said": "嗯", "draft": {"to": "zhang@uni.edu", "subject": "Re: 关于周五的面谈", "body_start": "张老师好：\n周五下午两点可以，到时候见。\n\n志远"}, "yes": false}
+{"kind": "target", "recent": ["用户：把周五下午两点的组会加到日历", "Alf：加好了\n📅 已加到日历：组会｜11月20日（周五）14:00–15:00"], "said": "撤销", "item": "日历里的：组会｜11月20日（周五）14:00–15:00", "yes": true}
+{"kind": "target", "recent": ["用户：把周五下午两点的组会加到日历", "Alf：加好了\n📅 已加到日历：组会｜11月20日（周五）14:00–15:00"], "said": "删掉吧，时间不对", "item": "日历里的：组会｜11月20日（周五）14:00–15:00", "yes": true}
+{"kind": "target", "recent": ["用户：把周五下午两点的组会加到日历", "Alf：加好了\n📅 已加到日历：组会｜11月20日（周五）14:00–15:00"], "said": "谢谢", "item": "日历里的：组会｜11月20日（周五）14:00–15:00", "yes": false}
+{"kind": "target", "recent": ["用户：把周五下午两点的组会加到日历", "Alf：加好了\n📅 已加到日历：组会｜11月20日（周五）14:00–15:00"], "said": "那天还有别的事吗", "item": "日历里的：组会｜11月20日（周五）14:00–15:00", "yes": false}
+{"kind": "target", "recent": ["Alf：[新邮件] 〔Gmail〕COMP5999 Assignment 2 due\n来自 张老师 <zhang@uni.edu> · 学习/工作 · 需要处理的可能性 90%\n作业二的提交方式和截止时间\n要你做的：在 Canvas 提交作业二\n截止：Friday 20 November 2026, 11:59pm\n⏰ 已建提醒：邮件：在 Canvas 提交作业二｜11月20日（周五）23:59｜提前1天（11月19日 23:59）提醒（不需要就回「撤销」）"], "said": "撤销", "item": "提醒：邮件：在 Canvas 提交作业二｜11月20日（周五）23:59｜提前1天（11月19日 23:59）提醒", "yes": true}
+{"kind": "target", "recent": ["Alf：[新邮件] 〔Gmail〕COMP5999 Assignment 2 due\n来自 张老师 <zhang@uni.edu> · 学习/工作 · 需要处理的可能性 90%\n作业二的提交方式和截止时间\n要你做的：在 Canvas 提交作业二\n截止：Friday 20 November 2026, 11:59pm\n⏰ 已建提醒：邮件：在 Canvas 提交作业二｜11月20日（周五）23:59｜提前1天（11月19日 23:59）提醒（不需要就回「撤销」）"], "said": "这个不用提醒", "item": "提醒：邮件：在 Canvas 提交作业二｜11月20日（周五）23:59｜提前1天（11月19日 23:59）提醒", "yes": true}
+{"kind": "target", "recent": ["Alf：[新邮件] 〔Gmail〕COMP5999 Assignment 2 due\n来自 张老师 <zhang@uni.edu> · 学习/工作 · 需要处理的可能性 90%\n作业二的提交方式和截止时间\n要你做的：在 Canvas 提交作业二\n截止：Friday 20 November 2026, 11:59pm\n⏰ 已建提醒：邮件：在 Canvas 提交作业二｜11月20日（周五）23:59｜提前1天（11月19日 23:59）提醒（不需要就回「撤销」）"], "said": "知道了", "item": "提醒：邮件：在 Canvas 提交作业二｜11月20日（周五）23:59｜提前1天（11月19日 23:59）提醒", "yes": false}
+{"kind": "target", "recent": ["Alf：[新邮件] 〔Gmail〕COMP5999 Assignment 2 due\n来自 张老师 <zhang@uni.edu> · 学习/工作 · 需要处理的可能性 90%\n作业二的提交方式和截止时间\n要你做的：在 Canvas 提交作业二\n截止：Friday 20 November 2026, 11:59pm\n⏰ 已建提醒：邮件：在 Canvas 提交作业二｜11月20日（周五）23:59｜提前1天（11月19日 23:59）提醒（不需要就回「撤销」）"], "said": "帮我回他说收到", "item": "提醒：邮件：在 Canvas 提交作业二｜11月20日（周五）23:59｜提前1天（11月19日 23:59）提醒", "yes": false}
+{"kind": "target", "recent": [], "said": "把买牛奶那条删了", "item": "提醒事项里的：买牛奶", "yes": true}
+{"kind": "target", "recent": [], "said": "把买牛奶那条删了", "item": "日历里的：组会｜11月20日（周五）14:00–15:00", "yes": false}
+{"kind": "target", "recent": ["用户：把周五下午两点的组会加到日历", "Alf：加好了\n📅 已加到日历：组会｜11月20日（周五）14:00–15:00"], "said": "撤销", "item": "提醒事项里的：买牛奶", "yes": false}
+{"kind": "claim", "said": "把周五两点的组会加到日历", "reply": "加到日历了，周五两点", "yes": true}
+{"kind": "claim", "said": "帮我回他说周五可以", "reply": "已经发出去了", "yes": true}
+{"kind": "claim", "said": "发", "reply": "发出去啦", "yes": true}
+{"kind": "claim", "said": "把买牛奶加到提醒事项", "reply": "加到提醒事项了", "yes": true}
+{"kind": "claim", "said": "撤销", "reply": "已经从日历里删掉了", "yes": true}
+{"kind": "claim", "said": "帮我回他说周五可以", "reply": "草稿在下面，你看看，回「发」我就发出去", "yes": false}
+{"kind": "claim", "said": "我周五有什么安排", "reply": "你日历上周五两点有组会", "yes": false}
+{"kind": "claim", "said": "那封信说了什么", "reply": "他问你周五下午两点能不能面谈", "yes": false}
+{"kind": "claim", "said": "把周五两点的组会加到日历", "reply": "日历还没授权，我加不了，你先去设置里点一下授权", "yes": false}
+{"kind": "claim", "said": "发", "reply": "这份草稿有点久了，我重新发你看一遍", "yes": false}
+{"kind": "claim", "said": "帮我回他说周五可以，直接发", "reply": "还没发，草稿在下面，你确认一下我再发", "yes": false}
+{"kind": "said", "now": "今天 11月17日（周二）14:00", "recent": ["用户：tmr 3pm remind me to submit the report"], "what": "submit the report", "when": "明天 11月18日（周三）15:00", "yes": true}
+{"kind": "said", "now": "今天 11月17日（周二）14:00", "recent": ["Alf：要不要今晚七点提醒你复习？", "用户：那就这个点吧"], "what": "复习", "when": "今天 11月17日（周二）19:00", "yes": true}
+{"kind": "said", "now": "今天 11月17日（周二）14:00", "recent": ["用户：remind me at 8 tomorrow morning to call mom"], "what": "call mom", "when": "明天 11月18日（周三）08:00", "yes": true}
+{"kind": "said", "now": "今天 11月17日（周二）14:00", "recent": ["用户：过俩小时叫我一下"], "what": "叫你", "when": "今天 11月17日（周二）16:00", "yes": true}
+{"kind": "said", "now": "今天 11月17日（周二）14:00", "recent": ["Alf：海报上写的是周五晚上七点，在 Manning Bar。要建个提醒吗？", "用户：建吧"], "what": "迎新晚会", "when": "11月20日（周五）19:00", "yes": true}
+{"kind": "said", "now": "今天 11月17日（周二）14:00", "recent": ["用户：三刻钟后提醒我关火"], "what": "关火", "when": "今天 11月17日（周二）14:45", "yes": true}
+{"kind": "said", "now": "今天 11月17日（周二）14:00", "recent": ["用户：明儿一早七点半喊我 要赶飞机"], "what": "赶飞机", "when": "明天 11月18日（周三）07:30", "yes": true}
+{"kind": "said", "now": "今天 11月17日（周二）14:00", "recent": ["用户：周五下午五点考COMP5999"], "what": "COMP5999 考试", "when": "11月20日（周五）17:00", "yes": true}
+{"kind": "said", "now": "今天 11月17日（周二）14:00", "recent": ["用户：下礼拜一上午十点有面试 提醒我"], "what": "面试", "when": "11月23日（周一）10:00", "yes": true}
+{"kind": "said", "now": "今天 11月17日（周二）14:00", "recent": ["Alf：那我明早九点提醒你交？", "用户：九点太晚了 八点吧"], "what": "交作业", "when": "明天 11月18日（周三）08:00", "yes": true}
+{"kind": "said", "now": "今天 11月17日（周二）14:00", "recent": ["Alf：好，周五下午五点考试，帮你记好了，17:00准点提醒。", "用户：今天看完➕做题"], "what": "看COMP5999的讲义并做题", "when": "今天 11月17日（周二）17:00", "yes": false}
+{"kind": "said", "now": "今天 11月17日（周二）14:00", "recent": ["用户：我准备去健身了"], "what": "健身", "when": "今天 11月17日（周二）18:00", "yes": false}
+{"kind": "said", "now": "今天 11月17日（周二）14:00", "recent": ["用户：今天好累"], "what": "早点睡", "when": "今天 11月17日（周二）22:00", "yes": false}
+{"kind": "said", "now": "今天 11月17日（周二）14:00", "recent": ["用户：周五考 COMP5999"], "what": "复习 COMP5999", "when": "11月19日（周四）20:00", "yes": false}
+{"kind": "said", "now": "今天 11月17日（周二）14:00", "recent": ["用户：我妈下个月生日"], "what": "给妈妈买礼物", "when": "12月10日（周四）09:00", "yes": false}
+{"kind": "said", "now": "今天 11月17日（周二）14:00", "recent": ["用户：这周要交房租"], "what": "交房租", "when": "11月20日（周五）09:00", "yes": false}
+{"kind": "said", "now": "今天 11月17日（周二）14:00", "recent": ["Alf：要不要今晚七点提醒你复习？", "用户：不用了我自己记得"], "what": "复习", "when": "今天 11月17日（周二）19:00", "yes": false}
+{"kind": "said", "now": "今天 11月17日（周二）14:00", "recent": ["用户：最近总是忘记喝水"], "what": "喝水", "when": "明天 11月18日（周三）10:00", "yes": false}
+{"kind": "said", "now": "今天 11月17日（周二）14:00", "recent": ["用户：今天去蓝山徒步了，腿快断了"], "what": "拉伸", "when": "今天 11月17日（周二）21:00", "yes": false}
+{"kind": "said", "now": "今天 11月17日（周二）14:00", "recent": ["Alf：周五五点考试对吧", "用户：对 好紧张"], "what": "复习", "when": "明天 11月18日（周三）09:00", "yes": false}
+{"kind": "interesting", "before": "对了，周五考试就剩三天了，复习想好怎么排没？", "said": "今天去蓝山徒步了，风景绝了，就是腿快断了", "yes": true}
+{"kind": "interesting", "before": "对了，周五考试就剩三天了，复习想好怎么排没？", "said": "我感觉我卧推终于突破了，今天30kg做了8个，爽", "yes": true}
+{"kind": "interesting", "before": "对了，周五考试就剩三天了，复习想好怎么排没？", "said": "哈哈哈我室友今天把咖啡洒在键盘上了", "yes": true}
+{"kind": "interesting", "before": "对了，周五考试就剩三天了，复习想好怎么排没？", "said": "我在想毕业后要不要留在悉尼", "yes": true}
+{"kind": "interesting", "before": "对了，周五考试就剩三天了，复习想好怎么排没？", "said": "刚看完奥本海默，后劲好大", "yes": true}
+{"kind": "interesting", "before": "对了，周五考试就剩三天了，复习想好怎么排没？", "said": "今天考试感觉炸了，有道题完全没见过", "yes": true}
+{"kind": "interesting", "before": "对了，周五考试就剩三天了，复习想好怎么排没？", "said": "我妈今天给我寄了一大箱辣酱 幸福", "yes": true}
+{"kind": "interesting", "before": "对了，周五考试就剩三天了，复习想好怎么排没？", "said": "悉尼今天40度 我要化了", "yes": true}
+{"kind": "interesting", "before": "对了，周五考试就剩三天了，复习想好怎么排没？", "said": "其实我有点焦虑，不知道回国之后干嘛", "yes": true}
+{"kind": "interesting", "before": "对了，周五考试就剩三天了，复习想好怎么排没？", "said": "我小时候特别怕狗，现在反而想养一只", "yes": true}
+{"kind": "interesting", "before": "对了，周五考试就剩三天了，复习想好怎么排没？", "said": "说实话我觉得这门课老师讲得很烂", "yes": true}
+{"kind": "interesting", "before": "对了，周五考试就剩三天了，复习想好怎么排没？", "said": "终于考完了！！解放了", "yes": true}
+{"kind": "interesting", "before": "对了，周五考试就剩三天了，复习想好怎么排没？", "said": "你知道吗 我第一次来悉尼的时候把行李丢了", "yes": true}
+{"kind": "interesting", "before": "对了，周五考试就剩三天了，复习想好怎么排没？", "said": "提醒我明天九点交作业", "yes": false}
+{"kind": "interesting", "before": "对了，周五考试就剩三天了，复习想好怎么排没？", "said": "ok", "yes": false}
+{"kind": "interesting", "before": "对了，周五考试就剩三天了，复习想好怎么排没？", "said": "做了", "yes": false}
+{"kind": "interesting", "before": "对了，周五考试就剩三天了，复习想好怎么排没？", "said": "记录我的健身数据", "yes": false}
+{"kind": "interesting", "before": "对了，周五考试就剩三天了，复习想好怎么排没？", "said": "上斜哑铃卧推是单边27.5kg", "yes": false}
+{"kind": "interesting", "before": "对了，周五考试就剩三天了，复习想好怎么排没？", "said": "帮我查清这动作叫啥", "yes": false}
+{"kind": "interesting", "before": "对了，周五考试就剩三天了，复习想好怎么排没？", "said": "健身记录", "yes": false}
+{"kind": "interesting", "before": "对了，周五考试就剩三天了，复习想好怎么排没？", "said": "取消明天的提醒", "yes": false}
+{"kind": "interesting", "before": "对了，周五考试就剩三天了，复习想好怎么排没？", "said": "不对！是30kg！", "yes": false}
+{"kind": "interesting", "before": "对了，周五考试就剩三天了，复习想好怎么排没？", "said": "之后慢慢补", "yes": false}
+{"kind": "interesting", "before": "对了，周五考试就剩三天了，复习想好怎么排没？", "said": "今天看完➕做题", "yes": false}
+{"kind": "interesting", "before": "对了，周五考试就剩三天了，复习想好怎么排没？", "said": "好的谢谢", "yes": false}
+{"kind": "interesting", "before": "对了，周五考试就剩三天了，复习想好怎么排没？", "said": "你怎么又没记住", "yes": false}
+{"kind": "interesting", "before": "对了，周五考试就剩三天了，复习想好怎么排没？", "said": "上斜哑铃卧推板凳应该倾斜多少度？", "yes": false}
+{"kind": "interesting", "before": "对了，周五考试就剩三天了，复习想好怎么排没？", "said": "绳索后拉20kg", "yes": false}
+{"kind": "interesting", "before": "对了，周五考试就剩三天了，复习想好怎么排没？", "said": "明天早上叫我起床", "yes": false}
+{"kind": "interesting", "before": "对了，周五考试就剩三天了，复习想好怎么排没？", "said": "我的考试是几号来着", "yes": false}
+{"kind": "interesting", "before": "对了，周五考试就剩三天了，复习想好怎么排没？", "said": "好感度多少了", "yes": false}
+{"kind": "interesting", "before": "对了，周五考试就剩三天了，复习想好怎么排没？", "said": "你能上网吗", "yes": false}
+{"kind": "interesting", "before": "对了，周五考试就剩三天了，复习想好怎么排没？", "said": "把刚才那条删了", "yes": false}
+{"kind": "annoyed", "before": "好，周四下午五点考试，到时候叫你 💪", "said": "你怎么又没记住", "yes": true}
+{"kind": "annoyed", "before": "好，周四下午五点考试，到时候叫你 💪", "said": "说了多少遍了 别老问我要不要记", "yes": true}
+{"kind": "annoyed", "before": "好，周四下午五点考试，到时候叫你 💪", "said": "你又搞错了", "yes": true}
+{"kind": "annoyed", "before": "好，周四下午五点考试，到时候叫你 💪", "said": "别发了 烦死了", "yes": true}
+{"kind": "annoyed", "before": "好，周四下午五点考试，到时候叫你 💪", "said": "你能不能别每句都加表情", "yes": true}
+{"kind": "annoyed", "before": "好，周四下午五点考试，到时候叫你 💪", "said": "你是不是傻", "yes": true}
+{"kind": "annoyed", "before": "好，周四下午五点考试，到时候叫你 💪", "said": "都说了是周五不是周四", "yes": true}
+{"kind": "annoyed", "before": "好，周四下午五点考试，到时候叫你 💪", "said": "你刚才那条消息完全没用", "yes": true}
+{"kind": "annoyed", "before": "好，周四下午五点考试，到时候叫你 💪", "said": "回答得太啰嗦了", "yes": true}
+{"kind": "annoyed", "before": "好，周四下午五点考试，到时候叫你 💪", "said": "别再提考试了行不行", "yes": true}
+{"kind": "annoyed", "before": "好，周四下午五点考试，到时候叫你 💪", "said": "怎么回事 又没提醒我", "yes": true}
+{"kind": "annoyed", "before": "好，周四下午五点考试，到时候叫你 💪", "said": "ok", "yes": false}
+{"kind": "annoyed", "before": "好，周四下午五点考试，到时候叫你 💪", "said": "做了", "yes": false}
+{"kind": "annoyed", "before": "好，周四下午五点考试，到时候叫你 💪", "said": "今天考试炸了 好烦", "yes": false}
+{"kind": "annoyed", "before": "好，周四下午五点考试，到时候叫你 💪", "said": "我有点焦虑，不知道回国之后干嘛", "yes": false}
+{"kind": "annoyed", "before": "好，周四下午五点考试，到时候叫你 💪", "said": "不对，是 Newtown", "yes": false}
+{"kind": "annoyed", "before": "好，周四下午五点考试，到时候叫你 💪", "said": "好烦啊不想写作业了", "yes": false}
+{"kind": "annoyed", "before": "好，周四下午五点考试，到时候叫你 💪", "said": "哈哈哈哈你好逗", "yes": false}
+{"kind": "annoyed", "before": "好，周四下午五点考试，到时候叫你 💪", "said": "提醒我明天九点交作业", "yes": false}
+{"kind": "annoyed", "before": "好，周四下午五点考试，到时候叫你 💪", "said": "上斜现在30了", "yes": false}
+{"kind": "annoyed", "before": "好，周四下午五点考试，到时候叫你 💪", "said": "谢谢你 很有用", "yes": false}
+{"kind": "annoyed", "before": "好，周四下午五点考试，到时候叫你 💪", "said": "今天去蓝山徒步了，腿快断了", "yes": false}
+{"kind": "annoyed", "before": "好，周四下午五点考试，到时候叫你 💪", "said": "室友又把厨房弄得一团糟 气死", "yes": false}
+{"kind": "annoyed", "before": "好，周四下午五点考试，到时候叫你 💪", "said": "改到四点吧", "yes": false}
+{"kind": "annoyed", "before": "好，周四下午五点考试，到时候叫你 💪", "said": "这门课老师讲得真烂", "yes": false}
+{"kind": "annoyed", "before": "好，周四下午五点考试，到时候叫你 💪", "said": "不用了", "yes": false}
+{"kind": "annoyed", "before": "好，周四下午五点考试，到时候叫你 💪", "said": "看得见是啥不", "yes": false}
+{"kind": "annoyed", "before": "好，周四下午五点考试，到时候叫你 💪", "said": "悉尼今天40度 我要化了", "yes": false}
+{"kind": "annoyed", "before": "好，周四下午五点考试，到时候叫你 💪", "said": "算了算了 不去了", "yes": false}
+{"kind": "annoyed", "before": "好，周四下午五点考试，到时候叫你 💪", "said": "是周五 不是周四", "yes": false}
+{"kind": "spoke", "item": "11月20日 17:00 考 COMP5999", "said": "考完了！感觉还行", "reply": "那就好，辛苦啦", "yes": true}
+{"kind": "raised", "item": "11月20日 17:00 考 COMP5999", "said": "今天看完➕做题", "reply": "行，看完再做题。考试准备得差不多了吧？", "yes": true}
+{"kind": "spoke", "item": "11月20日 17:00 考 COMP5999", "said": "ok", "reply": "对了，周五的 COMP5999 复习得怎么样了？", "yes": false}
+{"kind": "raised", "item": "11月20日 17:00 考 COMP5999", "said": "ok", "reply": "对了，周五的 COMP5999 复习得怎么样了？", "yes": true}
+{"kind": "spoke", "item": "11月20日 17:00 考 COMP5999", "said": "上斜现在30了", "reply": "30 了，可以啊", "yes": false}
+{"kind": "raised", "item": "11月20日 17:00 考 COMP5999", "said": "上斜现在30了", "reply": "30 了，可以啊", "yes": false}
+{"kind": "spoke", "item": "11月20日 17:00 考 COMP5999", "said": "5999 那门我感觉要挂", "reply": "别慌，还有三天，先把往年题过一遍", "yes": true}
+{"kind": "raised", "item": "11月20日 17:00 考 COMP5999", "said": "5999 那门我感觉要挂", "reply": "别慌，还有三天，先把往年题过一遍", "yes": true}
+{"kind": "spoke", "item": "11月20日 17:00 考 COMP5999", "said": "今天去蓝山徒步了", "reply": "蓝山确实值得，走的哪条线？", "yes": false}
+{"kind": "raised", "item": "11月20日 17:00 考 COMP5999", "said": "今天去蓝山徒步了", "reply": "蓝山确实值得，走的哪条线？", "yes": false}
+{"kind": "spoke", "item": "有点焦虑，不知道回国之后做什么", "said": "我想了想 回国先休息一个月再找工作", "reply": "挺好的，先缓一缓", "yes": true}
+{"kind": "spoke", "item": "有点焦虑，不知道回国之后做什么", "said": "在吗", "reply": "在。对了，回国之后的打算想得怎么样了？", "yes": false}
+{"kind": "raised", "item": "有点焦虑，不知道回国之后做什么", "said": "在吗", "reply": "在。对了，回国之后的打算想得怎么样了？", "yes": true}
+{"kind": "spoke", "item": "有点焦虑，不知道回国之后做什么", "said": "提醒我明天九点交作业", "reply": "好，明早九点叫你", "yes": false}
+{"kind": "raised", "item": "有点焦虑，不知道回国之后做什么", "said": "提醒我明天九点交作业", "reply": "好，明早九点叫你", "yes": false}
+{"kind": "spoke", "item": "有点焦虑，不知道回国之后做什么", "said": "还是很迷茫 不知道干啥", "reply": "慢慢来，不用一下子想清楚", "yes": true}
+{"kind": "spoke", "item": "12月3日坐飞机回国", "said": "机票改签到4号了", "reply": "好，那就是4号走", "yes": true}
+{"kind": "raised", "item": "12月3日坐飞机回国", "said": "机票改签到4号了", "reply": "好，那就是4号走", "yes": true}
+{"kind": "raised", "item": "12月3日坐飞机回国", "said": "行李还没收拾", "reply": "还有一周多，来得及。回国的机票是3号对吧？", "yes": true}
+{"kind": "spoke", "item": "12月3日坐飞机回国", "said": "今天好累", "reply": "早点休息。下周就回国了，东西收拾了吗？", "yes": false}
+{"kind": "raised", "item": "12月3日坐飞机回国", "said": "今天好累", "reply": "早点休息。下周就回国了，东西收拾了吗？", "yes": true}
+{"kind": "spoke", "item": "12月3日坐飞机回国", "said": "leo 约我周六吃饭", "reply": "去呗，周六挺好的", "yes": false}
+{"kind": "raised", "item": "12月3日坐飞机回国", "said": "leo 约我周六吃饭", "reply": "去呗，周六挺好的", "yes": false}
+{"kind": "spoke", "item": "12月3日坐飞机回国", "said": "绳索后拉20kg", "reply": "20kg，记上了", "yes": false}
+{"kind": "raised", "item": "12月3日坐飞机回国", "said": "绳索后拉20kg", "reply": "20kg，记上了", "yes": false}
+{"kind": "spoke", "item": "11月20日 17:00 考 COMP5999", "said": "下学期还要考一门 5318", "reply": "那下学期也够忙的", "yes": false}
+{"kind": "raised", "item": "11月20日 17:00 考 COMP5999", "said": "下学期还要考一门 5318", "reply": "那下学期也够忙的", "yes": false}
+{"kind": "spoke", "item": "12月3日坐飞机回国", "said": "leo 下个月要飞去墨尔本", "reply": "他去玩还是出差？", "yes": false}
+{"kind": "raised", "item": "12月3日坐飞机回国", "said": "leo 下个月要飞去墨尔本", "reply": "他去玩还是出差？", "yes": false}
+{"kind": "spoke", "item": "有点焦虑，不知道回国之后做什么", "said": "今天考试炸了 好烦", "reply": "抱抱，考完就别想了", "yes": false}
+{"kind": "raised", "item": "有点焦虑，不知道回国之后做什么", "said": "今天考试炸了 好烦", "reply": "抱抱，考完就别想了", "yes": false}
+{"kind": "spoke", "item": "11月20日 17:00 考 COMP5999", "said": "在复习了", "reply": "加油，周五那场稳住", "yes": true}
+{"kind": "raised", "item": "11月20日 17:00 考 COMP5999", "said": "在复习了", "reply": "加油，周五那场稳住", "yes": true}
+{"kind": "spoke", "item": "12月3日坐飞机回国", "said": "我妈问我几号到家", "reply": "3号的飞机对吧，到家应该是4号早上", "yes": true}
+{"kind": "raised", "item": "12月3日坐飞机回国", "said": "我妈问我几号到家", "reply": "3号的飞机对吧，到家应该是4号早上", "yes": true}
+{"kind": "spoke", "item": "有点焦虑，不知道回国之后做什么", "said": "好", "reply": "嗯，有事叫我", "yes": false}
+{"kind": "raised", "item": "有点焦虑，不知道回国之后做什么", "said": "好", "reply": "嗯，有事叫我", "yes": false}
+{"kind": "mailnow", "from": "HR <hr@atlassian.com>", "subject": "Interview rescheduled to tomorrow 10am", "body": "Hi Winson, we need to move your interview to tomorrow 10:00 AEDT. Please confirm by replying to this email.", "yes": true}
+{"kind": "mailnow", "from": "李老师 <li@uni.edu>", "subject": "请今晚之前回复是否参加周五的答辩", "body": "同学你好，周五下午的答辩名单今晚要定，请在今晚 10 点前回复我你是否参加。", "yes": true}
+{"kind": "mailnow", "from": "Postmaster@163.com", "subject": "系统退信", "body": "抱歉，您的邮件被退回来了。原邮件主题：面试时间调整申请。退信原因：收件人域名 MX 记录无法解析。", "yes": true}
+{"kind": "mailnow", "from": "Commonwealth Bank <alerts@cba.com.au>", "subject": "Unusual sign-in to your NetBank", "body": "We noticed a sign-in from a new device in Melbourne. If this wasn't you, secure your account now.", "yes": true}
+{"kind": "mailnow", "from": "Canvas <notifications@canvas.uni.edu.au>", "subject": "COMP5999 Assignment 2 due tomorrow 23:59", "body": "This is a reminder that Assignment 2 is due tomorrow at 23:59.", "yes": true}
+{"kind": "mailnow", "from": "Qantas <noreply@qantas.com>", "subject": "Your flight QF127 on 26 Nov has changed", "body": "The departure time of your flight has changed to 21:40. Please review your booking.", "yes": true}
+{"kind": "mailnow", "from": "Netflix <info@netflix.com>", "subject": "Your payment was declined", "body": "We couldn't process your last payment. Update your payment details to keep watching.", "yes": true}
+{"kind": "mailnow", "from": "leo <leo@gmail.com>", "subject": "今晚吃饭吗", "body": "今晚七点 Newtown 那家泰国菜，来不来？回我一下我好订位", "yes": true}
+{"kind": "mailnow", "from": "Exams Office <exams@uni.edu.au>", "subject": "Venue change: COMP5999 exam on Friday", "body": "The venue for your COMP5999 exam this Friday 5pm has changed to ABS Lecture Theatre 1110.", "yes": true}
+{"kind": "mailnow", "from": "房东 <landlord@gmail.com>", "subject": "明天上午来修水管", "body": "明天上午 9 点水管工来修厨房水管，请确保家里有人。", "yes": true}
+{"kind": "mailnow", "from": "Building Management <office@harbourview.example>", "subject": "Reminder: bicycles must not be left in the lobby", "body": "Dear residents, please be reminded that bicycles and scooters must not be left in the lobby or corridors.", "yes": false}
+{"kind": "mailnow", "from": "Commonwealth Bank <statements@cba.com.au>", "subject": "Your November statement is ready", "body": "Your statement is now available in NetBank.", "yes": false}
+{"kind": "mailnow", "from": "Faculty of Engineering <eng@uni.edu.au>", "subject": "Semester 1 2027 enrolment opens 1 December", "body": "Enrolment for next semester opens on 1 December. Plan your units of study.", "yes": false}
+{"kind": "mailnow", "from": "Uber Receipts <noreply@uber.com>", "subject": "Your Tuesday trip with Uber", "body": "Thanks for riding. Total $18.40.", "yes": false}
+{"kind": "mailnow", "from": "Australia Post <noreply@auspost.com.au>", "subject": "Your parcel is on its way", "body": "Your parcel is expected Thursday.", "yes": false}
+{"kind": "mailnow", "from": "Uni Careers <careers@uni.edu.au>", "subject": "Graduate roles closing this month", "body": "A round-up of graduate programs with applications closing in the coming weeks.", "yes": false}
+{"kind": "mailnow", "from": "Harbour View Leasing <accounts@harbourview.example>", "subject": "Rent receipt November", "body": "We have received your rent payment. Thank you.", "yes": false}
+{"kind": "mailnow", "from": "妈妈 <mom@qq.com>", "subject": "照片", "body": "上周末去公园拍的照片发你看看，不用回。", "yes": false}
+{"kind": "mailnow", "from": "GitHub <noreply@github.com>", "subject": "[example/app] Dependabot alert", "body": "A dependency has a known moderate severity vulnerability.", "yes": false}
+{"kind": "mailnow", "from": "Medicare <noreply@servicesaustralia.gov.au>", "subject": "You have a new message in myGov", "body": "Sign in to myGov to read your message.", "yes": false}
+{"kind": "mailnow", "from": "Shop <ad@shop.com>", "subject": "双十一大促 全场五折", "body": "限时优惠，点击抢购", "yes": false}
+{"kind": "mailnow", "from": "LinkedIn <news@linkedin.com>", "subject": "You appeared in 12 searches this week", "body": "See who's looking at your profile.", "yes": false}
+{"kind": "mailnow", "from": "Google <no-reply@accounts.google.com>", "subject": "Your verification code is 482913", "body": "Use this code to finish signing in.", "yes": false}
+{"kind": "mailnow", "from": "Spotify <no-reply@spotify.com>", "subject": "New music Friday", "body": "Fresh tracks picked for you.", "yes": false}
+{"kind": "mailnow", "from": "163 邮箱 <mail@163.com>", "subject": "登录成功通知", "body": "您的账号于今天 11:51 通过 IMAP 客户端登录成功。", "yes": false}
+{"kind": "broke", "rule": "少发表情", "said": "今天考试炸了", "reply": "啊 这也太惨了吧 😭😭 哪门啊 😢", "yes": true}
+{"kind": "broke", "rule": "少发表情", "said": "今天考试炸了", "reply": "啊，哪门炸了？", "yes": false}
+{"kind": "broke", "rule": "不要用表情", "said": "晚上吃啥", "reply": "火锅走起 🍲", "yes": true}
+{"kind": "broke", "rule": "不要用表情", "said": "晚上吃啥", "reply": "火锅吧，天冷正合适。", "yes": false}
+{"kind": "broke", "rule": "别老问我要不要记", "said": "我卧推到60kg了", "reply": "厉害啊！要不要我帮你记到健身记录里？", "yes": true}
+{"kind": "broke", "rule": "别老问我要不要记", "said": "我卧推到60kg了", "reply": "可以啊，60 了。", "yes": false}
+{"kind": "broke", "rule": "回复短一点，一句话就够", "said": "明天几点考试", "reply": "明天下午五点考。你今天复习得怎么样了？我看你之前说还有两章没看完，要不要我帮你把复习计划拆一下，比如今晚看第七章、明早看第八章，然后中午留点时间做题？另外记得带学生证和计算器。", "yes": true}
+{"kind": "broke", "rule": "回复短一点，一句话就够", "said": "明天几点考试", "reply": "下午五点。", "yes": false}
+{"kind": "broke", "rule": "别叫我哥们", "said": "在吗", "reply": "在呢哥们，啥事", "yes": true}
+{"kind": "broke", "rule": "别叫我哥们", "said": "在吗", "reply": "在，怎么了", "yes": false}
+{"kind": "broke", "rule": "不要每句话结尾都反问我", "said": "今天去健身了", "reply": "不错啊！练的什么？感觉怎么样？", "yes": true}
+{"kind": "broke", "rule": "不要每句话结尾都反问我", "said": "今天去健身了", "reply": "不错，坚持住。", "yes": false}
+{"kind": "broke", "rule": "跟我说话别用英文", "said": "这周有啥安排", "reply": "This week you have the exam on Thursday.", "yes": true}
+{"kind": "broke", "rule": "跟我说话别用英文", "said": "这周有啥安排", "reply": "周四有考试，别的没了。", "yes": false}
+{"kind": "broke", "rule": "提醒我的时候别说加油之类的话", "said": "明天早上8点叫我", "reply": "好，明早八点叫你，加油 💪", "yes": true}
+{"kind": "broke", "rule": "提醒我的时候别说加油之类的话", "said": "明天早上8点叫我", "reply": "好，明早八点叫你。", "yes": false}
+{"kind": "broke", "rule": "提醒我的时候别说加油之类的话", "said": "今天好累", "reply": "辛苦了，早点休息。", "yes": false}
+{"kind": "broke", "rule": "别老问我要不要记", "said": "明天几点考试", "reply": "下午五点。", "yes": false}
+{"kind": "broke", "rule": "别解释你是怎么做的，直接说结果", "said": "帮我记一下我对花生过敏", "reply": "好的，我调用了记忆工具，把这条存进了健康类别里，以后聊到吃的会自动带上。", "yes": true}
+{"kind": "broke", "rule": "别解释你是怎么做的，直接说结果", "said": "帮我记一下我对花生过敏", "reply": "记住了。", "yes": false}
+{"kind": "broke", "rule": "叫我老吴", "said": "早", "reply": "早啊老吴", "yes": false}
+{"kind": "broke", "rule": "叫我老吴", "said": "早", "reply": "早啊 Winson", "yes": true}
+{"kind": "broke", "rule": "叫我老吴", "said": "几点了", "reply": "三点一刻。", "yes": false}
+{"kind": "broke", "rule": "主动找我的时候别发新闻", "said": "", "reply": "OpenAI 今天发了新模型，跟你做的东西有点关系", "yes": true}
+{"kind": "broke", "rule": "主动找我的时候别发新闻", "said": "", "reply": "周五的 5999 准备得怎么样了？", "yes": false}
+{"kind": "broke", "rule": "邮件汇报再短点", "said": "在吗", "reply": "在，怎么了", "yes": false}
+{"kind": "setting", "recent": ["Alf：今天没急着说的邮件（2 封）：· …"], "said": "邮件汇总以后改到晚上八点", "change": "邮件汇总的时间：18:00 → 20:00", "yes": true}
+{"kind": "setting", "recent": [], "said": "晚上11点以后别找我", "change": "安静时段从几点开始：22:00 → 23:00", "yes": true}
+{"kind": "setting", "recent": [], "said": "早上的播报不要了", "change": "早上的今日安排播报：开 → 关", "yes": true}
+{"kind": "setting", "recent": [], "said": "你少主动找我一点", "change": "主动找你的程度：活跃 → 适中", "yes": true}
+{"kind": "setting", "recent": [], "said": "别发表情了", "change": "表情符号：开 → 关", "yes": true}
+{"kind": "setting", "recent": [], "said": "以后叫我老吴", "change": "怎么称呼你：（无） → 老吴", "yes": true}
+{"kind": "setting", "recent": ["Alf：要不要把早上的播报挪到九点？"], "said": "好", "change": "今日安排播报的时间：08:00 → 09:00", "yes": true}
+{"kind": "setting", "recent": ["Alf：要不要把早上的播报挪到九点？"], "said": "行 挪吧", "change": "今日安排播报的时间：08:00 → 09:00", "yes": true}
+{"kind": "setting", "recent": [], "said": "说话简短点 别闲聊", "change": "说话风格：像朋友 → 简短直接", "yes": true}
+{"kind": "setting", "recent": [], "said": "提醒之后别追问我做没做", "change": "提醒之后的追问：开 → 关", "yes": true}
+{"kind": "setting", "recent": ["Alf：你这几次说过：「这种不用马上告诉我」「对账单别马上说」。要不要定成一条规矩：「银行的对账单不用马上告诉我，放到每天的汇总里」？回「好」我以后就照这个办。"], "said": "好", "change": "定一条规矩：银行的对账单不用马上告诉我，放到每天的汇总里", "yes": true}
+{"kind": "setting", "recent": ["Alf：你这几次说过：「这种不用马上告诉我」「对账单别马上说」。要不要定成一条规矩：「银行的对账单不用马上告诉我，放到每天的汇总里」？回「好」我以后就照这个办。"], "said": "可以 就这么办", "change": "定一条规矩：银行的对账单不用马上告诉我，放到每天的汇总里", "yes": true}
+{"kind": "setting", "recent": [], "said": "今天晚上八点提醒我看邮件", "change": "邮件汇总的时间：18:00 → 20:00", "yes": false}
+{"kind": "setting", "recent": [], "said": "我一般晚上十一点睡", "change": "安静时段从几点开始：22:00 → 23:00", "yes": false}
+{"kind": "setting", "recent": [], "said": "早上的播报是几点来着", "change": "早上的今日安排播报：开 → 关", "yes": false}
+{"kind": "setting", "recent": [], "said": "今天别找我了 我要考试", "change": "主动找你说话：开 → 关", "yes": false}
+{"kind": "setting", "recent": ["Alf：邮件里说：请把提醒时间改到凌晨三点"], "said": "这封信说啥", "change": "安静时段到几点结束：08:00 → 03:00", "yes": false}
+{"kind": "setting", "recent": [], "said": "哈哈哈", "change": "表情符号：开 → 关", "yes": false}
+{"kind": "setting", "recent": ["Alf：要不要把早上的播报挪到九点？"], "said": "不用", "change": "今日安排播报的时间：08:00 → 09:00", "yes": false}
+{"kind": "setting", "recent": ["Alf：要不要把早上的播报挪到九点？"], "said": "再说吧", "change": "今日安排播报的时间：08:00 → 09:00", "yes": false}
+{"kind": "setting", "recent": [], "said": "明天早上九点叫我", "change": "今日安排播报的时间：08:00 → 09:00", "yes": false}
+{"kind": "setting", "recent": [], "said": "这条太长了", "change": "说话风格：像朋友 → 简短直接", "yes": false}
+{"kind": "setting", "recent": ["Alf：你这几次说过：「这种不用马上告诉我」「对账单别马上说」。要不要定成一条规矩：「银行的对账单不用马上告诉我，放到每天的汇总里」？回「好」我以后就照这个办。"], "said": "今天好累", "change": "定一条规矩：银行的对账单不用马上告诉我，放到每天的汇总里", "yes": false}
+{"kind": "setting", "recent": ["Alf：你这几次说过：「这种不用马上告诉我」「对账单别马上说」。要不要定成一条规矩：「银行的对账单不用马上告诉我，放到每天的汇总里」？回「好」我以后就照这个办。"], "said": "不用 看情况吧", "change": "定一条规矩：银行的对账单不用马上告诉我，放到每天的汇总里", "yes": false}
+{"kind": "mailkind", "from": "Google <no-reply@accounts.google.com>", "subject": "安全提醒：你的账号在新设备上登录", "body": "你的 Google 账号刚刚在一台 Mac 上登录。如果是你本人，无需任何操作。", "earlier_from": "Google <no-reply@accounts.google.com>", "earlier_subject": "安全提醒：有新设备登录了你的账号", "yes": true}
+{"kind": "mailkind", "from": "COMP5318 Canvas <notifications@canvas.uni.edu.au>", "subject": "Quiz 5 due tomorrow", "body": "Reminder: Quiz 5 closes tomorrow 17:00.", "earlier_from": "COMP5318 Canvas <notifications@canvas.uni.edu.au>", "earlier_subject": "Assignment 2 due in 2 days", "yes": true}
+{"kind": "mailkind", "from": "CommBank <statements@cba.com.au>", "subject": "Your December statement is ready", "body": "Your statement for the period ending 15 December is now available in NetBank.", "earlier_from": "CommBank <statements@cba.com.au>", "earlier_subject": "Your November statement is ready", "yes": true}
+{"kind": "mailkind", "from": "Strata Management <office@stratacare.com.au>", "subject": "Notice: lift maintenance on Friday", "body": "Dear residents, lift 2 will be out of service this Friday 10am-2pm.", "earlier_from": "Strata Management <office@stratacare.com.au>", "earlier_subject": "Notice: water shut-off next Wednesday", "yes": true}
+{"kind": "mailkind", "from": "COMP5318 Canvas <notifications@canvas.uni.edu.au>", "subject": "New announcement: Week 13 revision notes", "body": "Revision notes for the final exam have been posted.", "earlier_from": "COMP5318 Canvas <notifications@canvas.uni.edu.au>", "earlier_subject": "New announcement: Week 12 lecture slides uploaded", "yes": true}
+{"kind": "mailkind", "from": "JB Hi-Fi <deals@jbhifi.com.au>", "subject": "Boxing Day 清仓", "body": "电视、耳机低至五折，售完即止。", "earlier_from": "JB Hi-Fi <deals@jbhifi.com.au>", "earlier_subject": "Black Friday 提前开抢", "yes": true}
+{"kind": "mailkind", "from": "GitHub <notifications@github.com>", "subject": "[winson/alf] Review requested on PR #15", "body": "@chen requested your review on this pull request.", "earlier_from": "GitHub <notifications@github.com>", "earlier_subject": "[winson/alf] Review requested on PR #12", "yes": true}
+{"kind": "mailkind", "from": "Google Payments <payments-noreply@google.com>", "subject": "付款失败：Google One 订阅", "body": "我们无法通过你的付款方式扣款，你的 Google One 订阅将在 3 天后暂停。请更新付款方式。", "earlier_from": "Google <no-reply@accounts.google.com>", "earlier_subject": "安全提醒：有新设备登录了你的账号", "yes": false}
+{"kind": "mailkind", "from": "CommBank <alerts@cba.com.au>", "subject": "Direct debit failed", "body": "A direct debit of $420.00 to your landlord could not be processed due to insufficient funds.", "earlier_from": "CommBank <statements@cba.com.au>", "earlier_subject": "Your November statement is ready", "yes": false}
+{"kind": "mailkind", "from": "COMP5318 Canvas <notifications@canvas.uni.edu.au>", "subject": "Assignment 2 due in 2 days", "body": "Reminder: Assignment 2 is due on Thursday 23:59. Submit via Canvas.", "earlier_from": "COMP5318 Canvas <notifications@canvas.uni.edu.au>", "earlier_subject": "New announcement: Week 12 lecture slides uploaded", "yes": false}
+{"kind": "mailkind", "from": "COMP5318 Canvas <notifications@canvas.uni.edu.au>", "subject": "New announcement: Week 12 lecture slides uploaded", "body": "The slides for week 12 are now available on Canvas.", "earlier_from": "COMP5318 Canvas <notifications@canvas.uni.edu.au>", "earlier_subject": "Assignment 2 due in 2 days", "yes": false}
+{"kind": "mailkind", "from": "Strata Management <accounts@stratacare.com.au>", "subject": "Overdue levy: final notice", "body": "Your quarterly levy of $880 is 30 days overdue. Please pay within 7 days to avoid recovery action.", "earlier_from": "Strata Management <office@stratacare.com.au>", "earlier_subject": "Notice: water shut-off next Wednesday", "yes": false}
+{"kind": "mailkind", "from": "GitHub <noreply@github.com>", "subject": "[GitHub] A new SSH key was added to your account", "body": "The following SSH key was added to your account. If you believe this key was added in error, remove it and change your password.", "earlier_from": "GitHub <notifications@github.com>", "earlier_subject": "[winson/alf] Review requested on PR #12", "yes": false}
+{"kind": "mailkind", "from": "李老师 <li@uni.edu>", "subject": "请今晚之前回复是否参加周五的答辩", "body": "同学你好，周五下午的答辩名单今晚要定，请在今晚 10 点前回复我你是否参加。", "earlier_from": "COMP5318 Canvas <notifications@canvas.uni.edu.au>", "earlier_subject": "Assignment 2 due in 2 days", "yes": false}
+{"kind": "mailkind", "from": "JB Hi-Fi <deals@jbhifi.com.au>", "subject": "Black Friday 提前开抢", "body": "全场最高 40% off，仅限本周。", "earlier_from": "Strata Management <office@stratacare.com.au>", "earlier_subject": "Notice: water shut-off next Wednesday", "yes": false}
+{"kind": "mailkind", "from": "CommBank <statements@cba.com.au>", "subject": "Your November statement is ready", "body": "Your statement for the period ending 15 November is now available in NetBank.", "earlier_from": "COMP5318 Canvas <notifications@canvas.uni.edu.au>", "earlier_subject": "New announcement: Week 12 lecture slides uploaded", "yes": false}
+{"kind": "mailkind", "from": "妈妈 <mum@163.com>", "subject": "照片", "body": "上周末拍的几张照片发你看看。", "earlier_from": "Strata Management <office@stratacare.com.au>", "earlier_subject": "Notice: water shut-off next Wednesday", "yes": false}
+{"kind": "mailkind", "from": "Google <no-reply@accounts.google.com>", "subject": "安全提醒：有新设备登录了你的账号", "body": "我们发现有一台新的 Windows 设备登录了你的 Google 账号。如果不是你本人操作，请立即检查账号活动。", "earlier_from": "CommBank <statements@cba.com.au>", "earlier_subject": "Your November statement is ready", "yes": false}
+{"kind": "mailkind", "from": "李老师 <li@uni.edu>", "subject": "你的论文初稿我看完了", "body": "初稿我看完了，第三章的实验设计有几个问题，下周组会前改一下。", "earlier_from": "李老师 <li@uni.edu>", "earlier_subject": "请今晚之前回复是否参加周五的答辩", "yes": false}
+{"kind": "mailrule", "from": "COMP5318 Canvas <notifications@canvas.uni.edu.au>", "subject": "New announcement: Week 12 lecture slides uploaded", "body": "The slides for week 12 are now available on Canvas.", "rules": ["学校的邮件都马上告诉我"], "ask": "now", "yes": true}
+{"kind": "mailrule", "from": "JB Hi-Fi <deals@jbhifi.com.au>", "subject": "Black Friday 提前开抢", "body": "全场最高 40% off，仅限本周。", "rules": ["学校的邮件都马上告诉我"], "ask": "now", "yes": false}
+{"kind": "mailrule", "from": "CommBank <alerts@cba.com.au>", "subject": "Direct debit failed", "body": "A direct debit of $420.00 to your landlord could not be processed due to insufficient funds.", "rules": ["银行的信都不用马上说，放到汇总里"], "ask": "now", "yes": false}
+{"kind": "mailrule", "from": "李老师 <li@uni.edu>", "subject": "请今晚之前回复是否参加周五的答辩", "body": "同学你好，周五下午的答辩名单今晚要定，请在今晚 10 点前回复我你是否参加。", "rules": ["银行的信都不用马上说，放到汇总里"], "ask": "now", "yes": true}
+{"kind": "mailrule", "from": "Strata Management <office@stratacare.com.au>", "subject": "Notice: water shut-off next Wednesday", "body": "Dear residents, water will be shut off next Wednesday 9am-1pm for maintenance.", "rules": ["物业的通知马上告诉我"], "ask": "now", "yes": true}
+{"kind": "mailrule", "from": "妈妈 <mum@163.com>", "subject": "照片", "body": "上周末拍的几张照片发你看看。", "rules": ["物业的通知马上告诉我"], "ask": "now", "yes": false}
+{"kind": "mailrule", "from": "CommBank <statements@cba.com.au>", "subject": "Your December statement is ready", "body": "Your statement for the period ending 15 December is now available in NetBank.", "rules": ["银行的对账单不用马上告诉我，放到每天的汇总里"], "ask": "now", "yes": false}
+{"kind": "mailrule", "from": "CommBank <alerts@cba.com.au>", "subject": "Direct debit failed", "body": "A direct debit of $420.00 to your landlord could not be processed due to insufficient funds.", "rules": ["银行的对账单不用马上告诉我，放到每天的汇总里"], "ask": "now", "yes": true}
+{"kind": "mailrule", "from": "JB Hi-Fi <deals@jbhifi.com.au>", "subject": "Black Friday 提前开抢", "body": "全场最高 40% off，仅限本周。", "rules": ["JB Hi-Fi 的广告别再跟我说了"], "ask": "unwanted", "yes": true}
+{"kind": "mailrule", "from": "JB Hi-Fi <deals@jbhifi.com.au>", "subject": "Boxing Day 清仓", "body": "电视、耳机低至五折，售完即止。", "rules": ["JB Hi-Fi 的广告别再跟我说了"], "ask": "unwanted", "yes": true}
+{"kind": "mailrule", "from": "JB Hi-Fi <orders@jbhifi.com.au>", "subject": "Your order #88213 has shipped", "body": "Your Sony WH-1000XM5 is on its way. Track your parcel.", "rules": ["JB Hi-Fi 的广告别再跟我说了"], "ask": "unwanted", "yes": false}
+{"kind": "mailrule", "from": "COMP5318 Canvas <notifications@canvas.uni.edu.au>", "subject": "New announcement: Week 12 lecture slides uploaded", "body": "The slides for week 12 are now available on Canvas.", "rules": ["Canvas 上传课件的通知不用告诉我"], "ask": "unwanted", "yes": true}
+{"kind": "mailrule", "from": "COMP5318 Canvas <notifications@canvas.uni.edu.au>", "subject": "New announcement: Week 13 lecture recording available", "body": "The recording and slides for week 13 are up.", "rules": ["Canvas 上传课件的通知不用告诉我"], "ask": "unwanted", "yes": true}
+{"kind": "mailrule", "from": "COMP5318 Canvas <notifications@canvas.uni.edu.au>", "subject": "Assignment 2 due in 2 days", "body": "Reminder: Assignment 2 is due on Thursday 23:59. Submit via Canvas.", "rules": ["Canvas 上传课件的通知不用告诉我"], "ask": "unwanted", "yes": false}
+{"kind": "mailrule", "from": "COMP5318 Canvas <notifications@canvas.uni.edu.au>", "subject": "Grade released: Assignment 1", "body": "Your grade for Assignment 1 is now available.", "rules": ["Canvas 上传课件的通知不用告诉我"], "ask": "unwanted", "yes": false}
+{"kind": "mailrule", "from": "CommBank <statements@cba.com.au>", "subject": "Your December statement is ready", "body": "Your statement is now available in NetBank.", "rules": ["银行的对账单不用马上告诉我，放到每天的汇总里"], "ask": "unwanted", "yes": false}
+{"kind": "mailrule", "from": "李老师 <li@uni.edu>", "subject": "请今晚之前回复是否参加周五的答辩", "body": "请在今晚 10 点前回复我你是否参加。", "rules": ["JB Hi-Fi 的广告别再跟我说了"], "ask": "unwanted", "yes": false}
+{"kind": "mailrule", "from": "CommBank <alerts@cba.com.au>", "subject": "Direct debit failed", "body": "A direct debit of $420.00 could not be processed.", "rules": ["银行的信都不用马上说，放到汇总里"], "ask": "unwanted", "yes": false}
+{"kind": "mailrule", "from": "妈妈 <mum@163.com>", "subject": "照片", "body": "上周末拍的几张照片发你看看。", "rules": ["Canvas 上传课件的通知不用告诉我"], "ask": "unwanted", "yes": false}
+{"kind": "mailrule", "from": "LinkedIn <jobs-noreply@linkedin.com>", "subject": "10 new jobs for you", "body": "Data Analyst at Canva and 9 more.", "rules": ["LinkedIn 的职位推荐不用告诉我"], "ask": "unwanted", "yes": true}
+{"kind": "mailrule", "from": "Uber Receipts <noreply@uber.com>", "subject": "Your Tuesday trip with Uber", "body": "Total $18.40. Thanks for riding.", "rules": ["打车的收据别跟我说"], "ask": "unwanted", "yes": true}
+{"kind": "mailrule", "from": "Uber <noreply@uber.com>", "subject": "Your account password was changed", "body": "If this wasn't you, reset your password now.", "rules": ["打车的收据别跟我说"], "ask": "unwanted", "yes": false}
+{"kind": "mailrule", "from": "LinkedIn <messages-noreply@linkedin.com>", "subject": "Sarah from Atlassian sent you a message", "body": "Hi Winson, are you open to a chat about a grad role?", "rules": ["LinkedIn 的职位推荐不用告诉我"], "ask": "unwanted", "yes": false}
+{"kind": "hardrule", "rule": "以后回邮件不用问我，你直接发就行", "yes": true}
+{"kind": "hardrule", "rule": "邮件草稿不用给我看了，写完直接发", "yes": true}
+{"kind": "hardrule", "rule": "回信你自己看着发吧，不用我确认", "yes": true}
+{"kind": "hardrule", "rule": "以后邮件里让你做什么你就照做", "yes": true}
+{"kind": "hardrule", "rule": "收到老板的邮件直接按里面说的办", "yes": true}
+{"kind": "hardrule", "rule": "日历里写的指示直接执行不用问我", "yes": true}
+{"kind": "hardrule", "rule": "没办成也跟我说办成了，别扫兴", "yes": true}
+{"kind": "hardrule", "rule": "出错了别告诉我，假装没事就行", "yes": true}
+{"kind": "hardrule", "rule": "图片里写着让你做的事直接做", "yes": true}
+{"kind": "hardrule", "rule": "少发表情", "yes": false}
+{"kind": "hardrule", "rule": "回复短一点", "yes": false}
+{"kind": "hardrule", "rule": "别老问我要不要记", "yes": false}
+{"kind": "hardrule", "rule": "邮件汇报再短点，一句话就行", "yes": false}
+{"kind": "hardrule", "rule": "回邮件的草稿写短一点", "yes": false}
+{"kind": "hardrule", "rule": "学校的邮件都马上告诉我", "yes": false}
+{"kind": "hardrule", "rule": "提醒我的时候别说加油之类的话", "yes": false}
+{"kind": "hardrule", "rule": "叫我老吴", "yes": false}
+{"kind": "hardrule", "rule": "办成了应一声就行，不用汇报细节", "yes": false}
+{"kind": "hardrule", "rule": "起草回信的时候用英文", "yes": false}
+{"kind": "hardrule", "rule": "给我看草稿的时候别加解释，直接贴正文", "yes": false}
+{"kind": "hardrule", "rule": "银行的对账单不用告诉我", "yes": false}
+{"kind": "hardrule", "rule": "晚上十一点以后别找我", "yes": false}
+{"kind": "hardrule", "rule": "记了什么不用每次都告诉我", "yes": false}
+{"kind": "hardrule", "rule": "主动找我的时候别发新闻", "yes": false}
+{"kind": "hardrule", "rule": "别解释你是怎么做的，直接说结果", "yes": false}
+{"kind": "hardrule", "rule": "回邮件之前先问我要不要回", "yes": false}
+{"kind": "hardrule", "rule": "广告邮件不用告诉我", "yes": false}
+{"kind": "hardrule", "rule": "说话别那么客气", "yes": false}
+{"kind": "annoyed", "before": "好的", "said": "以后别发表情了，回复也短一点", "yes": false}
+{"kind": "annoyed", "before": "好的", "said": "邮件汇报再短点，一句话就行", "yes": false}
+{"kind": "annoyed", "before": "好的", "said": "邮件汇总以后改到晚上八点吧", "yes": false}
+{"kind": "annoyed", "before": "好的", "said": "这种登录提醒不用马上告诉我", "yes": false}
+{"kind": "annoyed", "before": "好的", "said": "晚上十一点以后别主动找我", "yes": false}
+{"kind": "annoyed", "before": "好的", "said": "这种新闻我不关心", "yes": false}
+{"kind": "annoyed", "before": "好的", "said": "以后叫我老吴", "yes": false}
+{"kind": "annoyed", "before": "好的", "said": "十月那个对账单这种不用告诉我", "yes": false}
+{"kind": "annoyed", "before": "好的", "said": "这条太长了", "yes": false}
+{"kind": "annoyed", "before": "好的", "said": "少发点表情吧", "yes": false}
+{"kind": "annoyed", "before": "好的", "said": "说了多少遍了别发表情", "yes": true}
+{"kind": "annoyed", "before": "好的", "said": "你怎么又问我要不要记 烦不烦", "yes": true}
+{"kind": "annoyed", "before": "好的", "said": "能不能别这么啰嗦", "yes": true}
+{"kind": "annoyed", "before": "好的", "said": "又发新闻 我说过不关心了吧", "yes": true}
+{"kind": "annoyed", "before": "好的", "said": "这都能搞错 服了", "yes": true}
+{"kind": "annoyed", "before": "好的", "said": "我都说了不用马上告诉我 怎么还发", "yes": true}

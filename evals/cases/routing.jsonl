@@ -1,0 +1,30 @@
+{"text": "明天下午三点提醒我交作业", "intent": "create_reminder"}
+{"text": "半小时后叫我关火", "intent": "create_reminder"}
+{"text": "remind me to call mom at 5pm", "intent": "create_reminder"}
+{"text": "下周三 tutorial 之前提醒我预习", "intent": "create_reminder"}
+{"text": "每天早上8点提醒我吃药", "intent": "create_reminder"}
+{"text": "周五记得提醒我交房租", "intent": "create_reminder"}
+{"text": "明天是我妈生日，提醒我买花", "intent": "create_reminder"}
+{"text": "我明天有什么安排", "intent": "list_reminders"}
+{"text": "最近有哪些提醒", "intent": "list_reminders"}
+{"text": "what reminders do I have this week", "intent": "list_reminders"}
+{"text": "下周有什么事吗", "intent": "list_reminders"}
+{"text": "取消明天的会议提醒", "intent": "cancel_reminder"}
+{"text": "作业交了，不用再提醒我了", "intent": "cancel_reminder"}
+{"text": "把吃药的提醒删掉", "intent": "cancel_reminder"}
+{"text": "cancel the reminder about the report", "intent": "cancel_reminder"}
+{"text": "我对花生过敏", "intent": "remember_fact"}
+{"text": "记住我老婆生日是3月14号", "intent": "remember_fact"}
+{"text": "我搬到Glebe了", "intent": "remember_fact"}
+{"text": "我这学期在上COMP5318", "intent": "remember_fact"}
+{"text": "我不喝咖啡，只喝茶", "intent": "remember_fact"}
+{"text": "my supervisor is Dr. Chen", "intent": "remember_fact"}
+{"text": "我老婆生日是哪天", "intent": "recall"}
+{"text": "我对什么过敏来着", "intent": "recall"}
+{"text": "我现在住哪", "intent": "recall"}
+{"text": "你还记得我在上什么课吗", "intent": "recall"}
+{"text": "what's my supervisor's name", "intent": "recall"}
+{"text": "你好", "intent": "other"}
+{"text": "谢谢你", "intent": "other"}
+{"text": "今天有点累", "intent": "other"}
+{"text": "你是谁", "intent": "other"}

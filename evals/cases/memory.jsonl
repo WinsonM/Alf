@@ -1,0 +1,15 @@
+{"existing": "我住在Newtown", "new": "我搬到Glebe了", "relation": "updates"}
+{"existing": "我住在Newtown", "new": "我住在Newtown", "relation": "duplicate"}
+{"existing": "我住在Newtown", "new": "我对花生过敏", "relation": "unrelated"}
+{"existing": "我对花生过敏", "new": "我对花生和虾都过敏", "relation": "updates"}
+{"existing": "我老婆生日是3月14号", "new": "我老婆的生日是3月14日", "relation": "duplicate"}
+{"existing": "我老婆生日是3月14号", "new": "9月23日是我妈生日", "relation": "unrelated"}
+{"existing": "我这学期在上COMP5318", "new": "我这学期还在上COMP5310", "relation": "unrelated"}
+{"existing": "我不喝咖啡", "new": "我最近开始喝咖啡了", "relation": "updates"}
+{"existing": "我的导师是陈老师", "new": "my supervisor is Dr. Chen", "relation": "duplicate"}
+{"existing": "我的导师是陈老师", "new": "我换导师了，现在是王老师", "relation": "updates"}
+{"existing": "我喜欢吃辣", "new": "我喜欢看科幻电影", "relation": "unrelated"}
+{"existing": "我在Woolworths兼职", "new": "我辞掉了Woolworths的兼职", "relation": "updates"}
+{"existing": "我妈的电话是0412345678", "new": "我妈换号了，新号码是0498765432", "relation": "updates"}
+{"existing": "我每周三有瑜伽课", "new": "我每周三晚上上瑜伽", "relation": "duplicate"}
+{"existing": "我女朋友叫小雨", "new": "我和小雨分手了", "relation": "updates"}

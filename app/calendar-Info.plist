@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleIdentifier</key><string>com.alf.calendar</string>
+    <key>CFBundleName</key><string>Alf 日历助手</string>
+    <key>CFBundleDisplayName</key><string>Alf 日历助手</string>
+    <key>CFBundleExecutable</key><string>alf-calendar</string>
+    <key>CFBundlePackageType</key><string>APPL</string>
+    <key>CFBundleShortVersionString</key><string>0.1</string>
+    <key>CFBundleVersion</key><string>1</string>
+    <key>LSMinimumSystemVersion</key><string>13.0</string>
+    <!-- 没有界面：不出现在程序坞里，跑完就退出 -->
+    <key>LSUIElement</key><true/>
+    <key>NSCalendarsFullAccessUsageDescription</key><string>Alf 需要读取你的日程，才能在早报和提醒里告诉你有什么安排；你让它"加到日历"时，它会新建日程。它只删除自己建的日程。</string>
+    <key>NSCalendarsUsageDescription</key><string>Alf 需要读取你的日程，才能在早报和提醒里告诉你有什么安排；你让它"加到日历"时，它会新建日程。它只删除自己建的日程。</string>
+    <key>NSRemindersFullAccessUsageDescription</key><string>Alf 需要读取你的提醒事项，才能在早报里一并告诉你；你让它"加到提醒事项"时，它会新建条目。它只删除自己建的条目。</string>
+    <key>NSRemindersUsageDescription</key><string>Alf 需要读取你的提醒事项，才能在早报里一并告诉你；你让它"加到提醒事项"时，它会新建条目。它只删除自己建的条目。</string>
+</dict>
+</plist>
