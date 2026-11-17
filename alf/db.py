@@ -301,6 +301,17 @@ CREATE TABLE IF NOT EXISTS pacts (
     asks       INTEGER NOT NULL DEFAULT 0    -- Alf 提起而他没接话的次数；到两次就不再提
 );
 
+-- 上网查过什么：问题、查到的要点、出处。他接着说"链接发我"时拿得出来；设置页上能看到最近查了什么。
+CREATE TABLE IF NOT EXISTS web_searches (
+    id         INTEGER PRIMARY KEY,
+    question   TEXT NOT NULL,
+    digest     TEXT NOT NULL,           -- 查资料的那次调用写的要点，不是发给他的话
+    sources    TEXT NOT NULL DEFAULT '[]',   -- JSON：[{"title", "url", "site", "date"}]
+    queries    TEXT NOT NULL DEFAULT '[]',   -- JSON：DeepSeek 实际搜了哪几条
+    episode_id INTEGER,                 -- 是在回他哪句话的时候查的
+    created_at INTEGER NOT NULL
+);
+
 -- 全文索引里存的是预先切好的词（中文按二元组，见 fts.py）；rowid 等于源表的 id。
 CREATE VIRTUAL TABLE IF NOT EXISTS facts_fts USING fts5(tokens);
 CREATE VIRTUAL TABLE IF NOT EXISTS episodes_fts USING fts5(tokens);

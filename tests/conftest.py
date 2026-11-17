@@ -73,7 +73,8 @@ def make_agent(conn, cfg):
 class FakeLLM:
     """照剧本回答的生成式模型。
 
-    对话调用按顺序取 chat 里的一项：字符串 = 最终回复；列表 = 工具调用 [(工具名, 参数)]；异常 = 抛出。
+    对话调用按顺序取 chat 里的一项：字符串 = 最终回复；列表 = 工具调用 [(工具名, 参数)]；异常 = 抛出；
+    字典 = 一条原样的回复消息（联网检索的那次调用会带 annotations 和 server_tool_calls）。
     JSON 调用（记忆抽取）按顺序取 facts 里的一项，取完了就回答"没有要记的"。
     """
 
@@ -97,6 +98,8 @@ class FakeLLM:
             raise item
         if isinstance(item, str):
             return LLMReply(content=item, message={"role": "assistant", "content": item}, usage=usage)
+        if isinstance(item, dict):
+            return LLMReply(content=item.get("content") or "", message={"role": "assistant", **item}, usage=usage)
         calls = [ToolCall(f"call_{len(self.requests)}_{i}", name, args) for i, (name, args) in enumerate(item)]
         message = {"role": "assistant", "content": None, "tool_calls": [
             {"id": c.id, "type": "function", "function": {"name": c.name, "arguments": json.dumps(c.arguments)}} for c in calls]}

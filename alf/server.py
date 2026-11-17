@@ -24,7 +24,7 @@ from fastapi.responses import HTMLResponse, JSONResponse
 from pydantic import BaseModel, Field
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 
-from . import affinity, apple, asr, connectors, db, doctor, feedback, impressions, lessons, pacts, persona, prefs, proactive, timeline
+from . import affinity, apple, asr, connectors, db, doctor, feedback, impressions, lessons, pacts, persona, prefs, proactive, timeline, websearch
 from .agent import Reply, Turn
 from .chat import CATEGORY_LABELS, make_agent
 from .config import MAIL_PROVIDERS, Settings, env_file, normalize_handle, update_dotenv
@@ -482,6 +482,12 @@ def create_app(cfg: Settings, backend: Backend, *, llm_backend: LLMBackend | Non
                 rule = memory().write(proposal["text"], FEEDBACK, now=now, scope=lessons.scope_of(proposal["scope"])).fact.id
             lessons.settle_proposal(conn, proposal_id, rule_id=rule)
         return {"ok": True, "rule_id": rule}
+
+    @app.get("/api/search/recent")
+    def recent_searches() -> dict:
+        """最近上网查过什么：问的是什么、DeepSeek 实际搜了哪几条、看了哪几个网页。给设置页用。"""
+        with lock:
+            return {"searches": websearch.view(conn)}
 
     # --- 人设里它说过的话、它对他的印象、约定：在页面上删、改、了结 ---------------------------
 

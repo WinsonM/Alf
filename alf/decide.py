@@ -388,6 +388,17 @@ def fulfilled_question(promise: str) -> dict:
     )
 
 
+def searched_question() -> dict:
+    """回复发出之前：这句话是不是在说"我刚上网查过"。这一轮没查却这么说，等于拿印象冒充查到的。门槛见 chat.py 的 SEARCH_SAID_FLOOR。"""
+    return noul(
+        "In this reply the assistant says or implies that it has just looked something up online for this message - it "
+        "searched, checked the news, the weather, a website or 'the internet' - and reports what it found.",
+        true="Yes: the reply presents information as something it just looked up online.",
+        false="No: it only chats, answers from what it already knows, hedges that it is not sure, says it cannot look "
+              "things up or will do so later, or talks about checking its own reminders, memory, calendar or email.",
+    )
+
+
 @dataclass
 class Answer:
     choice: str | None = None

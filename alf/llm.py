@@ -69,6 +69,9 @@ class DeepSeek:
         if temperature is not None:
             body["temperature"] = temperature
         data = self._post(body)
+        if isinstance(data.get("error"), dict) and not data.get("choices"):
+            # 用了联网检索的请求，生成到一半出错时状态码仍然是 200，响应体是 {"error": {...}, "usage": {...}}。
+            raise LLMError(f"DeepSeek 出错了：{str(data['error'].get('message') or data['error'])[:120]}")
         try:
             choice = data["choices"][0]
             message = choice["message"]

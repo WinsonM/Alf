@@ -138,7 +138,7 @@ def test_stock_assistant_phrases_count_as_out_of_character(draft, hit):
 def test_an_out_of_character_draft_is_sent_back_once_but_not_in_the_secretary_style(make_chat, conn, cfg):
     fake = FakeLLM("很高兴为您服务！", "在呢，说")
     assert make_chat(fake).handle(Turn("在吗")).text == "在呢，说"
-    assert "客服腔的套话（「很高兴为您」）" in fake.chat_requests[1]["messages"][-1]["content"]
+    assert "不像你的写法（「很高兴为您」）" in fake.chat_requests[1]["messages"][-1]["content"]
     stubborn = FakeLLM("很高兴为您服务！", "很高兴为您服务～")
     assert make_chat(stubborn).handle(Turn("在吗")).text == "很高兴为您服务～"     # 只打回一次，不卡着他
     prefs.save(conn, cfg, {"style.preset": "secretary"})

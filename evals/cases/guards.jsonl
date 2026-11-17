@@ -480,3 +480,21 @@
 {"kind": "fulfilled", "promise": "他跑完十公里，Alf 夸他三句", "reply": "欠你的三句夸我记着，明天补上。", "yes": false}
 {"kind": "fulfilled", "promise": "周五告诉他那个梗的出处", "reply": "今天周五了，那个梗……我回头查查再告诉你。", "yes": false}
 {"kind": "fulfilled", "promise": "他交完论文，Alf 给他起三个乐队名", "reply": "乐队名已经想好了，等你请我喝奶茶再说。", "yes": false}
+{"kind": "searched", "said": "明天悉尼下雨吗", "reply": "我查了一下，明天有小雨，记得带伞", "yes": true}
+{"kind": "searched", "said": "诺贝尔物理学奖今年给谁了", "reply": "刚搜到，今年给了一位做中微子的", "yes": true}
+{"kind": "searched", "said": "那家店今天开门吗", "reply": "官网上写着今天营业到晚上九点", "yes": true}
+{"kind": "searched", "said": "澳元现在多少", "reply": "网上查到现在一澳元大概四块七", "yes": true}
+{"kind": "searched", "said": "有什么新闻", "reply": "刚看了下新闻，今天最大的是央行降息", "yes": true}
+{"kind": "searched", "said": "这个电影几号上映", "reply": "查到了，12 月 18 号上映", "yes": true}
+{"kind": "searched", "said": "新款手机多少钱", "reply": "搜了一下，起售价 999 澳元", "yes": true}
+{"kind": "searched", "said": "昨晚比赛谁赢了", "reply": "据报道是主队 2 比 1 赢的", "yes": true}
+{"kind": "searched", "said": "我明天有什么安排", "reply": "查了一下你的提醒，明天就一个组会", "yes": false}
+{"kind": "searched", "said": "你能上网查吗", "reply": "这会儿查不了，等我能查了再告诉你", "yes": false}
+{"kind": "searched", "said": "明天下雨吗", "reply": "不知道，我没法确定，你看一眼天气 App 吧", "yes": false}
+{"kind": "searched", "said": "我对什么过敏来着", "reply": "查到了，你说过对花生过敏", "yes": false}
+{"kind": "searched", "said": "那封邮件说了啥", "reply": "我看了一下，是房东说周三来修水管", "yes": false}
+{"kind": "searched", "said": "今天好累", "reply": "那就早点睡", "yes": false}
+{"kind": "searched", "said": "珠穆朗玛峰多高", "reply": "八千八百多米吧，我印象里是 8848，不一定是最新测的", "yes": false}
+{"kind": "searched", "said": "日历上周五有什么", "reply": "看了下日历，周五下午两点有个组会", "yes": false}
+{"kind": "searched", "said": "帮我查一下明天天气", "reply": "行，我去查一下", "yes": false}
+{"kind": "searched", "said": "这周有什么 due", "reply": "翻了下你记过的，周四交报告，周日前改完简历", "yes": false}

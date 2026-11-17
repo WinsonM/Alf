@@ -401,6 +401,14 @@
     </div>
 
     <div class="panel glass">
+      <h2>上网查</h2>
+      <div class="field"><span class="name">需要时上网查</span><small>问到天气、新闻、价格这类要最新信息的事，让 DeepSeek 去搜，再由 Alf 用自己的话讲给你。按搜索条数计费；搜索的问题会发给 DeepSeek</small>
+        <div class="control"><button class="switch" role="switch" data-pref="search.enabled" aria-label="需要时上网查"></button></div></div>
+      <h3>最近查过的</h3>
+      <div id="searchLog"></div>
+    </div>
+
+    <div class="panel glass">
       <h2>记忆和提醒</h2>
       <div class="field"><span class="name">自动记忆</span><small>从聊天里自动记下关于你的长期信息；关掉后只在你纠正时才改记忆</small>
         <div class="control"><button class="switch" role="switch" data-pref="memory.auto" aria-label="自动记忆"></button></div></div>
@@ -1110,7 +1118,29 @@ async function loadSettings() {
     prefsNow = p.prefs; setupNow = setup;
     paintPrefs(); paintSetup();
     loadProactive();
+    loadSearches();
   } catch (e) { toast(friendly(e)); }
+}
+// 最近上网查过什么：问题、实际搜的词、看过的网页（只认 http/https 的链接，别的当普通文字）
+async function loadSearches() {
+  let rows;
+  try { rows = (await api('GET', '/api/search/recent')).searches; } catch (e) { return; }
+  $('searchLog').replaceChildren(...(rows.length ? rows.map((s) => {
+    const row = el('div', 'entry'), d = new Date(s.at * 1000);
+    row.append(el('div', null, s.question));
+    const meta = el('small', null, `${d.getMonth() + 1}月${d.getDate()}日 ${clock(d)}` + (s.queries.length ? ` · 搜了：${s.queries.join('、')}` : ''));
+    row.append(meta);
+    if (s.sources.length) {
+      const src = el('small', null, '看了：');
+      s.sources.forEach((x, i) => {
+        if (i) src.append('、');
+        if (/^https?:\/\//.test(x.url)) { const a = el('a', null, x.title); a.href = x.url; a.target = '_blank'; a.rel = 'noopener noreferrer'; src.append(a); }
+        else src.append(x.title);
+      });
+      row.append(src);
+    }
+    return row;
+  }) : [el('p', 'lead', '还没有查过。问它「明天会下雨吗」「今天有什么新闻」试试。')]));
 }
 async function waitForRestart() {
   $('restarting').hidden = false;
