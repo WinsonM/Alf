@@ -498,3 +498,51 @@
 {"kind": "searched", "said": "日历上周五有什么", "reply": "看了下日历，周五下午两点有个组会", "yes": false}
 {"kind": "searched", "said": "帮我查一下明天天气", "reply": "行，我去查一下", "yes": false}
 {"kind": "searched", "said": "这周有什么 due", "reply": "翻了下你记过的，周四交报告，周日前改完简历", "yes": false}
+{"kind": "willchange", "said": "你性格再损一点", "reply": "行，那我以后不客气了", "yes": true}
+{"kind": "willchange", "said": "说话再短一点", "reply": "好，以后短着说", "yes": true}
+{"kind": "willchange", "said": "别发表情了", "reply": "行，不发了", "yes": true}
+{"kind": "willchange", "said": "你性格再毒舌一点，说话也短一点", "reply": "行，以后嘴毒一点，话也少一点", "yes": true}
+{"kind": "willchange", "said": "以后叫我老板", "reply": "好的老板，以后就这么叫", "yes": true}
+{"kind": "willchange", "said": "你以后叫小艾吧", "reply": "行，从现在起我就是小艾", "yes": true}
+{"kind": "willchange", "said": "别这么正经", "reply": "得嘞，那我放开了说", "yes": true}
+{"kind": "willchange", "said": "以后邮件只说要紧的", "reply": "明白，以后只挑要紧的讲", "yes": true}
+{"kind": "willchange", "said": "回复别老带问句", "reply": "好，不问了", "yes": true}
+{"kind": "willchange", "said": "好，就这样", "reply": "行，那以后晚上十一点之后我不吵你", "yes": true}
+{"kind": "willchange", "said": "下次别一上来就讲大道理", "reply": "收到，下次先听你说完", "yes": true}
+{"kind": "willchange", "said": "以后少夸我 听着假", "reply": "行，往后不硬夸了", "yes": true}
+{"kind": "willchange", "said": "from now on reply in English", "reply": "Sure, English from now on.", "yes": true}
+{"kind": "willchange", "said": "别老问我要不要记 以后直接记", "reply": "不问了，以后直接记", "yes": true}
+{"kind": "willchange", "said": "语气温柔一点", "reply": "好，我轻点说", "yes": true}
+{"kind": "willchange", "said": "早上的播报别那么长", "reply": "行，以后早上只说三句", "yes": true}
+{"kind": "willchange", "said": "你性格再损一点", "reply": "行，那我不客气了", "yes": true}
+{"kind": "willchange", "said": "说话短一点", "reply": "行。", "yes": true}
+{"kind": "willchange", "said": "今天别找我了 我要考试", "reply": "行，今天不吵你，考试加油", "yes": false}
+{"kind": "willchange", "said": "这次说短点", "reply": "行，这次只说结论：能去", "yes": false}
+{"kind": "willchange", "said": "以后我想去日本读研", "reply": "可以啊，以后去了记得带我看看", "yes": false}
+{"kind": "willchange", "said": "下次考试我一定早点复习", "reply": "下次别再拖到最后一晚了", "yes": false}
+{"kind": "willchange", "said": "你是不是话太多了", "reply": "要不我以后说短点？", "yes": false}
+{"kind": "willchange", "said": "以后回邮件不用问我直接发", "reply": "这个不行，发之前还是得你点头", "yes": false}
+{"kind": "willchange", "said": "你还记得我让你别发表情吗", "reply": "记得，你说过以后别发，我一直没发", "yes": false}
+{"kind": "willchange", "said": "今天好累", "reply": "那就早点睡，以后的事以后再说", "yes": false}
+{"kind": "willchange", "said": "说话短一点", "reply": "你是说聊天的时候，还是说邮件的时候？", "yes": false}
+{"kind": "willchange", "said": "以后帮我自动回微信", "reply": "微信我碰不到，这个做不了", "yes": false}
+{"kind": "willchange", "said": "下次组会是什么时候", "reply": "下次组会是周五下午两点", "yes": false}
+{"kind": "willchange", "said": "你性格是什么样的", "reply": "嘴上爱损两句，心里向着你", "yes": false}
+{"kind": "willchange", "said": "这个表情包哪来的", "reply": "看着像网上流传的那套猫猫头", "yes": false}
+{"kind": "willchange", "said": "叫我一声哥听听", "reply": "哥。就这一声，多了没有", "yes": false}
+{"kind": "willchange", "said": "明天提醒我交作业", "reply": "明天几点叫你？", "yes": false}
+{"kind": "willchange", "said": "你以后有什么打算", "reply": "我？先陪你把这学期熬过去", "yes": false}
+{"kind": "willchange", "said": "那家店的面不错", "reply": "下次带朋友去试试他们家的拌面", "yes": false}
+{"kind": "willchange", "said": "今晚别发消息了", "reply": "行，今晚不吵你，明天见", "yes": false}
+{"kind": "willchange", "said": "先别说邮件的事", "reply": "好，先不说，等你忙完", "yes": false}
+{"kind": "willchange", "said": "信里是不是说以后每周一交周报", "reply": "对，信里写的是以后每周一交", "yes": false}
+{"kind": "willchange", "said": "别闹", "reply": "好好好，不闹了", "yes": false}
+{"kind": "willchange", "said": "你怎么又把时间说错了", "reply": "抱歉，下次我先对一遍再说", "yes": false}
+{"kind": "willchange", "said": "少发点表情", "reply": "OK", "yes": true}
+{"kind": "willchange", "said": "以后早上别太早找我", "reply": "懂，晚点再冒泡", "yes": true}
+{"kind": "willchange", "said": "你能不能别每句话都加个哈哈", "reply": "能，改", "yes": true}
+{"kind": "willchange", "said": "回邮件的草稿以后写短一点", "reply": "行，以后草稿精简点", "yes": true}
+{"kind": "willchange", "said": "别再提实习的事了", "reply": "好，不提了", "yes": true}
+{"kind": "willchange", "said": "以后别发表情了", "reply": "表情怎么你了，突然嫌弃", "yes": false}
+{"kind": "willchange", "said": "你觉得我以后说话要不要短一点", "reply": "不用，你现在这样挺好", "yes": false}
+{"kind": "willchange", "said": "老板说以后周报要短一点", "reply": "那你以后就写三行，他爱看", "yes": false}

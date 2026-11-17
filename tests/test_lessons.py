@@ -15,7 +15,7 @@ from alf.agent import Quoted, Turn
 from alf.chat import ChatAgent
 from alf.config import IMessageConfig
 from alf.connectors import Item
-from alf.decide import Decider, inbox_questions
+from alf.decide import Decider, DecisionError, inbox_questions
 from alf.heartbeat import JobContext
 from alf.imessage import ChatDB, IMessageChannel
 from alf.llm import LLM
@@ -205,6 +205,100 @@ def test_no_requests_means_no_extra_check(make_chat):
     backend = judge()
     make_chat(FakeLLM("在呢"), backend).handle(Turn("在吗"))
     assert not any(k.startswith("rule_") for _, q in backend.calls for k in q)
+
+
+# --- 答应了"以后照你说的来"，就得落下来 ------------------------------------------------
+
+def test_agreeing_to_do_things_differently_without_writing_it_down_is_sent_back(make_chat, conn, cfg):
+    # 一句话里提了两件：改性格（人设）、说话短一点（要求）。第一份草稿只是口头答应，一个工具都没调。
+    new = "嘴更损一点，但他认真的时候不闹。"
+    fake = FakeLLM("行，以后损着来，话也省着说",
+                   [("change_setting", {"setting": "persona.traits", "value": new, "quote": "性格再损一点"}),
+                    ("remember", {"text": "说话再短一点", "category": "feedback", "scope": "all", "quote": "说话也再短一点"})],
+                   "行，以后损着来，话也省着说")
+    backend = judge(change=0.9, claim=0.1)
+    reply = make_chat(fake, backend).handle(Turn("你性格再损一点，说话也再短一点"))
+    retry = fake.chat_requests[1]["messages"][-1]["content"]
+    assert retry.startswith("[系统检查]") and "草稿会让他以为他提的要求你已经收下、以后都会照做" in retry
+    assert "change_setting" in retry and "category=feedback" in retry and "一件一件办" in retry   # 打回时说明落在哪、提了几件办几件
+    # 两件都落下来了，各有各的回执；他看到的是重写之后的那条
+    assert reply.text == f"行，以后损着来，话也省着说\n🎭 人设改了——性格：{new}\n📝 记成了你对我的要求：说话再短一点（不是这个意思就跟我说）"
+    assert prefs.load(conn, cfg)["persona.traits"] == new and [f.text for f in lessons.rules(conn)] == ["说话再短一点"]
+    asked = next(state for state, q in backend.calls if "change" in q)
+    assert asked == {"user_latest_message": "你性格再损一点，说话也再短一点", "assistant_reply": "行，以后损着来，话也省着说"}
+
+
+def test_a_promise_that_is_still_only_words_gets_a_note_from_the_program(make_chat, conn, cfg):
+    backend = judge(change=0.9, claim=0.1)
+    lazy = FakeLLM("好，以后短着说", "好，以后短着说")
+    assert make_chat(lazy, backend).handle(Turn("说话再短一点")).text == \
+        "好，以后短着说\n⚠️ 核对：到这条回复为止，设置和人设都没有改，也没有记下新的要求，上面只是口头答应。"
+    assert len(lazy.chat_requests) == 2 and lessons.rules(conn) == []                 # 只打回一次
+    # 回复里一个"以后"都没有，但他这句话本身是在提要求：照样核对。判断看的是回复：答应了才算，反问不算
+    agreeing = lambda q, state: 0.95 if "不客气" in state["assistant_reply"] else 0.03   # noqa: E731
+    bare = FakeLLM("行，那我不客气了", "这个我先不改，你想让我损到什么程度？")
+    assert make_chat(bare, judge(change=agreeing, claim=0.1)).handle(Turn("你性格再损一点")).text == "这个我先不改，你想让我损到什么程度？"
+    assert "以后都会照做" in bare.chat_requests[1]["messages"][-1]["content"]         # 打回之后它改了口：照发，不附那行核对
+
+
+@pytest.mark.parametrize("said, script, reply", [
+    # 只管今天：回复里有"下次"所以问了 Jev，Jev 说这不是在答应以后都这样
+    ("今天别找我了 我要考试", ["行，今天不吵你，下次聊"], "行，今天不吵你，下次聊"),
+    # 说的是他自己以后的打算
+    ("以后我想去日本读研", ["可以啊，以后去了带我看看"], "可以啊，以后去了带我看看"),
+])
+def test_a_one_off_or_his_own_plans_are_not_turned_into_a_standing_change(make_chat, conn, cfg, said, script, reply):
+    backend = judge(change=0.05, claim=0.1)
+    fake = FakeLLM(*script)
+    assert make_chat(fake, backend).handle(Turn(said)).text == reply and len(fake.chat_requests) == 1
+    assert any("change" in q for _, q in backend.calls)                               # 问过了，没过门槛
+    assert prefs.load(conn, cfg) == prefs.defaults(cfg) and lessons.rules(conn) == [] and lessons.setting_changes(conn) == []
+
+
+def test_the_check_is_not_even_asked_when_something_was_written_down_or_nothing_hints_at_a_request(make_chat, conn, cfg):
+    backend = judge(change=0.9, claim=0.1)
+    asked = lambda: any("change" in q for _, q in backend.calls)                      # noqa: E731
+    # 平常的话：不问
+    assert make_chat(FakeLLM("在呢"), backend).handle(Turn("在吗")).text == "在呢" and not asked()
+    assert make_chat(FakeLLM("好，到时候叫你"), judge(change=0.9, claim=0.1, accepted=0.1)).handle(Turn("明早七点叫我")).text == "好，到时候叫你"
+    # 改了设置：有 ⚙️ 作证
+    done = FakeLLM([("change_setting", {"setting": "style.emoji", "value": "off"})], "行，以后不发了")
+    assert make_chat(done, backend).handle(Turn("以后别发表情了")).text == "行，以后不发了\n⚙️ 设置改了——表情符号：开 → 关" and not asked()
+    # 设置本来就是他要的那样：没有回执，但"以后照旧"不是空话
+    same = FakeLLM([("change_setting", {"setting": "style.emoji", "value": "off"})], "本来就关着，以后也不发")
+    assert make_chat(same, backend).handle(Turn("以后别发表情了")).text == "本来就关着，以后也不发" and not asked()
+    # 这条要求早就记着：重复的不再存一遍，也不算空话
+    kept = FakeLLM([("remember", {"text": "说话再短一点", "category": "feedback"})], "行，以后短着说",
+                   [("remember", {"text": "说话再短一点", "category": "feedback"})], "一直短着呢，以后也是")
+    agent = make_chat(kept, backend)
+    agent.handle(Turn("说话再短一点"))
+    assert agent.handle(Turn("以后说话再短一点")).text == "一直短着呢，以后也是" and len(lessons.rules(conn)) == 1 and not asked()
+
+
+def test_without_the_judge_a_bare_word_like_later_is_not_enough_to_send_a_draft_back(make_chat):
+    class Down(Scripted):
+        def system_one(self, state, questions):
+            if "change" in questions:
+                raise DecisionError("Jev 限流了，稍后再试")
+            return super().system_one(state, questions)
+
+    fake = FakeLLM("好，以后短着说")
+    assert make_chat(fake, Down(rel="unrelated")).handle(Turn("说话再短一点")).text == "好，以后短着说"   # "以后"单凭字面分不清，不卡着回复
+
+
+@pytest.mark.parametrize("said, reply, hit", [
+    ("你性格再损一点", "行，那我不客气了", True),          # 他这句话在说它的性格
+    ("别发表情了", "行，不发了", True),
+    ("别这么正经", "得嘞", True),
+    ("好", "行，以后晚上十一点之后不吵你", True),           # 回复里有"以后"
+    ("ok", "Sure, English from now on.", True),
+    ("明早七点叫我", "明早七点叫你", False),
+    ("今天别找我了", "行，今天不吵你", False),
+    ("在吗", "在呢", False),
+])
+def test_which_turns_are_worth_asking_the_judge_about(said, reply, hit):
+    from alf.chat import ABOUT_MANNER, HENCEFORTH
+    assert bool(HENCEFORTH.search(reply) or HENCEFORTH.search(said) or ABOUT_MANNER.search(said)) is hit
 
 
 def test_an_unprompted_message_that_breaks_a_request_is_not_sent(conn, cfg):

@@ -399,6 +399,27 @@ def searched_question() -> dict:
     )
 
 
+def agreed_to_change_question() -> dict:
+    """回复发出之前：这句话是不是在答应"以后都照你刚说的来"——改性格、说话短一点、别发表情这一类。
+    答应了却既没改设置和人设、也没记成要求，下一句话它就忘了。门槛见 chat.py 的 AGREED_CHANGE_FLOOR。
+
+    要连他那句话一起看："行，不发了"单看回复分不清是这一次还是以后都这样。
+    只管今天、这一次的不算（"今天别找我了"照办这一次就好，不该变成一条长期的要求）。
+    """
+    return noul(
+        "In this reply the assistant agrees to change how it itself talks or acts from now on, as the user has just asked. "
+        "That is: the user's latest message asks for a lasting change in the assistant's own behaviour - its personality, "
+        "name or tone, how long its replies are, whether it uses emoji, what it calls him, what it reports or leaves out, "
+        "when or how often it contacts him - or says yes to such a change the assistant proposed, and the reply goes along "
+        "with it: it agrees, acknowledges the request, or promises to do so. A request about the assistant's general manner "
+        "('be blunter', 'keep it shorter', 'stop using emoji') is a lasting one unless the user limits it to this once or to today.",
+        true="Yes: the reply accepts a standing change to the assistant's own behaviour that the user asked for.",
+        false="No: the user asked for nothing of the kind, or only for this once, for now or for today; or the reply "
+              "declines, asks what he means, merely offers or proposes a change, talks about the user's own plans, gives "
+              "him advice, or refers to an instruction that was already in place before this message.",
+    )
+
+
 @dataclass
 class Answer:
     choice: str | None = None

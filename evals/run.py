@@ -115,12 +115,13 @@ def run_guards(args) -> int:
     reminder is created at a time the user never said); for claim/accepted it only costs a re-check, and for
     interesting (the affinity point) a miss costs nothing but a point."""
     from alf.affinity import INTEREST_FLOOR
-    from alf.chat import (ACCEPT_FLOOR, ANNOYED_FLOOR, CLAIM_FLOOR, DISPUTE_FLOOR, FULFILL_FLOOR, HARD_FLOOR, LOOP_FLOOR, PACT_FLOOR, PACT_SAID_FLOOR,
-                          RULE_FLOOR, SEARCH_SAID_FLOOR, SEND_FLOOR, SETTING_FLOOR, TARGET_FLOOR, TIME_SAID_FLOOR)
-    from alf.decide import (accepted_question, against_safeguard_question, agreed_question, annoyed_question, asked_setting_question,
-                            broke_rule_question, claim_question, confirm_send_question, disputes_question, fulfilled_question, impression_label_question,
-                            impression_supported_question, inbox_questions, interesting_question, pact_said_question, raised_question,
-                            same_note_question, searched_question, spoke_of_question, target_question, time_said_question)
+    from alf.chat import (ACCEPT_FLOOR, AGREED_CHANGE_FLOOR, ANNOYED_FLOOR, CLAIM_FLOOR, DISPUTE_FLOOR, FULFILL_FLOOR, HARD_FLOOR, LOOP_FLOOR,
+                          PACT_FLOOR, PACT_SAID_FLOOR, RULE_FLOOR, SEARCH_SAID_FLOOR, SEND_FLOOR, SETTING_FLOOR, TARGET_FLOOR, TIME_SAID_FLOOR)
+    from alf.decide import (accepted_question, against_safeguard_question, agreed_question, agreed_to_change_question, annoyed_question,
+                            asked_setting_question, broke_rule_question, claim_question, confirm_send_question, disputes_question,
+                            fulfilled_question, impression_label_question, impression_supported_question, inbox_questions,
+                            interesting_question, pact_said_question, raised_question, same_note_question, searched_question,
+                            spoke_of_question, target_question, time_said_question)
     from alf.impressions import LABEL_FLOOR, SUPPORT_FLOOR
     from alf.jobs import KIND_FLOOR, UNWANTED_FLOOR
     from alf.memory import SUPERSEDE_FLOOR
@@ -172,6 +173,9 @@ def run_guards(args) -> int:
             {"user_latest_message": c["said"], "assistant_reply": c["reply"]}, f"{c['said']} / {c['reply']}")),
         # 回复是不是在说"我刚上网查过"（这一轮没查却这么说，要打回）。
         "searched": (SEARCH_SAID_FLOOR, searched_question, lambda c: (
+            {"user_latest_message": c["said"], "assistant_reply": c["reply"]}, f"{c['said']} / {c['reply']}")),
+        # 回复是不是在答应"以后都照你说的来"（没改设置和人设、也没记成要求就这么说，要打回）。
+        "willchange": (AGREED_CHANGE_FLOOR, agreed_to_change_question, lambda c: (
             {"user_latest_message": c["said"], "assistant_reply": c["reply"]}, f"{c['said']} / {c['reply']}")),
         # Alf 把自己答应的事标成兑现之前：回复里是不是真的做了。
         "fulfilled": (FULFILL_FLOOR, lambda c: fulfilled_question(c["promise"]), lambda c: ({"assistant_reply": c["reply"]}, f"{c['promise']} ← {c['reply']}")),

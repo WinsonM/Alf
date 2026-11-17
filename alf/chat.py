@@ -27,9 +27,9 @@ from .agent import Agent, Reply, Turn, duration
 from .config import Settings
 from .connectors import ConnectorError, email_smtp, sender_name
 from .decide import (FACT_CATEGORIES, Decider, DecisionError, accepted_question, against_safeguard_question, agreed_question,
-                     annoyed_question, asked_setting_question, broke_rule_question, claim_question, confirm_send_question,
-                     disputes_question, fulfilled_question, interesting_question, pact_said_question, raised_question,
-                     searched_question, spoke_of_question, target_question, time_said_question)
+                     agreed_to_change_question, annoyed_question, asked_setting_question, broke_rule_question, claim_question,
+                     confirm_send_question, disputes_question, fulfilled_question, interesting_question, pact_said_question,
+                     raised_question, searched_question, spoke_of_question, target_question, time_said_question)
 from .heartbeat import load_state
 from .llm import LLM, LLMError, ToolCall
 from .memory import FEEDBACK, LOOP_MAX_ASKS, LOOP_QUIET, MOMENT, Fact, Memory, same_wording, was_said
@@ -132,6 +132,7 @@ BASE_PROMPT = """你是用户的私人助理，也是他的朋友，你们通过
 - 有现成设置的事——每天邮件汇总和早上播报的时间或开关、安静时段、主动找他的多少、提醒后要不要追问、说话风格、用不用表情、怎么称呼他——用 change_setting 改。说时间的原话原样放进 value，程序来读。他只是说今天、这一次（"今天别找我了"），那不是改设置，照办这一次就好。
 - 关于你怎么说话、怎么做事的要求（"别老问我要不要记""邮件汇报再短点"）——用 remember 记成 category=feedback，scope 填它管哪里：chat 聊天 / mail 说邮件 / proactive 你主动找他（搭话、早报、追问）/ all 都管。他没限定就填 all。
 - 他针对某一封具体的邮件、你发的某一条具体的消息表态（"这封不用马上告诉我""这条没用""这句太长了"），而不是提一条以后都适用的要求——用 note_correction 记成例子。同类的例子攒多了，程序会在晚上问他要不要定成规矩；你不要自己把一次的话扩大成规矩。
+- 他一句话里提了几件（又要你换种性格，又要你说话短一点），就一件一件办，各用各的工具。一件都没落下来，就不要回"行，以后……"：没存下来的答应，下一句话你就不记得了。
 - [用户刚发来的消息]后面注明"引用回复"时，他是长按那条消息回的：他说的"这条""这封""这种"指的就是被引用的那一条。
 - [他挑过的毛病]是他对你以前某几条消息说过的话：同样的毛病不要再犯。
 - [等他点头的规矩]是程序根据几个例子提议的规矩，已经问过他了。他答复了（同意或不同意），用 settle_rule_proposal 记下；他没提就不要催。
@@ -484,6 +485,27 @@ HARD_FLOOR = 0.7
 _ON = {"on", "true", "yes", "1", "开", "开启", "打开", "是", "要"}
 _OFF = {"off", "false", "no", "0", "关", "关闭", "关掉", "否", "不要"}
 SCOPE_NOTES = {"mail": "（只管说邮件的时候）", "proactive": "（只管你主动找他的时候）", "chat": "（只管聊天的时候）"}
+# 答应了"以后照你说的来"，就得落下来。他让它改做法（"性格再损一点""说话短一点""别发表情"），模型有时只是口头应一声，
+# 一个工具都没调：既没改设置和人设，也没记成要求。下一句话它就忘了，而他以为已经改了——和"没记却说记下了"是一回事。
+# 粗筛看两头：回复里有"以后""下次"这类字眼；或者他这句话本身像在提这种要求——它可能只回一句"行，那我不客气了"，
+# 回复里一个"以后"都没有。命中了、这一轮又什么都没落下来时，问 Jev 一句（见 decide.agreed_to_change_question）。
+HENCEFORTH = re.compile(r"以后|今后|往后|从今|从现在|从此|下次|下回|再也不|不再|from now on|next time|going forward", re.I)
+ABOUT_MANNER = re.compile(r"(?:性格|脾气|语气|口气|说话|讲话|回复|回话|回答|风格|人设).{0,8}(?:点|些)|表情|emoji|称呼"
+                          r"|(?:别|不要|不用|少)(?:这么|那么|老是?|总是?|再|一直)", re.I)
+# 这件事能落在哪：改了设置（⚙️）或人设（🎭）、记成了要求或例子（📝）；也可能是一条约定（🤝）、一条重复的提醒（⏰）、
+# 取消了一条提醒（🗑，"以后别每天叫我了"）。有其中一样就不问：程序已经存下了东西，存成了什么回执会让他看到。
+LANDED = ("⚙️", "🎭", "📝", "🤝", "⏰", "🗑")
+# Jev 给的分数（evals 里的 willchange 一类，48 题，每题问过几遍）：答应了以后照做的 0.74–0.99——连"行。""OK""能，改"
+# 这种只应一声的也在 0.96 以上；最低的是他只回了一句"好，就这样"、而它说"那以后晚上十一点之后我不吵你"（0.74–0.77，
+# 单看这两句看不出他答应的是什么）。不算的 0.45 以下：只管今天、这一次的 0.10 以下，拒绝、反问、聊他自己的打算 0.05 以下；
+# 最高的三样是"别闹"→"好好好，不闹了"（0.37–0.45）、挨了埋怨后的"下次我先对一遍再说"（0.40–0.42）、
+# 复述一条早就有的要求（0.32–0.36）。同一题几遍之间差 0.04 左右，门槛放在两堆正中间。
+# 判断错了的代价：多打回一次，最坏多一行"⚠️ 核对"；漏掉一次，就是这道关卡要拦的那种空口答应。
+AGREED_CHANGE_FLOOR = 0.6
+STANDING = ("他提的要求你已经收下、以后都会照做", "设置和人设都没有改，也没有记下新的要求，上面只是口头答应")
+# 打回时多说一句怎么落：只说"去办"它未必知道该用哪个工具，一句话里提了两件事时尤其容易只办一件或一件不办。
+LAND_IT = ("落下来的办法：有现成设置的、要改人设的，用 change_setting；其余关于你怎么说话做事的要求，用 remember 记成 "
+           "category=feedback。他一句话里提了几件，就一件一件办。他只是说今天、这一次的，不用落下来，回复里也别说「以后」。")
 
 # --- 人设、印象、约定 ---
 # 回复出戏了（客服腔、"作为一个 AI 我……"）：打回重写一次。只在"像朋友""简短直接"两种风格下管；选了"像秘书"的，
@@ -573,6 +595,7 @@ class Changes:
     done: list[Done] = field(default_factory=list)
     drafts: list[int] = field(default_factory=list)   # 这一轮新起草的回信；回复发出后要记下"用户是在哪条回复里看到它的"
     owed: list = field(default_factory=list)          # Alf 这一轮说要兑现的约定：回复里真的做了才算（见 ChatAgent._settle_owed）
+    already: list[str] = field(default_factory=list)  # 这一轮要改、结果本来就是那样的设置：没有回执，但"以后照做"不是空话
 
     def note(self, line: str, *, show: bool = True, reminder: Reminder | None = None) -> None:
         self.done.append(Done(line, show, reminder))
@@ -827,7 +850,7 @@ class ChatAgent:
                     checked = True
                     log.info("自检：回复让人以为%s，但没有相应的回执，打回重做", unbacked[0])
                     messages += [{"role": "assistant", "content": text},
-                                 {"role": "user", "content": SELF_CHECK.format(what=unbacked[0])}]
+                                 {"role": "user", "content": SELF_CHECK.format(what=unbacked[0]) + (LAND_IT if unbacked == STANDING else "")}]
                     continue
                 if unbacked:   # 打回之后还是这样：由程序把实情写在后面，不让用户被一句空话带过去
                     changes.note(HONESTY_NOTE.format(what=unbacked[1]))
@@ -853,8 +876,9 @@ class ChatAgent:
     def _unbacked_claim(self, text: str, turn: Turn, changes: Changes) -> tuple[str, str] | None:
         """回复说办了某类事、却没有那类回执时，返回（它让人以为的事，实情）两句话；一切对得上就返回 None。
 
-        关键词先粗筛，命中了再问 Jev：这句话是不是在说"刚办完"；是不是应承了一个新的提醒；是不是在跟他约定一件事。
-        Jev 不可用时只按关键词（宁可多核对一次）；"到时候叫你""说好了"单凭字面分不清新旧，那时就不管了。
+        关键词先粗筛，命中了再问 Jev：这句话是不是在说"刚办完"；是不是应承了一个新的提醒；是不是在跟他约定一件事；
+        是不是在说刚上网查过；是不是在答应"以后都照你说的来"。
+        Jev 不可用时只按关键词（宁可多核对一次）；"到时候叫你""说好了""以后"单凭字面分不清，那时就不管了。
         """
         def backed(marks: tuple[str, ...]) -> bool:
             return any(line.startswith(marks) for line in changes.lines)   # 办成了就算数，给不给用户看是另一回事
@@ -864,18 +888,23 @@ class ChatAgent:
         promise = bool(PROMISE.search(text)) and not backed(("⏰", "🤝"))   # 刚记下一条约定："以后你说老规矩我就七点叫你"说的是它
         pact = bool(PACT_WORDS.search(text)) and not backed(("🤝", "⏰"))   # 这一轮建了提醒："说好了"说的是那条提醒
         looked = bool(SEARCH_WORDS.search(text)) and not backed(("🔎",))
-        if not (missing or vague or promise or pact or looked):
+        # 答应以后照做：这一轮得落下一样东西。设置本来就是他要的那样（changes.already）时没有回执，但也不算空话。
+        standing = (bool(HENCEFORTH.search(text) or HENCEFORTH.search(turn.text) or ABOUT_MANNER.search(turn.text))
+                    and not backed(LANDED) and not changes.already)
+        if not (missing or vague or promise or pact or looked or standing):
             return None
         try:
             a = self.memory.decider.ask("chat.selfcheck", {"user_latest_message": turn.text, "assistant_reply": text},
                                         {"claim": claim_question(), "accepted": accepted_question(),
                                          **({"pact": pact_said_question()} if pact else {}),
-                                         **({"searched": searched_question()} if looked else {})})
+                                         **({"searched": searched_question()} if looked else {}),
+                                         **({"change": agreed_to_change_question()} if standing else {})})
             claimed, accepted = a["claim"].noul >= CLAIM_FLOOR, promise and a["accepted"].noul >= ACCEPT_FLOOR
             sealed = pact and a["pact"].noul >= PACT_SAID_FLOOR
             looked = looked and a["searched"].noul >= SEARCH_SAID_FLOOR
+            standing = standing and a["change"].noul >= AGREED_CHANGE_FLOOR
         except DecisionError:
-            claimed, accepted, sealed, looked = bool(missing or vague), False, False, False
+            claimed, accepted, sealed, looked, standing = bool(missing or vague), False, False, False, False
         if claimed and missing:
             return "已经" + "、".join(says for says, _ in missing), "，".join(truth for _, truth in missing)
         if claimed and vague:
@@ -884,7 +913,9 @@ class ChatAgent:
             return "已经改动了提醒", "提醒没有任何改动"
         if sealed:
             return "这件事已经记成了你们的约定", "没有记下任何约定"
-        return ("这是你刚上网查到的", "这一轮没有上网查过任何东西，上面是凭印象说的") if looked else None
+        if looked:
+            return "这是你刚上网查到的", "这一轮没有上网查过任何东西，上面是凭印象说的"
+        return STANDING if standing else None
 
     def _rules_broken(self, text: str, turn: Turn) -> list[str]:
         """这条回复违反了他提过的哪几条要求（管得到聊天的那些）。一次 Jev 调用，每条要求一个问题。
@@ -1486,6 +1517,7 @@ class ChatAgent:
         except ValueError as e:
             return {"error": str(e)}
         if value == old:
+            changes.already.append(label)
             return {"ok": True, "changed": False, "note": f"{label}本来就是「{prefs.show(key, old)}」，没有改动。照实告诉他。"}
         card = key in persona.PARTS
         if card and self._bypasses_safeguard(str(value)):
