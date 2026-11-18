@@ -15,6 +15,7 @@ T = NOW.timestamp()
 def gate(cfg, monkeypatch):
     monkeypatch.setattr(voice, "duration", lambda path: 60.0)          # 不真的解码：这里测的是门，不是录音
     monkeypatch.setattr(intake, "hostname", lambda: "study-mac.local")
+    monkeypatch.setattr(intake, "computer_name", lambda: "书房的 Mac")
     return intake.Gate(cfg, clock=lambda: T)
 
 
@@ -74,8 +75,8 @@ def test_a_paired_phone_can_hand_in_recordings_and_nothing_else(gate, phone, cfg
     row = conn.execute("SELECT * FROM recordings").fetchone()
     assert (row["state"], row["device"], row["started_at"], row["seconds"]) == ("new", "watch", T - 30, 60.0)
     assert not list((intake.home(cfg) / "tmp").glob("*"))                              # 临时文件不留
-    assert gate.status() | {"check": None} == {"running": False, "port": gate.port, "paired": True, "host": "study-mac.local",
-                                               "check": None, "received": 2, "last_at": T}
+    assert gate.status() | {"check": None} == {"running": False, "port": gate.port, "paired": True, "host": "study-mac.local", "name": "书房的 Mac",
+                                               "check": None, "received": 2, "last_at": T, "pairings": 1}
     assert "token" not in str(gate.status())
 
 
@@ -98,6 +99,35 @@ def test_unpairing_locks_the_old_phone_out(gate, phone):
     gate.unpair()
     assert put(phone, token).status_code == 401 and phone.get("/hello", headers={"authorization": f"Bearer {token}"}).status_code == 401
     assert pair(gate, phone) != token
+
+
+def test_the_announcement_lives_in_this_process_and_leaves_no_helper_behind(cfg, monkeypatch):
+    calls = []
+
+    class Lib:      # 顶替系统的 Bonjour 接口：测试里不真的往局域网里报名字
+        class _Fn:
+            def __init__(self, name):
+                self.name = name
+
+            def __call__(self, *args):
+                calls.append((self.name, args[3:5] + args[7:8] if self.name == "DNSServiceRegister" else ()))
+                return 0
+
+        def __getattr__(self, name):
+            fn = self._Fn(name)
+            setattr(self, name, fn)
+            return fn
+
+    lib = Lib()
+    monkeypatch.setattr(intake.ctypes, "CDLL", lambda name: lib)
+    announcer = intake.Announcer()
+    assert announcer.start("书房的 Mac", 8766)
+    name, (label, kind, port) = calls[0]
+    assert (name, label.decode(), kind.decode(), port) == ("DNSServiceRegister", "书房的 Mac", intake.SERVICE, intake.socket.htons(8766))
+    announcer.stop()
+    announcer.stop()                                                    # 停两次没关系
+    assert [c[0] for c in calls] == ["DNSServiceRegister", "DNSServiceRefDeallocate"]
+    assert "Popen" not in open(intake.__file__).read()                  # 不再起子进程：父进程被杀，就不会留下一个还在报名字的孤儿
 
 
 def test_the_certificate_is_made_once_and_its_fingerprint_is_stable(cfg):
@@ -124,6 +154,8 @@ def test_the_settings_page_opens_and_closes_the_gate_and_chat_cannot(cfg, monkey
         assert events == ["stop", "start"]
         got = c.post("/api/intake/pair").json()
         assert len(got["code"]) == 6 and got["expires_in"] == intake.CODE_TTL
+        # 页面拿这份回答重画"配对手机"那一行：少了 available 或 running，那一行会在配对码出来的同时消失（真出过这个错）
+        assert got["available"] and got["running"] and got["pairings"] == 0
         status = c.get("/api/intake").json()
         assert status["available"] and status["running"] and not status["paired"] and "token" not in status
         c.patch("/api/prefs", json={"hearing.intake": False})

@@ -543,7 +543,7 @@ def create_app(cfg: Settings, backend: Backend, *, llm_backend: LLMBackend | Non
         """出一个六位的配对码，五分钟内在手机上输进去。"""
         if gate is None or not gate.running:
             raise HTTPException(409, "先打开「接收手表传来的录音」")
-        return {**gate.begin_pairing(), **gate.status()}
+        return {"available": True, **gate.begin_pairing(), **gate.status()}
 
     @app.delete("/api/intake/pairing")
     def intake_unpair() -> dict:

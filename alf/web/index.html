@@ -211,6 +211,7 @@
   .group + .fact { border-top: 0; }
   .fact select.scope { padding: 5px 26px 5px 10px; font-size: 12.5px; border-radius: 999px; }
   .fact .arrow { color: var(--muted); padding: 0 4px; }
+  .paircode { grid-column: 1; font: 600 30px ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: 6px; margin: 8px 0 2px; user-select: all; }
   /* 人设、印象、约定、经历共用的几样：编辑框占满一行；苗头和了结的条目淡一点；小标签；按月折叠 */
   .fact textarea.box { width: 100%; min-height: 76px; grid-column: 1; }
   .fact .part { font-size: 12px; font-weight: 600; color: var(--muted); grid-column: 1; }
@@ -425,6 +426,7 @@
       <div class="field"><span class="name">接收手表传来的录音</span><small id="intakeHint">在家里的 Wi-Fi 上开一个只收录音的端口，手机回到家就把手表录的音传过来。这是 Alf 唯一对局域网开的口子：带口令和加密，只能交录音，读不到任何东西</small>
         <div class="control"><button class="switch" role="switch" data-pref="hearing.intake" aria-label="接收手表传来的录音"></button></div></div>
       <div class="field" id="intakePair" hidden><span class="name">配对手机</span><small id="pairHint">在 iPhone 上打开 Alf 录音，选这台 Mac，输入这里给出的六位数</small>
+        <div id="pairCode" class="paircode" hidden></div>
         <div class="control"><button class="btn" id="pairBtn">配对手机</button><button class="btn" id="unpairBtn">解除配对</button></div></div>
       <div class="field"><label for="keepDays">原声保留</label><small>到期只删录音本身，转出来的文字和整理出来的事留着；没有人声的录音当场就删</small>
         <div class="control"><select id="keepDays"></select></div></div>
@@ -1208,22 +1210,37 @@ async function loadHearing() {
   loadIntake();
 }
 // 收录音的端口：开没开、配没配对。配对码只在点了「配对手机」之后显示五分钟；口令从不显示。
-let pairUntil = 0;
-async function loadIntake(pairing) {
+// 配对码记在页面里（pairCode），不跟着每次刷新状态走：状态接口不带它，刷新一下不该把还有效的码刷没了。
+let pairCode = null, pairUntil = 0, pairingsSeen = null, pairPoll = null;
+async function loadIntake() {
   let g;
-  try { g = pairing || await api('GET', '/api/intake'); } catch (e) { return; }
-  $('intakePair').hidden = !g.available || !g.running;
-  if (!g.available || !g.running) return;
+  try { g = await api('GET', '/api/intake'); } catch (e) { return; }
+  const open = g.available && g.running;
+  $('intakePair').hidden = !open;
+  if (!open) { pairCode = null; return; }
+  if (pairCode && pairingsSeen !== null && g.pairings > pairingsSeen) {      // 手机刚拿这个码配上了
+    pairCode = null;
+    toast(`手机配上了。它显示的核对码应该是 ${g.check}`);
+  }
+  if (pairCode && Date.now() >= pairUntil) pairCode = null;
+  if (!pairCode && pairPoll) { clearInterval(pairPoll); pairPoll = null; }
   $('unpairBtn').hidden = !g.paired;
+  $('pairBtn').textContent = pairCode ? '换一个配对码' : '配对手机';
+  $('pairCode').hidden = !pairCode;
+  $('pairCode').textContent = pairCode || '';
   const last = g.last_at ? new Date(g.last_at * 1000) : null;
   const state = g.paired ? `已经配对过手机。这次启动以来收了 ${g.received} 段` + (last ? `，最近一段 ${clock(last)}` : '') : '还没有配对的手机';
-  $('pairHint').textContent = g.code && Date.now() < pairUntil
-    ? `在 iPhone 上输入配对码 ${g.code}（五分钟内有效）。手机上显示的核对码应该是 ${g.check}，不一样就别继续`
-    : `${state}。在 iPhone 上打开 Alf 录音，选这台 Mac（${g.host}），再点这里拿配对码`;
+  $('pairHint').textContent = pairCode
+    ? `在 iPhone 的 Alf 录音里选「${g.name}」，输入下面这个配对码（五分钟内有效）。配上之后手机会显示核对码，应该是 ${g.check}，不一样就别继续`
+    : `${state}。在 iPhone 上打开 Alf 录音，列表里会有「${g.name}」；点右边的按钮拿配对码`;
 }
 $('pairBtn').onclick = async () => {
-  try { const g = await api('POST', '/api/intake/pair'); pairUntil = Date.now() + g.expires_in * 1000; loadIntake(g); setTimeout(loadIntake, g.expires_in * 1000 + 500); }
-  catch (e) { toast(friendly(e)); }
+  try {
+    const g = await api('POST', '/api/intake/pair');
+    pairCode = g.code; pairUntil = Date.now() + g.expires_in * 1000; pairingsSeen = g.pairings;
+    if (!pairPoll) pairPoll = setInterval(loadIntake, 3000);      // 码亮着的时候勤看一眼：手机一配上，这里马上知道
+  } catch (e) { toast(friendly(e)); }
+  loadIntake();
 };
 $('unpairBtn').onclick = async () => {
   if (!await confirmDialog('解除配对？', '以前配对过的手机都不能再传录音，要重新配对。已经收到的录音不受影响。', '解除')) return;

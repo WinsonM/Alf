@@ -18,14 +18,15 @@
 """
 from __future__ import annotations
 
+import ctypes
 import hashlib
 import hmac
 import logging
 import os
 import secrets
+import socket
 import ssl
 import subprocess
-import sys
 import threading
 import time
 import uuid
@@ -106,6 +107,56 @@ def hostname() -> str:
     return f"{name}.local" if name else "localhost"
 
 
+def computer_name() -> str:
+    """这台 Mac 给人看的名字（"某某的 MacBook Air"）。手机的配对列表里显示的就是它：家里有两台 Mac 也分得清。"""
+    try:
+        name = subprocess.run(["/usr/sbin/scutil", "--get", "ComputerName"], capture_output=True, text=True, timeout=5).stdout.strip()
+    except (OSError, subprocess.SubprocessError):
+        name = ""
+    return name[:60] or "Alf"
+
+
+class Announcer:
+    """在局域网里报个名字（Bonjour），手机好找到这台 Mac。
+
+    直接向系统登记，不另起进程：登记挂在本进程的一个连接上，进程一没（正常退出、被杀、原地重启），连接断了，
+    系统自己就把名字撤掉。第一版是起一个 `dns-sd -R` 子进程替我们登记——父进程被杀之后它还活着，
+    手机上就多出一个点了没反应的"Alf"，真的那台被挤成了"Alf (2)"。
+    """
+
+    def __init__(self):
+        self._ref: ctypes.c_void_p | None = None
+
+    def start(self, name: str, port: int) -> bool:
+        self.stop()
+        try:
+            lib = ctypes.CDLL(None)
+            lib.DNSServiceRegister.argtypes = [ctypes.POINTER(ctypes.c_void_p), ctypes.c_uint32, ctypes.c_uint32, ctypes.c_char_p,
+                                               ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_uint16, ctypes.c_uint16,
+                                               ctypes.c_void_p, ctypes.c_void_p, ctypes.c_void_p]
+            lib.DNSServiceRegister.restype = ctypes.c_int32
+            ref = ctypes.c_void_p()
+            # 端口要按网络字节序给；名字重了系统会自己加上"(2)"
+            err = lib.DNSServiceRegister(ctypes.byref(ref), 0, 0, name.encode(), SERVICE.encode(), None, None, socket.htons(port),
+                                         0, None, None, None)
+        except (OSError, AttributeError) as e:      # 不是 macOS，或者系统里没有这个接口
+            log.warning("没能在局域网里登记服务，手机得手动填这台 Mac 的地址：%s", e)
+            return False
+        if err != 0:
+            log.warning("没能在局域网里登记服务（错误 %d），手机得手动填这台 Mac 的地址", err)
+            return False
+        self._ref = ref
+        return True
+
+    def stop(self) -> None:
+        if self._ref is not None:
+            lib = ctypes.CDLL(None)
+            lib.DNSServiceRefDeallocate.argtypes = [ctypes.c_void_p]
+            lib.DNSServiceRefDeallocate.restype = None
+            lib.DNSServiceRefDeallocate(self._ref)
+            self._ref = None
+
+
 class PairIn(BaseModel):
     code: str = Field(min_length=6, max_length=6, pattern=r"^\d{6}$")
 
@@ -120,10 +171,11 @@ class Gate:
         self._expires = 0.0
         self._tries = 0
         self.received = 0                    # 这次启动以来收了几段
+        self.pairings = 0                    # 这次启动以来配对成功了几次（设置页靠它知道"手机刚配上了"）
         self.last_at: float | None = None
         self._server = None
         self._thread: threading.Thread | None = None
-        self._bonjour: subprocess.Popen | None = None
+        self._announcer = Announcer()
 
     # --- 配对 ---
 
@@ -146,6 +198,7 @@ class Gate:
                     raise HTTPException(429, "错太多次了，在 Mac 上重新点一次")
                 raise HTTPException(403, "配对码不对")
             self._code = None
+            self.pairings += 1
         return token(self.cfg) or new_token(self.cfg)
 
     def unpair(self) -> None:
@@ -167,11 +220,12 @@ class Gate:
     def status(self) -> dict:
         cert = home(self.cfg) / "cert.pem"
         return {"running": self.running, "port": self.port, "paired": token(self.cfg) is not None, "host": hostname(),
+                "name": computer_name(),
                 "check": check_code(fingerprint(cert)) if cert.is_file() else None,
-                "received": self.received, "last_at": self.last_at}
+                "received": self.received, "last_at": self.last_at, "pairings": self.pairings}
 
     def start(self) -> None:
-        """开门：起一个只收录音的 HTTPS 服务，并在局域网里报个名字，手机好找到。已经开着就什么都不做。"""
+        """开门：起一个只收录音的 HTTPS 服务，并在局域网里报上这台 Mac 的名字，手机好找到。已经开着就什么都不做。"""
         if self.running:
             return
         import uvicorn
@@ -183,18 +237,11 @@ class Gate:
         self._server.install_signal_handlers = lambda: None      # 信号归主服务管
         self._thread = threading.Thread(target=self._server.run, daemon=True, name="alf-intake")
         self._thread.start()
-        if sys.platform == "darwin":
-            try:      # 系统自带的 dns-sd 替我们在局域网里登记服务；进程活着登记就在
-                self._bonjour = subprocess.Popen(["/usr/bin/dns-sd", "-R", "Alf", SERVICE, "local", str(self.port)],
-                                                 stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-            except OSError as e:
-                log.warning("没能在局域网里登记服务，手机可能找不到这台 Mac：%s", e)
+        self._announcer.start(computer_name(), self.port)
         log.info("收录音的端口开了：%d（局域网，只收不发）", self.port)
 
     def stop(self) -> None:
-        if self._bonjour is not None:
-            self._bonjour.terminate()
-            self._bonjour = None
+        self._announcer.stop()
         if self._server is not None:
             self._server.should_exit = True
             self._server = None
