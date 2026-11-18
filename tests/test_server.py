@@ -303,6 +303,7 @@ def test_memory_can_be_listed_edited_and_forgotten(client, cfg):
     assert [(c["label"], c["changed"]) for c in empty.pop("persona")["card"]][:3] == [("名字", False), ("身份", False), ("性格", False)]
     assert empty.pop("impressions") == {"formed": [], "hunches": [], "withdrawn": [], "form_days": 2}
     assert empty.pop("pacts") == {"active": [], "settled": []}
+    assert (empty.pop("people"), empty.pop("days")) == ([], [])       # 没听过录音：没有人，也没有"每天的事"
     assert empty == {"facts": [], "affinity": {
         "score": 50, "max": 100, "start": 50, "tier": "刚熟悉", "recent": [],
         "mood": {"state": "even", "label": "平常", "warm": 0.0, "tension": 0.0, "reason": None}},

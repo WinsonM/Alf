@@ -286,6 +286,16 @@
       <div id="pacts"></div>
     </div>
     <div class="panel glass">
+      <h2>每天的事</h2>
+      <p class="lead">从手表录音里整理出来的：机器把你身边的对话转成文字，再归纳成一两句。会听错、会认错人，不对的删掉就好。</p>
+      <div id="heardDays"></div>
+    </div>
+    <div class="panel glass">
+      <h2>身边的人</h2>
+      <p class="lead">录音里按声音认出来的人。没名字的是反复出现、还不知道是谁的声音：告诉它是谁，这个声音以前和以后说的话就都归到这个名字下。</p>
+      <div id="people"></div>
+    </div>
+    <div class="panel glass">
       <h2>学到的</h2>
       <p class="lead">你说过的话怎样改变了它的做法。提的要求它会一直照做；针对某一次的纠正先存成例子，同类的攒到两次，它会在晚上问你要不要定成规矩。</p>
       <div id="lessons"></div>
@@ -406,6 +416,18 @@
         <div class="control"><button class="switch" role="switch" data-pref="search.enabled" aria-label="需要时上网查"></button></div></div>
       <h3>最近查过的</h3>
       <div id="searchLog"></div>
+    </div>
+
+    <div class="panel glass">
+      <h2>听录音</h2>
+      <div class="field"><span class="name">听手表传来的录音</span><small id="hearingHint">把手表录的音在这台 Mac 上转成文字、按声音分人，每天整理成「今天的事」。录音不出这台 Mac；整理时文字会发给 DeepSeek</small>
+        <div class="control"><button class="switch" role="switch" data-pref="hearing.enabled" aria-label="听手表传来的录音"></button></div></div>
+      <div class="field"><span class="name">接收手表传来的录音</span><small id="intakeHint">在家里的 Wi-Fi 上开一个只收录音的端口，手机回到家就把手表录的音传过来。这是 Alf 唯一对局域网开的口子：带口令和加密，只能交录音，读不到任何东西</small>
+        <div class="control"><button class="switch" role="switch" data-pref="hearing.intake" aria-label="接收手表传来的录音"></button></div></div>
+      <div class="field" id="intakePair" hidden><span class="name">配对手机</span><small id="pairHint">在 iPhone 上打开 Alf 录音，选这台 Mac，输入这里给出的六位数</small>
+        <div class="control"><button class="btn" id="pairBtn">配对手机</button><button class="btn" id="unpairBtn">解除配对</button></div></div>
+      <div class="field"><label for="keepDays">原声保留</label><small>到期只删录音本身，转出来的文字和整理出来的事留着；没有人声的录音当场就删</small>
+        <div class="control"><select id="keepDays"></select></div></div>
     </div>
 
     <div class="panel glass">
@@ -787,6 +809,8 @@ async function loadFacts() {
     showPersona(data.persona);
     showImpressions(data.impressions);
     showPacts(data.pacts);
+    showDays(data.days);
+    showPeople(data.people);
     showMoments(facts.filter((f) => f.current && f.layer === 'moment'));
   } catch (e) { toast(friendly(e)); return; }
   $('factsAll').textContent = showOldFacts ? '只看现在的' : '显示已过时的';
@@ -930,6 +954,48 @@ function showPacts(P) {
   if (P.settled.length) out.push(heading('了结的', ''), ...P.settled.map((x) => infoRow(x.text, [x.who_label, x.status_label, x.outcome ? `你说：「${x.outcome}」` : ''], [], 'dim')));
   $('pacts').replaceChildren(...(out.length ? out : [el('p', 'lead', '还没有。跟它说「这周日前我一定把简历改完，你监督我」「以后我说老规矩就是明早七点叫我」，说好的事会列在这里。')]));
 }
+// 每天的事：按天折叠，今天的摊开。每条可以删（听错了、认错了人）；整天的可以一起删。
+function showDays(D) {
+  if (!D) return;
+  const today = new Date(), stamp = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+  const out = D.map((g) => {
+    const box = el('details', 'month'), [, m, d] = g.day.split('-');
+    box.open = g.day === stamp;
+    box.append(el('summary', null, `${Number(m)}月${Number(d)}日 · ${g.events.length} 件事 · 听到 ${g.lines} 句`));
+    box.append(...g.events.map((x) => {
+      const wrong = el('button', 'btn', '不对');
+      wrong.onclick = async () => { if (await confirmDialog('这一条不对？', x.text, '删掉')) doThen(() => api('DELETE', `/api/days/events/${x.id}`), '已删掉'); };
+      const at = new Date(x.at * 1000);
+      return infoRow(x.text, [clock(at), x.kind === 'promise' ? '你亲口答应的' : '', x.people.length ? `在场：${x.people.join('、')}` : '', x.quote ? `依据：「${x.quote}」` : ''], [wrong]);
+    }));
+    const all = el('button', 'btn', '删掉这一天听到的');
+    all.onclick = async () => { if (await confirmDialog(`删掉 ${Number(m)}月${Number(d)}日听到的全部内容？`, '这一天转出来的话、整理出来的事和还留着的原声都会删掉，不能恢复。', '全部删掉')) doThen(() => api('DELETE', `/api/days/${g.day}`), '已删掉'); };
+    const foot = el('div', 'control'); foot.append(all); box.append(foot);
+    return box;
+  });
+  $('heardDays').replaceChildren(...(out.length ? out : [el('p', 'lead', '还没有。手表上开始录音之后，说完的对话会在这里整理成一两句话。')]));
+}
+// 身边的人：你本人、有名字的、还没名字的声音。可以起名（同名的会并成一个人）、说这是我、说不用记、忘掉声纹。
+function showPeople(P) {
+  if (!P) return;
+  const heard = (x) => [x.days ? `${x.days} 天里听到过` : '还没在录音里听到', x.seconds ? `共 ${x.seconds >= 60 ? Math.round(x.seconds / 60) + ' 分钟' : x.seconds + ' 秒'}` : '', x.last ? `上次 ${day(x.last)}` : '', `${x.prints} 条声纹`];
+  const forget = (x) => { const b = el('button', 'btn', '忘掉声纹'); b.onclick = async () => { if (await confirmDialog(`忘掉${x.is_me ? '你本人' : x.label}的声纹？`, '说过的话留着，但不再属于谁；以后再听到这个声音，会当成没听过的。', '忘掉')) doThen(() => api('DELETE', `/api/people/${x.id}`), '已忘掉'); }; return b; };
+  const out = P.map((x) => {
+    if (x.is_me) return infoRow('你本人', heard(x), [forget(x)]);
+    const rename = el('button', 'btn', x.name ? '改名' : '这是谁');
+    const buttons = [rename];
+    if (!x.name) {
+      const mine = el('button', 'btn', '是我'); mine.onclick = () => doThen(() => api('PATCH', `/api/people/${x.id}`, { is_me: true }), '记住了');
+      buttons.push(mine);
+      if (!x.ignored) { const skip = el('button', 'btn', '不用记'); skip.onclick = () => doThen(() => api('PATCH', `/api/people/${x.id}`, { ignored: true }), '以后不问了'); buttons.push(skip); }
+    }
+    buttons.push(forget(x));
+    const r = infoRow(x.name || `还不知道是谁（${x.label}）`, [...heard(x), x.ignored ? '不用记' : ''], buttons, x.name ? '' : 'dim');
+    rename.onclick = () => editInPlace(r, x.name || '', 20, false, (v) => api('PATCH', `/api/people/${x.id}`, { name: v }));
+    return r;
+  });
+  $('people').replaceChildren(...(out.length ? out : [el('p', 'lead', '还没有。录音里听到的人会出现在这里；你发给它的语音消息会被用来认出你本人的声音。')]));
+}
 // 经历按月排：这个月的摊开，更早的折起来。
 function showMoments(rows) {
   const out = [], months = new Map();
@@ -1009,6 +1075,7 @@ async function savePref(key, value) {
     toast('已保存');
     // 改了信息来源就马上重新汇总一次，不等半小时。
     if (key.startsWith('sources.') || key === 'news.topics') api('POST', '/api/jobs/sources/run').catch(() => {});
+    if (key.startsWith('hearing.')) setTimeout(loadHearing, 600);      // 端口开关要一点时间
   } catch (e) { toast(friendly(e)); }
   paintPrefs();
 }
@@ -1024,6 +1091,7 @@ function paintPrefs() {
   $('followupAfter').value = String(prefsNow['followup.after_minutes']);
   $('mailEvery').value = String(prefsNow['email.every']);
   $('defaultHour').value = String(prefsNow['reminders.default_hour']);
+  $('keepDays').value = String(prefsNow['hearing.keep_days']);
   document.querySelectorAll('#levelSeg button').forEach((b) => b.setAttribute('aria-checked', String(b.dataset.value === prefsNow['proactive.level'])));
   $('newsTopics').replaceChildren(...NEWS_TOPICS.map((topic) => {
     const chip = el('button', 'chip glass', topic);
@@ -1093,6 +1161,8 @@ $('calendarLead').onchange = () => savePref('calendar.lead_minutes', Number($('c
 $('followupAfter').onchange = () => savePref('followup.after_minutes', Number($('followupAfter').value));
 $('mailEvery').onchange = () => savePref('email.every', Number($('mailEvery').value));
 $('defaultHour').onchange = () => savePref('reminders.default_hour', Number($('defaultHour').value));
+$('keepDays').onchange = () => savePref('hearing.keep_days', Number($('keepDays').value));
+for (const d of [1, 3, 7, 14, 30, 90]) { const o = el('option', null, `${d} 天`); o.value = d; $('keepDays').append(o); }
 for (let h = 0; h < 24; h++) { const o = el('option', null, `${String(h).padStart(2, '0')}:00`); o.value = h; $('defaultHour').append(o); }
 
 // —— 设置：连接（.env 里的三项，要重启）——
@@ -1122,8 +1192,44 @@ async function loadSettings() {
     loadProactive();
     loadSearches();
     loadRetrieval();
+    loadHearing();
   } catch (e) { toast(friendly(e)); }
 }
+// 听录音：模型在不在本机、还有多少没听、今天听了多少（只有数目）
+async function loadHearing() {
+  let h;
+  try { h = await api('GET', '/api/hearing'); } catch (e) { return; }
+  const base = '录音不出这台 Mac；整理成「今天的事」时，文字会发给 DeepSeek。';
+  $('hearingHint').textContent = !h.models
+    ? '语音模型还没下载，现在不会听。在终端运行 uv run alf hear --setup 下载（约 200 MB）'
+    : base + `今天听了 ${h.today_minutes} 分钟（人声 ${h.today_speech_minutes} 分钟），记下 ${h.today_lines} 句`
+      + (h.waiting ? `；还有 ${h.waiting_minutes} 分钟没听完` : '') + (h.failed ? `；${h.failed} 段读不出来` : '')
+      + (h.me ? '' : '。还不认识你的声音：发一条语音消息给它，或者在记忆页的「身边的人」里点「是我」');
+  loadIntake();
+}
+// 收录音的端口：开没开、配没配对。配对码只在点了「配对手机」之后显示五分钟；口令从不显示。
+let pairUntil = 0;
+async function loadIntake(pairing) {
+  let g;
+  try { g = pairing || await api('GET', '/api/intake'); } catch (e) { return; }
+  $('intakePair').hidden = !g.available || !g.running;
+  if (!g.available || !g.running) return;
+  $('unpairBtn').hidden = !g.paired;
+  const last = g.last_at ? new Date(g.last_at * 1000) : null;
+  const state = g.paired ? `已经配对过手机。这次启动以来收了 ${g.received} 段` + (last ? `，最近一段 ${clock(last)}` : '') : '还没有配对的手机';
+  $('pairHint').textContent = g.code && Date.now() < pairUntil
+    ? `在 iPhone 上输入配对码 ${g.code}（五分钟内有效）。手机上显示的核对码应该是 ${g.check}，不一样就别继续`
+    : `${state}。在 iPhone 上打开 Alf 录音，选这台 Mac（${g.host}），再点这里拿配对码`;
+}
+$('pairBtn').onclick = async () => {
+  try { const g = await api('POST', '/api/intake/pair'); pairUntil = Date.now() + g.expires_in * 1000; loadIntake(g); setTimeout(loadIntake, g.expires_in * 1000 + 500); }
+  catch (e) { toast(friendly(e)); }
+};
+$('unpairBtn').onclick = async () => {
+  if (!await confirmDialog('解除配对？', '以前配对过的手机都不能再传录音，要重新配对。已经收到的录音不受影响。', '解除')) return;
+  try { await api('DELETE', '/api/intake/pairing'); toast('已解除'); } catch (e) { toast(friendly(e)); }
+  loadIntake();
+};
 // 按意思找：模型在不在本机、索引建到哪了（只有数目）
 async function loadRetrieval() {
   let r;

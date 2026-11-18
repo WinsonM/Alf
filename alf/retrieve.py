@@ -1,9 +1,11 @@
 """检索：按字面和按意思两路找，再按名次合到一起。
 
-三类东西各找各的：
+几类东西各找各的：
 - fact   记忆——事实和经历（他对 Alf 的要求不在这里：那些每轮都带着）
 - chunk  他以前说过的话，按"一小段对话"算一条
 - mail   邮件：发件人、主题、提要
+- heard  手表录音里听到的话，按"一小段对话"算一条（hearing.py 切的）
+- event  从听到的话里整理出来的"每天的事"（days.py）
 
 为什么要两路：
 - 按字面（全文索引，中文按二元组）找得准，但只认字。"我对象叫什么"找不到"女朋友叫小满"，"bench press"找不到"卧推"。
@@ -22,13 +24,13 @@ import re
 import sqlite3
 from dataclasses import dataclass
 
-from . import fts
+from . import fts, people
 from .connectors import sender_name
 from .memory import FEEDBACK
 
 log = logging.getLogger("alf.retrieve")
 
-KINDS = ("fact", "chunk", "mail")
+KINDS = ("fact", "chunk", "mail", "heard", "event")
 RRF_K = 40                # 倒数名次相加里的常数：越大，名次靠后的结果分量越重。沿用 Anima Brain 的取值
 # 合的时候，按意思的名次算全份，按字面的算半份。在评测集上（evals/retrieval.py）：对自然语言的问句，字面这一路
 # 噪声大，等权相加会把按意思找对的第一名挤下去；可专有名词、编号又是字面最可靠。半份是两头都不丢的取法。
@@ -120,6 +122,9 @@ def _sources(conn: sqlite3.Connection) -> list[tuple[str, int, str]]:
     out += [("chunk", r["id"], r["text"]) for r in conn.execute("SELECT id, text FROM chunks ORDER BY id")]
     out += [("mail", r["id"], mail_text(r)) for r in conn.execute(
         "SELECT * FROM inbox_items WHERE COALESCE(tier, '') != 'dup' ORDER BY id")]
+    out += [("heard", r["id"], r["text"]) for r in conn.execute("SELECT id, text FROM heard_passages ORDER BY id")]
+    names = people.labels(conn)          # 事情里的"声3"换成现在的名字：起了名之后文字变了，向量会跟着重算
+    out += [("event", r["id"], people.render(r["text"], names)) for r in conn.execute("SELECT id, text FROM day_events WHERE removed_at IS NULL ORDER BY id")]
     return [(kind, ref, text) for kind, ref, text in out if text.strip()]
 
 
@@ -168,6 +173,9 @@ def by_words(conn: sqlite3.Connection, kind: str, query: str, limit: int = CANDI
         rows = conn.execute("SELECT i.id FROM inbox_fts JOIN inbox_items i ON i.id = inbox_fts.rowid WHERE inbox_fts MATCH ?"
                             " ORDER BY bm25(inbox_fts) LIMIT ?", (q, limit))
         return [r["id"] for r in rows]
+    if kind in ("heard", "event"):
+        table = "heard_fts" if kind == "heard" else "events_fts"
+        return [r["rowid"] for r in conn.execute(f"SELECT rowid FROM {table} WHERE {table} MATCH ? ORDER BY bm25({table}) LIMIT ?", (q, limit))]
     # 对话：全文索引是按单句建的，找到之后归到它所在的那一段
     out: list[int] = []
     for r in conn.execute("SELECT rowid FROM episodes_fts WHERE episodes_fts MATCH ? ORDER BY bm25(episodes_fts) LIMIT ?", (q, limit * 3)):

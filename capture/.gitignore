@@ -1,0 +1,5 @@
+Config/Local.xcconfig
+*.xcodeproj/
+build/
+Phone/Info.plist
+Watch/Info.plist

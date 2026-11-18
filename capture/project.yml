@@ -1,0 +1,58 @@
+# Alf 录音：手表上录音、手机上中转的小 App。工程由 xcodegen 生成：改了这个文件或增删了源文件，重跑 `xcodegen generate`。
+# 签名用的 Team ID 和 bundle 前缀不进仓库：放在 Config/Local.xcconfig（照 Local.xcconfig.example 抄一份）。
+name: AlfCapture
+options:
+  deploymentTarget:
+    iOS: "18.0"
+    watchOS: "11.0"
+  createIntermediateGroups: true
+configFiles:
+  Debug: Config/Base.xcconfig
+  Release: Config/Base.xcconfig
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    CODE_SIGN_STYLE: Automatic
+    DEVELOPMENT_TEAM: $(ALF_TEAM)
+    MARKETING_VERSION: "0.1.0"
+    CURRENT_PROJECT_VERSION: "1"
+targets:
+  AlfCapture:
+    type: application
+    platform: iOS
+    sources: [Phone, Shared]
+    dependencies:
+      - target: AlfCaptureWatch
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: $(ALF_BUNDLE_PREFIX).alfcapture
+        TARGETED_DEVICE_FAMILY: "1"
+    info:
+      path: Phone/Info.plist
+      properties:
+        CFBundleDisplayName: Alf 录音
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
+        NSLocalNetworkUsageDescription: 在家里的 Wi-Fi 上找到你的 Mac，把手表录的音传给 Alf。
+        NSBonjourServices: [_alf-intake._tcp]
+        NSAppTransportSecurity:
+          NSAllowsLocalNetworking: true
+        UIBackgroundModes: [fetch]
+        BGTaskSchedulerPermittedIdentifiers: [alf.capture.upload]
+        ITSAppUsesNonExemptEncryption: false
+  AlfCaptureWatch:
+    type: application
+    platform: watchOS
+    sources: [Watch, Shared]
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: $(ALF_BUNDLE_PREFIX).alfcapture.watchkitapp
+    info:
+      path: Watch/Info.plist
+      properties:
+        CFBundleDisplayName: Alf 录音
+        WKApplication: true
+        WKCompanionAppBundleIdentifier: $(ALF_BUNDLE_PREFIX).alfcapture
+        UIBackgroundModes: [audio]
+        NSMicrophoneUsageDescription: 你点了开始之后，录下身边的声音，传到你自己的 Mac 上由 Alf 转成文字。
+        ITSAppUsesNonExemptEncryption: false

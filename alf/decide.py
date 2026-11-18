@@ -399,6 +399,30 @@ def searched_question() -> dict:
     )
 
 
+def heard_supported_question(event: str) -> dict:
+    """"每天的事"存下之前：录音里的这几句话撑不撑得起这条概括。门槛见 days.py 的 SUPPORT_FLOOR。"""
+    return noul(
+        "The lines in the state are a machine transcript of a conversation recorded around the user (speech recognition "
+        "can mishear words; `我` marks the user himself). They give real grounds for this one-line summary of what "
+        f"happened: «{event}». The summary is written from the user's side: a missing subject, or `自己`, means the user. "
+        "Who was involved, what was discussed and anything decided must all be found in the lines; "
+        "the summary must not add names, numbers, dates or outcomes the lines do not contain.",
+        true="Yes: the lines support the summary.",
+        false="No: the lines do not show this, are too garbled to tell, or the summary adds details that are not there.",
+    )
+
+
+def own_promise_question(promise: str) -> dict:
+    """"他亲口答应的事"存下之前：这几句是不是他本人在答应去做这件事。门槛见 days.py 的 PROMISE_FLOOR。"""
+    return noul(
+        "The lines in the state were spoken by the user himself (a machine transcript, so single words may be misheard). "
+        f"In them he commits to doing this: «{promise}» - he says he will do it, agrees to do it, or takes it on.",
+        true="Yes: he himself commits to doing it.",
+        false="No: he is only asking, describing, guessing, talking about what someone else will do, or declining; or the "
+              "lines are too garbled to tell.",
+    )
+
+
 def agreed_to_change_question() -> dict:
     """回复发出之前：这句话是不是在答应"以后都照你刚说的来"——改性格、说话短一点、别发表情这一类。
     答应了却既没改设置和人设、也没记成要求，下一句话它就忘了。门槛见 chat.py 的 AGREED_CHANGE_FLOOR。

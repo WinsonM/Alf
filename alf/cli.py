@@ -54,6 +54,11 @@ def main(argv: list[str] | None = None) -> int:
     sub.add_parser("check-email", help="自检邮箱配置（只读）")
     sub.add_parser("organize", help="整理旧记忆：补上主题和到期日（只改归类，不改内容）")
     sub.add_parser("index", help="下载按意思检索用的嵌入模型（约 490 MB），并给已有的记忆、对话、邮件建好索引")
+    p = sub.add_parser("hear", help="听录音：下载语音模型（--setup），或者导入几段录音让它听")
+    p.add_argument("files", nargs="*", help="要导入的录音文件（m4a、wav、mp3）；几个文件按顺序算是连着录的")
+    p.add_argument("--setup", action="store_true", help="下载语音模型（约 200 MB，存到 ~/.cache/alf/voice）")
+    p.add_argument("--at", help="第一个文件是什么时候开始录的，写成「2026-11-18 14:05」；不写就按文件的修改时间往前推")
+    p.add_argument("--show", action="store_true", help="听完把转出来的话打印出来（默认只报数目）")
     p = sub.add_parser("service", help="把 Alf 注册成登录自启的后台服务（macOS）")
     p.add_argument("action", choices=["install", "uninstall", "status"])
     p.add_argument("--port", type=int)
@@ -81,6 +86,8 @@ def main(argv: list[str] | None = None) -> int:
         return organize_memory(cfg, offline=args.offline)
     if args.command == "index":
         return build_index(cfg)
+    if args.command == "hear":
+        return hear(cfg, args.files, setup=args.setup, at=args.at, show=args.show)
     if args.command == "service":
         from . import service
 
@@ -115,8 +122,67 @@ def build_index(cfg: Settings) -> int:
                 print(f"  算了 {done['embedded']} 条，还剩 {done['left']} 条")
             if not done["left"]:
                 break
-        label = {"fact": "记忆", "chunk": "对话片段", "mail": "邮件"}
+        label = {"fact": "记忆", "chunk": "对话片段", "mail": "邮件", "heard": "听到的话", "event": "每天的事"}
         print("索引好了：" + "，".join(f"{label[k]} {v['embedded']}/{v['total']}" for k, v in retrieve.coverage(conn, embedder.name).items()))
+    finally:
+        conn.close()
+    return 0
+
+
+def hear(cfg: Settings, files: list[str], *, setup: bool, at: str | None, show: bool) -> int:
+    """下载语音模型，或者手动导入几段录音。平时录音是手表经手机传过来、后台自己听的；这条命令用在第一次装模型，
+    和手头有一段现成的录音想让它听的时候。默认只报数目——转出来的话是他身边人说的，不该随手打在终端里。"""
+    from datetime import datetime
+
+    from . import hearing, people, voice
+
+    if setup:
+        try:
+            voice.download()
+        except Exception as e:
+            print(f"没下载成：{e}")
+            return 1
+    ears = voice.default()
+    conn = db.connect(cfg.db_path)
+    try:
+        now = datetime.now(cfg.tz)
+        if not files:
+            s = hearing.status(conn, cfg, now)
+            print(("语音模型在本机。" if s["models"] else "语音模型还没下载，运行 uv run alf hear --setup。")
+                  + f"今天听了 {s['today_minutes']} 分钟（人声 {s['today_speech_minutes']} 分钟），记下 {s['today_lines']} 句；"
+                  + f"还有 {s['waiting']} 段没听；认识 {s['people']} 个人，另有 {s['unnamed']} 个没名字的声音。")
+            return 0
+        if ears is None:
+            print("语音模型还没下载，先运行 uv run alf hear --setup。")
+            return 1
+        try:
+            start = datetime.strptime(at, "%Y-%m-%d %H:%M").replace(tzinfo=cfg.tz).timestamp() if at else None
+        except ValueError:
+            print("--at 写成「2026-11-18 14:05」这种格式。")
+            return 1
+        before = conn.execute("SELECT COALESCE(MAX(id), 0) FROM utterances").fetchone()[0]
+        for name in files:
+            path = Path(name).expanduser()
+            seconds = voice.duration(path) if path.is_file() else None
+            if not seconds:
+                print(f"{path.name}：读不出来，跳过")
+                continue
+            began = start if start is not None else path.stat().st_mtime - seconds
+            try:
+                got = hearing.receive(conn, cfg, path, began, "import", int(now.timestamp()))
+            except voice.VoiceError as e:
+                print(f"{path.name}：{e}")
+                continue
+            print(f"{path.name}：{'收下了' if got else '以前收过，跳过'}（{seconds / 60:.1f} 分钟）")
+            start = began + seconds if start is not None else None
+        # 手动导入的不用等"是不是还有下一段"：把钟拨快一点，让凑批的那道等待直接过去
+        done = hearing.hear_pending(conn, cfg, ears, budget=3600, clock=lambda: time.time() + hearing.SETTLE)
+        print(f"听了 {done['seconds'] / 60:.1f} 分钟（人声 {done['speech'] / 60:.1f} 分钟），记下 {done['lines']} 句。"
+              "后台会在对话说完二十分钟后把它们整理成「每天的事」。")
+        if show:
+            names = people.labels(conn)
+            for u in conn.execute("SELECT * FROM utterances WHERE id > ? ORDER BY started_at", (before,)):
+                print(f"  {datetime.fromtimestamp(u['started_at'], cfg.tz):%m-%d %H:%M:%S} {names.get(u['person_id'], '有人')}：{u['text']}")
     finally:
         conn.close()
     return 0

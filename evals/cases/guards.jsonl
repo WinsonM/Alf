@@ -546,3 +546,51 @@
 {"kind": "willchange", "said": "以后别发表情了", "reply": "表情怎么你了，突然嫌弃", "yes": false}
 {"kind": "willchange", "said": "你觉得我以后说话要不要短一点", "reply": "不用，你现在这样挺好", "yes": false}
 {"kind": "willchange", "said": "老板说以后周报要短一点", "reply": "那你以后就写三行，他爱看", "yes": false}
+{"kind": "heard", "lines": ["我：小组作业的初稿我周五之前发给你们", "Kevin：好，那我负责写文献综述", "声3：开头我来讲，幻灯片周一发群里"], "text": "和 Kevin、声3 分了小组作业的工", "yes": true}
+{"kind": "heard", "lines": ["我：文献综述你写得怎么样了", "小满：写完了，昨晚发你邮箱了，你有空看一下", "我：好，我今晚看完给你反馈"], "text": "小满说文献综述写完发到邮箱了，自己答应今晚看完给反馈", "yes": true}
+{"kind": "heard", "lines": ["我：周六要不要一起去吃火锅", "小满：可以啊，叫上丹尼尔一起", "我：行，那我来订位子，订周六晚上七点"], "text": "和小满约了周六晚上七点吃火锅，自己负责订位", "yes": true}
+{"kind": "heard", "lines": ["声2：The tutor said the report should be under 3000 words", "我：三千字以内，记住了"], "text": "声2 转述导师的要求：报告不超过 3000 字", "yes": true}
+{"kind": "heard", "lines": ["May：下周三的面试你准备得怎么样了", "我：简历改完了，行为面试的题还没练", "May：那周末我陪你模拟一次"], "text": "和 May 聊了下周三的面试，May 说周末陪着模拟一次", "yes": true}
+{"kind": "heard", "lines": ["阿哲：房东说下个月开始房租涨二十", "我：这么突然", "阿哲：他说邮件里写了，让我们周五前回复续不续"], "text": "阿哲转述房东要涨房租，让周五前回复续不续租", "yes": true}
+{"kind": "heard", "lines": ["我：这周的实验报告什么时候交", "声5：周四晚上十二点前，传到系统上", "我：好，谢谢"], "text": "问到了实验报告的截止时间：周四晚上十二点前", "yes": true}
+{"kind": "heard", "lines": ["Kevin：我把数据清晰那部分发群里了", "我：收到，我晚点合到出报里"], "text": "Kevin 把数据清洗的部分发到了群里", "yes": true}
+{"kind": "heard", "lines": ["小满：我妈下周来悉尼，想请你吃个饭", "我：好啊，哪天", "小满：周日中午吧，地方我来订"], "text": "小满的妈妈下周来悉尼，约了周日中午一起吃饭", "yes": true}
+{"kind": "heard", "lines": ["声4：这门课期末占百分之五十，开卷", "我：那还好", "声4：但是只能带一张 A4 纸"], "text": "听说这门课期末占 50%，开卷，只能带一张 A4 纸", "yes": true}
+{"kind": "heard", "lines": ["May：我拿到那家公司的 offer 了", "我：太好了，恭喜", "May：下个月入职"], "text": "May 说她拿到了 offer，下个月入职", "yes": true}
+{"kind": "heard", "lines": ["阿哲：健身房周末要不要一起去", "我：周六上午可以", "阿哲：那九点门口见"], "text": "和阿哲约了周六上午九点去健身房", "yes": true}
+{"kind": "heard", "lines": ["Kevin：好，那我负责写文献综述"], "text": "和 Kevin 约了周六去爬山", "yes": false}
+{"kind": "heard", "lines": ["我：周六要不要一起去吃火锅", "小满：我看看吧，可能要赶作业"], "text": "和小满约好了周六晚上七点吃火锅", "yes": false}
+{"kind": "heard", "lines": ["May：下周三的面试你准备得怎么样了", "我：还行吧"], "text": "May 说周末陪他模拟面试，并把题库发给了他", "yes": false}
+{"kind": "heard", "lines": ["阿哲：房东说下个月开始房租涨二十", "我：这么突然"], "text": "和阿哲决定不续租，月底搬走", "yes": false}
+{"kind": "heard", "lines": ["声5：周四晚上十二点前，传到系统上"], "text": "实验报告延期到了下周一", "yes": false}
+{"kind": "heard", "lines": ["小满：我妈下周来悉尼", "我：挺好的"], "text": "小满的妈妈周日中午请他吃饭，在唐人街那家粤菜馆", "yes": false}
+{"kind": "heard", "lines": ["声4：这门课期末占百分之五十", "我：那还好"], "text": "这门课的期末考试取消了，改成交论文", "yes": false}
+{"kind": "heard", "lines": ["有人：一杯拿铁谢谢", "有人：大杯还是中杯"], "text": "和 Kevin 在咖啡店讨论了实习的事", "yes": false}
+{"kind": "heard", "lines": ["我：嗯", "有人：那个就是", "我：对对"], "text": "和导师定下了论文题目", "yes": false}
+{"kind": "heard", "lines": ["May：我拿到那家公司的 offer 了", "我：太好了，恭喜"], "text": "May 没拿到 offer，很难过", "yes": false}
+{"kind": "heard", "lines": ["Kevin：换尊骗我来做", "我：号"], "text": "Kevin 答应周一中午前把幻灯片发到群里", "yes": false}
+{"kind": "heard", "lines": ["阿哲：健身房周末要不要一起去", "我：这周末不行，要赶 due"], "text": "和阿哲约了周六上午九点去健身房", "yes": false}
+{"kind": "promise", "lines": ["小组作业的初稿我周五之前发给你们"], "text": "周五之前把小组作业的初稿发给组员", "yes": true}
+{"kind": "promise", "lines": ["好，我今晚看完给你反馈"], "text": "今晚看完文献综述并给反馈", "yes": true}
+{"kind": "promise", "lines": ["行，那我来订位子，订周六晚上七点"], "text": "订周六晚上七点的位子", "yes": true}
+{"kind": "promise", "lines": ["数据清洗那部分我来做"], "text": "负责做数据清洗那部分", "yes": true}
+{"kind": "promise", "lines": ["没问题，明天上课我把笔记带给你"], "text": "明天上课把笔记带给对方", "yes": true}
+{"kind": "promise", "lines": ["那幻灯片我周一中午之前发到群里"], "text": "周一中午之前把幻灯片发到群里", "yes": true}
+{"kind": "promise", "lines": ["我回去就把钱转给你"], "text": "回去之后把钱转给对方", "yes": true}
+{"kind": "promise", "lines": ["OK I'll send you the draft by Friday"], "text": "周五之前把草稿发过去", "yes": true}
+{"kind": "promise", "lines": ["这周末我一定把简历改完发你"], "text": "这周末把简历改完发给对方", "yes": true}
+{"kind": "promise", "lines": ["行，周日我去机场接你"], "text": "周日去机场接对方", "yes": true}
+{"kind": "promise", "lines": ["那我明天早上给房东回邮件"], "text": "明天早上给房东回邮件", "yes": true}
+{"kind": "promise", "lines": ["好的好的，我下课就去打印"], "text": "下课后去打印", "yes": true}
+{"kind": "promise", "lines": ["下周二的展示谁来讲开头"], "text": "下周二的展示由他来讲开头", "yes": false}
+{"kind": "promise", "lines": ["你周五之前能发给我吗"], "text": "周五之前把东西发给对方", "yes": false}
+{"kind": "promise", "lines": ["Kevin 说他周四晚上能写完"], "text": "周四晚上写完文献综述", "yes": false}
+{"kind": "promise", "lines": ["我这周可能没空，再说吧"], "text": "这周末一起去打球", "yes": false}
+{"kind": "promise", "lines": ["要是有时间的话我想去看看"], "text": "周末去看房", "yes": false}
+{"kind": "promise", "lines": ["初稿我上周就发给他们了"], "text": "周五之前把初稿发给组员", "yes": false}
+{"kind": "promise", "lines": ["不行，那天我有考试，去不了"], "text": "周六参加聚会", "yes": false}
+{"kind": "promise", "lines": ["文献综述你写得怎么样了"], "text": "写文献综述", "yes": false}
+{"kind": "promise", "lines": ["他让我周一前交，我还没想好交不交"], "text": "周一前把申请交上去", "yes": false}
+{"kind": "promise", "lines": ["三千字以内，记住了"], "text": "把报告写到三千字", "yes": false}
+{"kind": "promise", "lines": ["我今天中午吃的是那家拉面"], "text": "中午去吃拉面", "yes": false}
+{"kind": "promise", "lines": ["你记得周日去接她"], "text": "周日去机场接人", "yes": false}

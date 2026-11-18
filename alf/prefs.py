@@ -32,6 +32,7 @@ CHAT_SETTINGS = {
     "reminders.default_hour": "没说几点的提醒默认定在几点", "notify.desktop": "Mac 上的系统通知",
     "sources.news": "新闻", "news.topics": "关心的新闻主题",
     "impressions.enabled": "对你形成印象", "search.enabled": "上网查资料",
+    "hearing.enabled": "听手表录音", "hearing.keep_days": "录音的原声留几天",
     # 人设卡片的六项也走这条路：他说"你性格再损一点""以后你叫小艾"，改的是这里。
     **{key: f"人设里的{label}" for key, label in persona.PARTS.items()},
 }
@@ -86,6 +87,11 @@ def defaults(cfg: Settings) -> dict:
         "mcp.servers": [],                   # 额外的第三方 MCP 服务器：[{"name", "command", "args", "env"}]
         "impressions.enabled": True,         # 是否从聊天里慢慢形成对他的印象（关掉后已有的印象留着，不再新增）
         "search.enabled": True,              # 需要最新信息时让 DeepSeek 上网查（按搜索条数计费）
+        "hearing.enabled": True,             # 听手表传来的录音（要本机有语音模型；没有就不启动）。关掉后已经记下的留着
+        "hearing.keep_days": 7,              # 原声留几天；转出来的文字不受这个影响
+        # 在局域网上开一个只收录音的端口（见 intake.py）。默认关；只能在设置页上开，聊天里一句话开不了——
+        # 这是 Alf 唯一对外的口子，不该因为一句（可能是听来的、读来的）话就打开。
+        "hearing.intake": False,
         **persona.DEFAULT,                   # 人设卡片：名字、身份、性格、说话习惯、喜好、和他的关系
     }
 
@@ -123,7 +129,7 @@ def validate(key: str, value):
         raise ValueError(f"{key}：{why}")
 
     if key in ("style.emoji", "briefing.enabled", "digest.enabled", "notify.desktop", "memory.auto", "memory.semantic", "calendar.alerts", "followup.enabled",
-               "email.report", "impressions.enabled", "search.enabled",
+               "email.report", "impressions.enabled", "search.enabled", "hearing.enabled", "hearing.intake",
                "proactive.enabled", "sources.days", "sources.calendar", "sources.reminders", "sources.news"):
         if not isinstance(value, bool):
             fail("要填开或关")
@@ -173,7 +179,7 @@ def validate(key: str, value):
             fail("要在 0 和 1 之间")
         return float(value)
     low, high = {"reminders.default_hour": (0, 23), "reminders.check_every": (5, 300), "email.every": (60, 86400),
-                 "calendar.lead_minutes": (0, 240), "followup.after_minutes": (5, 720)}[key]
+                 "calendar.lead_minutes": (0, 240), "followup.after_minutes": (5, 720), "hearing.keep_days": (1, 90)}[key]
     if isinstance(value, bool) or not isinstance(value, int) or not low <= value <= high:
         fail(f"要在 {low} 和 {high} 之间")
     return value

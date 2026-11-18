@@ -2,6 +2,9 @@
 
 只监听 127.0.0.1。Alf 里有你的记忆和邮件摘要，而这个服务没有登录，所以不对局域网
 开放；要从手机访问，得先加鉴权再放开，不能只改监听地址。
+
+唯一的例外是收手表录音的那个端口（intake.py）：它是另一个服务、另一个端口，带口令和 TLS，只能交录音，
+读不到任何东西，而且默认不开。
 """
 from __future__ import annotations
 
@@ -24,8 +27,8 @@ from fastapi.responses import HTMLResponse, JSONResponse
 from pydantic import BaseModel, Field
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 
-from . import (affinity, apple, asr, connectors, db, doctor, embed, feedback, impressions, lessons, pacts, persona, prefs, proactive, retrieve,
-               timeline, websearch)
+from . import (affinity, apple, asr, connectors, days, db, doctor, embed, feedback, hearing, impressions, intake, lessons, pacts, people, persona,
+               prefs, proactive, retrieve, timeline, websearch)
 from .agent import Reply, Turn
 from .chat import CATEGORY_LABELS, make_agent
 from .config import MAIL_PROVIDERS, Settings, env_file, normalize_handle, update_dotenv
@@ -34,7 +37,7 @@ from .connectors.email_imap import ImapEmail
 from .decide import Backend, Decider
 from .heartbeat import Heartbeat, job_status, load_state
 from .imessage import CHANNEL as IMESSAGE, ChannelError, IMessageChannel
-from .jobs import FAST_JOBS, build_jobs, source_errors
+from .jobs import FAST_JOBS, HEAVY_JOBS, build_jobs, source_errors
 from .llm import LLM, LLMBackend
 from .mcp_servers.calendar import read_events
 from .memory import FEEDBACK, MOMENT, Memory
@@ -87,6 +90,13 @@ class PactIn(BaseModel):
     outcome: str = Field(pattern="^(kept|dropped)$")
 
 
+class PersonIn(BaseModel):
+    """录音里的一个人：起名字、说这是我本人、或者说不用记。三样传一样。"""
+    name: str | None = Field(default=None, min_length=1, max_length=people.NAME_CHARS)
+    is_me: bool | None = None
+    ignored: bool | None = None
+
+
 def read_env(path: Path) -> dict[str, str]:
     """只把 .env 解析出来看，不改当前进程的环境变量。"""
     values = {}
@@ -121,7 +131,8 @@ def create_app(cfg: Settings, backend: Backend, *, llm_backend: LLMBackend | Non
                restart: Callable[[], None] = reexec, open_settings: Callable[[], None] = open_privacy_settings,
                read_calendar: Callable[..., dict] = read_events,
                read_reminders: Callable[..., dict] = apple.read_reminders,
-               check_inbox: Callable = _check_inbox, check_outbox: Callable = email_smtp.check) -> FastAPI:
+               check_inbox: Callable = _check_inbox, check_outbox: Callable = email_smtp.check,
+               gate: intake.Gate | None = None) -> FastAPI:
     env_path = env_path or env_file()
     # 请求跑在线程池里，所以连接允许跨线程，各配一把锁。分成两个连接是因为一轮对话要等模型好几秒：
     # 对话用的连接被占着的时候，网页读时间线和状态不应该跟着卡住。
@@ -133,12 +144,16 @@ def create_app(cfg: Settings, backend: Backend, *, llm_backend: LLMBackend | Non
     # 任务表按当前设置生成，心跳每次都重新生成一遍：界面上改了时间或开关，几秒内生效。
     # 分两条车道：到点提醒单独一条，每 5 秒必到；要联网、要等模型的（汇总信息、主动判断、邮箱、早报）
     # 在另一条里慢慢跑，再慢也耽误不了提醒。
-    def lane(current: dict, fast: bool) -> list:
-        return [j for j in build_jobs(cfg, active, current) if (j.name in FAST_JOBS) == fast]
+    def lane(current: dict, which: str) -> list:
+        def of(name: str) -> str:
+            return "fast" if name in FAST_JOBS else "heavy" if name in HEAVY_JOBS else "slow"
+        return [j for j in build_jobs(cfg, active, current) if of(j.name) == which]
 
-    heartbeat = Heartbeat(cfg, lambda current: lane(current, True), make_decider=lambda c: Decider(backend, c))
-    background = Heartbeat(cfg, lambda current: lane(current, False), make_decider=lambda c: Decider(backend, c),
+    heartbeat = Heartbeat(cfg, lambda current: lane(current, "fast"), make_decider=lambda c: Decider(backend, c))
+    background = Heartbeat(cfg, lambda current: lane(current, "slow"), make_decider=lambda c: Decider(backend, c),
                            make_llm=(lambda c: LLM(llm_backend, c)) if llm_backend else None, name="alf-background")
+    # 第三条车道只跑听录音：它一批要算十几秒到几十秒，攒了一天的要连着算好一阵（见 jobs.HEAVY_JOBS）。
+    listening = Heartbeat(cfg, lambda current: lane(current, "heavy"), make_decider=lambda c: Decider(backend, c), name="alf-listening")
     recognizer = recognizer or asr.Recognizer(cfg.asr_model, cfg.asr_language)
     loaded_env = read_env(env_path)   # 启动时 .env 的样子，用来判断"改了但还没重启"
 
@@ -157,11 +172,17 @@ def create_app(cfg: Settings, backend: Backend, *, llm_backend: LLMBackend | Non
         if start_heartbeat:
             heartbeat.start()
             background.start()
+            listening.start()
             if imessage:
                 imessage.start()
+            if gate is not None:      # 收录音的端口：设置里开着才开
+                gate.sync(bool(prefs.load(conn, cfg).get("hearing.intake")))
         yield
+        if gate is not None:
+            gate.stop()
         heartbeat.stop()
         background.stop()
+        listening.stop()
         if imessage:
             imessage.stop()
 
@@ -170,6 +191,7 @@ def create_app(cfg: Settings, backend: Backend, *, llm_backend: LLMBackend | Non
     app.add_middleware(TrustedHostMiddleware, allowed_hosts=["127.0.0.1", "localhost"])
     app.state.heartbeat = heartbeat
     app.state.background = background
+    app.state.listening = listening
 
     @app.middleware("http")
     async def same_origin_only(request: Request, call_next):
@@ -266,7 +288,7 @@ def create_app(cfg: Settings, backend: Backend, *, llm_backend: LLMBackend | Non
 
     @app.post("/api/jobs/{name}/run", status_code=202)
     def run_job(name: str) -> dict:
-        if not (heartbeat.request(name) or background.request(name)):
+        if not (heartbeat.request(name) or background.request(name) or listening.request(name)):
             raise HTTPException(404, "没有这个任务")
         return {"queued": name}
 
@@ -308,9 +330,12 @@ def create_app(cfg: Settings, backend: Backend, *, llm_backend: LLMBackend | Non
     def patch_prefs(changes: dict) -> dict:
         try:
             with lock:
-                return {"prefs": prefs.save(conn, cfg, changes)}
+                saved = prefs.save(conn, cfg, changes)
         except ValueError as e:
             raise HTTPException(422, str(e)) from e
+        if gate is not None and "hearing.intake" in changes:      # 开关一动，端口当场跟着开或关，不用重启
+            gate.sync(bool(saved["hearing.intake"]))
+        return {"prefs": saved}
 
     # --- 环境：key 和 iMessage 地址，在 .env 里，改了要重启 -----------------------------
 
@@ -436,8 +461,9 @@ def create_app(cfg: Settings, backend: Backend, *, llm_backend: LLMBackend | Non
             who = persona.view(conn, prefs.load(conn, cfg))
             seen = impressions.view(conn, now)
             agreed = pacts.view(conn, now)
+            around, heard = people.view(conn), days.view(conn)
         return {"facts": [fact_view(f) for f in facts], "affinity": warmth, "lessons": learned,
-                "persona": who, "impressions": seen, "pacts": agreed}
+                "persona": who, "impressions": seen, "pacts": agreed, "people": around, "days": heard}
 
     @app.patch("/api/memory/{fact_id}")
     def edit_fact(fact_id: int, body: FactIn) -> dict:
@@ -497,6 +523,76 @@ def create_app(cfg: Settings, backend: Backend, *, llm_backend: LLMBackend | Non
         with lock:
             return {"searches": websearch.view(conn)}
 
+    # --- 听手表录音：状态、录音里的人、每天的事 ----------------------------------------------
+
+    @app.get("/api/hearing")
+    def hearing_status() -> dict:
+        """听录音的状态：模型在不在、还有多少没听、今天听了多少。只有数目，没有内容。"""
+        with lock:
+            return {"enabled": bool(prefs.load(conn, cfg).get("hearing.enabled", True)), **hearing.status(conn, cfg, datetime.now(cfg.tz))}
+
+    @app.get("/api/intake")
+    def intake_status() -> dict:
+        """收录音的端口：开没开、配没配对、这次启动以来收了几段。口令本身从不发回页面。"""
+        if gate is None:
+            return {"available": False}
+        return {"available": True, **gate.status()}
+
+    @app.post("/api/intake/pair")
+    def intake_pair() -> dict:
+        """出一个六位的配对码，五分钟内在手机上输进去。"""
+        if gate is None or not gate.running:
+            raise HTTPException(409, "先打开「接收手表传来的录音」")
+        return {**gate.begin_pairing(), **gate.status()}
+
+    @app.delete("/api/intake/pairing")
+    def intake_unpair() -> dict:
+        """解除配对：换一个新口令，以前配对过的手机都进不来了。"""
+        if gate is None:
+            raise HTTPException(409, "这次启动没有带收录音的端口")
+        gate.unpair()
+        return {"ok": True}
+
+    @app.patch("/api/people/{person_id}")
+    def edit_person(person_id: int, body: PersonIn) -> dict:
+        now = int(datetime.now(cfg.tz).timestamp())
+        with lock:
+            if people.get(conn, person_id) is None:
+                raise HTTPException(404, "没有这个人")
+            if body.ignored:
+                if not people.ignore(conn, person_id):
+                    raise HTTPException(422, "已经有名字的人不能标成不用记")
+                return {"ok": True}
+            if not body.is_me and not body.name:
+                raise HTTPException(422, "没说这是谁")
+            kept = hearing.name_voice(conn, person_id, body.name, now, is_me=bool(body.is_me))
+        return {"ok": True, "id": kept["id"] if kept else person_id, "merged": bool(kept) and kept["id"] != person_id}
+
+    @app.delete("/api/people/{person_id}")
+    def drop_person(person_id: int) -> dict:
+        """忘掉这个人的声纹。他说过的话留着，但不再属于谁。"""
+        with lock:
+            if not hearing.forget_voice(conn, person_id):
+                raise HTTPException(404, "没有这个人")
+        return {"ok": True}
+
+    @app.delete("/api/days/events/{event_id}")
+    def drop_day_event(event_id: int) -> dict:
+        with lock:
+            if days.remove(conn, event_id, int(datetime.now(cfg.tz).timestamp())) is None:
+                raise HTTPException(404, "没有这一条")
+        return {"ok": True}
+
+    @app.delete("/api/days/{day}")
+    def drop_day(day: str) -> dict:
+        """把某一天听到的全删掉：话、整理出来的事、原声。"""
+        try:
+            datetime.strptime(day, "%Y-%m-%d")
+        except ValueError:
+            raise HTTPException(422, "日期写成 2026-11-18 这种格式") from None
+        with lock:
+            return {"ok": True, "lines": hearing.forget_day(conn, day)}
+
     # --- 人设里它说过的话、它对他的印象、约定：在页面上删、改、了结 ---------------------------
 
     @app.delete("/api/persona/notes/{note_id}")
@@ -546,7 +642,7 @@ def serve(cfg: Settings, backend: Backend, port: int, llm_backend: LLMBackend | 
     # 日志里就没有时间了。
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(name)s %(message)s", datefmt="%m-%d %H:%M:%S", force=True)
     logging.getLogger("httpx").setLevel(logging.WARNING)   # 不然每次调模型都打一行请求日志
-    app = create_app(cfg, backend, llm_backend=llm_backend)
+    app = create_app(cfg, backend, llm_backend=llm_backend, gate=intake.Gate(cfg))
     log.info("Alf 启动中 http://127.0.0.1:%d  对话=%s  判断=%s  iMessage=%s  时区=%s  数据=%s", port,
              llm_backend.name if llm_backend else "模板", backend.name, "开" if cfg.imessage else "未配置", cfg.tz.key, cfg.db_path)
     # access_log 关掉：页面每 3 秒轮询一次，开着的话一天几万行日志。

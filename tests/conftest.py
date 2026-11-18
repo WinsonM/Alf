@@ -187,6 +187,16 @@ def no_real_embedding_model(monkeypatch):
 
 
 @pytest.fixture(autouse=True)
+def no_real_voice_models(monkeypatch):
+    """听录音要装三个语音模型（两百多 MB）。测试里一律当它们不在：听录音的任务不排，也不会有人去装模型；
+    专门测听录音的用例自己传一个假的 Ears。"""
+    from alf import voice
+
+    monkeypatch.setattr(voice, "default", lambda: None)
+    monkeypatch.setattr(voice, "files", lambda: None)
+
+
+@pytest.fixture(autouse=True)
 def no_real_sources(monkeypatch):
     """汇总信息会启动 MCP 服务器、上网取新闻、打开读日历的小 App。测试里默认换成空快照；
     专门测汇总的用例自己用 real_gather 取回真的函数。"""

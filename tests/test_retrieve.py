@@ -142,7 +142,8 @@ def test_everything_searchable_gets_a_vector_and_changes_are_followed(conn):
     conn.execute("UPDATE inbox_items SET summary = ? WHERE id = ?", (json.dumps({"gist": "租金涨到 540，两周内答复"}), letter))
     assert retrieve.sync(conn, e, TS + 60)["embedded"] == 2
     assert {(r["kind"], r["ref_id"]) for r in conn.execute("SELECT kind, ref_id FROM embeddings")} == {("fact", newer.id), ("chunk", 1), ("mail", letter)}
-    assert retrieve.coverage(conn, "fake") == {"fact": {"total": 1, "embedded": 1}, "chunk": {"total": 1, "embedded": 1}, "mail": {"total": 1, "embedded": 1}}
+    assert retrieve.coverage(conn, "fake") == {"fact": {"total": 1, "embedded": 1}, "chunk": {"total": 1, "embedded": 1}, "mail": {"total": 1, "embedded": 1},
+                                               "heard": {"total": 0, "embedded": 0}, "event": {"total": 0, "embedded": 0}}   # 没听过录音：后两类是空的
 
 
 def test_a_batch_is_bounded_and_no_model_still_builds_the_word_indexes(conn):

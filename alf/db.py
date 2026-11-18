@@ -323,7 +323,7 @@ CREATE TABLE IF NOT EXISTS chunks (
 );
 -- embeddings：每条记忆、每一段对话、每封邮件的向量。hash 是算向量时那段文字的摘要：文字变了就重算。
 CREATE TABLE IF NOT EXISTS embeddings (
-    kind       TEXT NOT NULL,           -- fact 记忆（事实和经历）| chunk 一段对话 | mail 一封邮件
+    kind       TEXT NOT NULL,           -- fact 记忆（事实和经历）| chunk 一段对话 | mail 一封邮件 | heard 听到的一段话 | event 某天的一件事
     ref_id     INTEGER NOT NULL,
     model      TEXT NOT NULL,
     hash       TEXT NOT NULL,
@@ -332,10 +332,98 @@ CREATE TABLE IF NOT EXISTS embeddings (
     PRIMARY KEY (kind, ref_id)
 );
 
+-- 听手表录音（见 hearing.py、people.py、days.py）。录音在本机转成文字，按声音分出是谁说的，每天整理成"今天的事"。
+-- recordings：收到的每一段录音（手表一分钟一段）。原声只留几天，转出来的文字留着。
+CREATE TABLE IF NOT EXISTS recordings (
+    id          INTEGER PRIMARY KEY,
+    sha256      TEXT NOT NULL UNIQUE,      -- 同一段传两次只收一次
+    path        TEXT,                      -- 原声放在哪；删掉之后是 NULL
+    device      TEXT,                      -- 哪个设备录的
+    started_at  REAL NOT NULL,             -- 开始录的时刻（墙上时间，秒）
+    seconds     REAL NOT NULL,
+    -- new 等着听 | hearing 正在听（heard_at 是开始听的时间）| done 听完了 | empty 没有人声 | failed 读不出来
+    state       TEXT NOT NULL DEFAULT 'new' CHECK (state IN ('new', 'hearing', 'done', 'empty', 'failed')),
+    speech      REAL,                      -- 里面有多少秒是人声
+    attempts    INTEGER NOT NULL DEFAULT 0,
+    error       TEXT,
+    received_at INTEGER NOT NULL,
+    heard_at    INTEGER                    -- 转写完的时间
+);
+CREATE INDEX IF NOT EXISTS recordings_todo ON recordings(state, started_at);
+
+-- people：听到过的人。先是一个"反复出现的声音"（name 为空），他告诉 Alf 这是谁之后才有名字。is_me 是他本人。
+CREATE TABLE IF NOT EXISTS people (
+    id         INTEGER PRIMARY KEY,
+    name       TEXT,
+    is_me      INTEGER NOT NULL DEFAULT 0,
+    created_at INTEGER NOT NULL,
+    named_at   INTEGER,
+    asked_at   INTEGER,                    -- 上一次问他"这是谁"的时间
+    asks       INTEGER NOT NULL DEFAULT 0, -- 问过几次没得到回答；到两次就不再问
+    ignored    INTEGER NOT NULL DEFAULT 0  -- 1 = 他说不用记这个人：不再问
+);
+-- voiceprints：一个人的声纹，可以有好几条（不同场合录到的）。认人时拿这些的加权平均去比。
+CREATE TABLE IF NOT EXISTS voiceprints (
+    id         INTEGER PRIMARY KEY,
+    person_id  INTEGER NOT NULL REFERENCES people(id),
+    model      TEXT NOT NULL,              -- 算它的模型；换了模型，旧的不再用
+    vec        BLOB NOT NULL,              -- float32，已经归一化
+    seconds    REAL NOT NULL,              -- 从多少秒的声音算出来的：越长越作数
+    source     TEXT NOT NULL,              -- heard 录音里听到的 | message 他发给 Alf 的语音消息 | enroll 专门录的
+    ref        TEXT,                       -- 出处：哪段录音、哪条语音消息
+    created_at INTEGER NOT NULL
+);
+CREATE INDEX IF NOT EXISTS voiceprints_person ON voiceprints(person_id);
+-- utterances：听到的每一句话。person_id 为空 = 听不出是谁。voice_score 是这句话的声音和最像的那个人有多像，
+-- 不管最后认没认：留着它，才能回头看认人的门槛定得对不对。
+CREATE TABLE IF NOT EXISTS utterances (
+    id           INTEGER PRIMARY KEY,
+    recording_id INTEGER REFERENCES recordings(id),
+    person_id    INTEGER REFERENCES people(id),
+    started_at   REAL NOT NULL,
+    ended_at     REAL NOT NULL,
+    day          TEXT NOT NULL,            -- 当地日期 YYYY-MM-DD
+    text         TEXT NOT NULL,
+    language     TEXT,
+    voice_score  REAL,
+    digested_at  INTEGER                   -- 已经整理进"每天的事"的时间；NULL = 还没整理
+);
+CREATE INDEX IF NOT EXISTS utterances_time ON utterances(started_at);
+CREATE INDEX IF NOT EXISTS utterances_day ON utterances(day);
+-- heard_passages：听到的话按"一小段对话"切开，检索用（和 chunks 对他自己的消息做的是同一件事）。id 是这一段第一句话的编号。
+CREATE TABLE IF NOT EXISTS heard_passages (
+    id             INTEGER PRIMARY KEY,
+    last_utterance INTEGER NOT NULL,
+    day            TEXT NOT NULL,
+    text           TEXT NOT NULL,          -- "谁：说了什么"，一句一行
+    started_at     REAL NOT NULL,
+    ended_at       REAL NOT NULL
+);
+CREATE INDEX IF NOT EXISTS heard_passages_day ON heard_passages(day);
+-- day_events：每天的事。从当天听到的话里归纳出来的，每条都挂着它依据的那几句原话；promise 是他本人亲口答应的事。
+CREATE TABLE IF NOT EXISTS day_events (
+    id         INTEGER PRIMARY KEY,
+    day        TEXT NOT NULL,
+    kind       TEXT NOT NULL DEFAULT 'event' CHECK (kind IN ('event', 'promise')),
+    text       TEXT NOT NULL,
+    people     TEXT NOT NULL DEFAULT '[]',  -- JSON：在场的人（people.id）
+    cites      TEXT NOT NULL DEFAULT '[]',  -- JSON：依据的那几句话（utterances.id）
+    quote      TEXT,                        -- 其中一句原话（截短），给他核对用
+    importance INTEGER,
+    started_at REAL NOT NULL,
+    ended_at   REAL NOT NULL,
+    created_at INTEGER NOT NULL,
+    told_at    INTEGER,                     -- 在每晚汇总里告诉过他
+    removed_at INTEGER                      -- 他说不对、删掉了
+);
+CREATE INDEX IF NOT EXISTS day_events_day ON day_events(day);
+
 -- 全文索引里存的是预先切好的词（中文按二元组，见 fts.py）；rowid 等于源表的 id。
 CREATE VIRTUAL TABLE IF NOT EXISTS facts_fts USING fts5(tokens);
 CREATE VIRTUAL TABLE IF NOT EXISTS episodes_fts USING fts5(tokens);
 CREATE VIRTUAL TABLE IF NOT EXISTS inbox_fts USING fts5(tokens);      -- 邮件：发件人、主题、提要
+CREATE VIRTUAL TABLE IF NOT EXISTS heard_fts USING fts5(tokens);      -- 听到的话（按段）
+CREATE VIRTUAL TABLE IF NOT EXISTS events_fts USING fts5(tokens);     -- 每天的事
 """
 
 

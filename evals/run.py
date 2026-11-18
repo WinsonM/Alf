@@ -122,6 +122,8 @@ def run_guards(args) -> int:
                             fulfilled_question, impression_label_question, impression_supported_question, inbox_questions,
                             interesting_question, pact_said_question, raised_question, same_note_question, searched_question,
                             spoke_of_question, target_question, time_said_question)
+    from alf import days
+    from alf.decide import heard_supported_question, own_promise_question
     from alf.impressions import LABEL_FLOOR, SUPPORT_FLOOR
     from alf.jobs import KIND_FLOOR, UNWANTED_FLOOR
     from alf.memory import SUPERSEDE_FLOOR
@@ -185,6 +187,11 @@ def run_guards(args) -> int:
         "label": (LABEL_FLOOR, lambda c: impression_label_question(c["text"]), lambda c: ({}, c["text"])),
         "dispute": (DISPUTE_FLOOR, lambda c: disputes_question(c["text"]), lambda c: (
             {"assistant_previous_message": c.get("before", ""), "user_latest_message": c["said"]}, f"「{c['said']}」→ {c['text']}")),
+        # 听录音整理出来的事：这几句话撑不撑得起这条概括；这是不是他本人在答应
+        "heard": (days.SUPPORT_FLOOR, lambda c: heard_supported_question(c["text"]), lambda c: (
+            {"lines": c["lines"]}, f"{c['text']} ← {' / '.join(c['lines'])}")),
+        "promise": (days.PROMISE_FLOOR, lambda c: own_promise_question(c["text"]), lambda c: (
+            {"lines": c["lines"]}, f"{c['text']} ← {' / '.join(c['lines'])}")),
     }
     failed, total, unsafe = 0, 0, 0
     scores: dict[str, dict[bool, list[float]]] = {}
@@ -197,7 +204,7 @@ def run_guards(args) -> int:
                 floor = 0.6 if case["ask"] == "now" else UNWANTED_FLOOR
             state, label = build(case)
             q = question(case) if case["kind"] in ("spoke", "raised", "broke", "hardrule", "mailkind", "mailrule",
-                                                   "impression", "label", "dispute", "fulfilled") else question()   # 这几类的问题里带着具体内容
+                                                   "impression", "label", "dispute", "fulfilled", "heard", "promise") else question()   # 这几类的问题里带着具体内容
             p = decider.ask(f"eval.{case['kind']}", state, {"q": q})["q"].noul
             scores.setdefault(case["kind"], {True: [], False: []})[case["yes"]].append(p)
             if args.kind:

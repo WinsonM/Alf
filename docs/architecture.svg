@@ -1,6 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 854" width="960" height="854" role="img" aria-labelledby="t d">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 936" width="960" height="936" role="img" aria-labelledby="t d">
   <title id="t">Alf 架构图</title>
-  <desc id="d">入口（iMessage、Alf.app 和网页、终端）连到这台 Mac 上常驻的 Alf 后台服务；服务内部分接入、主线（对话和心跳）、能力、存储四层；向下连模型（DeepSeek、Jev、Whisper）和外部来源（邮箱、日历和提醒事项、MCP 服务器）。</desc>
+  <desc id="d">入口（iMessage 和手表录音、Alf.app 和网页、终端）连到这台 Mac 上常驻的 Alf 后台服务；服务内部分接入、主线（对话和心跳）、能力、存储四层；向下连模型（DeepSeek、Jev、本机的语音和嵌入模型）和外部来源（邮箱、日历和提醒事项、MCP 服务器）。</desc>
   <style>
     svg {
       --bg: #ffffff; --ink: #1f2328; --muted: #59636e; --line: #d1d9e0; --group: #f6f8fa; --box: #ffffff;
@@ -33,14 +33,14 @@
     .arrow { stroke: var(--muted); stroke-width: 1.4; }
     .head { fill: var(--muted); }
   </style>
-  <rect class="card" x="0.5" y="0.5" width="959" height="853" rx="14"/>
+  <rect class="card" x="0.5" y="0.5" width="959" height="935" rx="14"/>
 
   <!-- 入口 -->
   <rect class="group" x="28" y="20" width="904" height="82" rx="14"/>
   <text class="row" x="52" y="66">入口</text>
   <rect class="box" x="104" y="32" width="260" height="58" rx="10"/>
-  <text class="t" x="118" y="56">iPhone · iMessage</text>
-  <text class="s" x="118" y="76">文字 · 语音 · 图片 · 引用回复</text>
+  <text class="t" x="118" y="56">iPhone · iMessage · 手表</text>
+  <text class="s" x="118" y="76">文字 · 语音 · 图片 · 手表录音</text>
   <rect class="box" x="380" y="32" width="260" height="58" rx="10"/>
   <text class="t" x="394" y="56">Alf.app · 网页</text>
   <text class="s" x="394" y="76">聊天 · 记忆 · 设置</text>
@@ -60,8 +60,8 @@
   <text class="s" x="798" y="128">uv run alf</text>
 
   <!-- Alf 后台服务 -->
-  <rect class="svc" x="28" y="146" width="904" height="536" rx="14"/>
-  <text x="48" y="173"><tspan class="svc-t">Alf 后台服务</tspan><tspan class="s" dx="12">在这台 Mac 上 · launchd 常驻 · 只监听 127.0.0.1</tspan></text>
+  <rect class="svc" x="28" y="146" width="904" height="618" rx="14"/>
+  <text x="48" y="173"><tspan class="svc-t">Alf 后台服务</tspan><tspan class="s" dx="12">在这台 Mac 上 · launchd 常驻 · 网页只监听 127.0.0.1</tspan></text>
 
   <!-- 接入 -->
   <text class="row" x="52" y="222">接入</text>
@@ -92,7 +92,7 @@
   <text class="s" x="532" y="329">没任务到点时不调模型、不联网</text>
 
   <!-- 能力 -->
-  <text class="row" x="52" y="481">能力</text>
+  <text class="row" x="52" y="522">能力</text>
   <rect class="box" x="104" y="358" width="194" height="72" rx="10"/>
   <text class="t" x="116" y="381">时间</text>
   <text class="f" x="116" y="399">timeparse.py</text>
@@ -141,45 +141,61 @@
   <text class="t" x="734" y="545">把关</text>
   <text class="f" x="734" y="563">decide.py</text>
   <text class="s" x="734" y="581">是不是 · 选哪个</text>
+  <rect class="box" x="104" y="604" width="194" height="72" rx="10"/>
+  <text class="t" x="116" y="627">听录音</text>
+  <text class="f" x="116" y="645">hearing.py · voice.py</text>
+  <text class="s" x="116" y="663">谁在什么时候说了什么</text>
+  <rect class="box" x="310" y="604" width="194" height="72" rx="10"/>
+  <text class="t" x="322" y="627">身边的人</text>
+  <text class="f" x="322" y="645">people.py</text>
+  <text class="s" x="322" y="663">声纹 · 认人 · 起名</text>
+  <rect class="box" x="516" y="604" width="194" height="72" rx="10"/>
+  <text class="t" x="528" y="627">每天的事</text>
+  <text class="f" x="528" y="645">days.py</text>
+  <text class="s" x="528" y="663">听到的话 → 今天的事</text>
+  <rect class="box" x="722" y="604" width="194" height="72" rx="10"/>
+  <text class="t" x="734" y="627">收录音的门</text>
+  <text class="f" x="734" y="645">intake.py</text>
+  <text class="s" x="734" y="663">局域网 · 只进不出</text>
 
   <!-- 存储 -->
-  <text class="row" x="52" y="642">存储</text>
-  <rect class="box" x="104" y="608" width="812" height="58" rx="10"/>
-  <text class="t" x="118" y="632">SQLite</text>
-  <text class="f" x="902" y="632" text-anchor="end">db.py · data/alf.db</text>
-  <text class="s" x="118" y="652">时间线 · 记忆 · 提醒 · 约定 · 印象 · 设置和人设 · 学到的 · 邮件 · 日历快照 · 查过什么 · 模型调用记录</text>
+  <text class="row" x="52" y="724">存储</text>
+  <rect class="box" x="104" y="690" width="812" height="58" rx="10"/>
+  <text class="t" x="118" y="714">SQLite</text>
+  <text class="f" x="902" y="714" text-anchor="end">db.py · data/alf.db</text>
+  <text class="s" x="118" y="734">时间线 · 记忆 · 提醒 · 约定 · 印象 · 设置和人设 · 学到的 · 邮件 · 日历快照 · 听到的话 · 模型调用记录</text>
 
   <!-- 后台服务 ↔ 模型、外部来源 -->
-  <line class="arrow" x1="248" y1="690" x2="248" y2="718"/>
-  <path class="head" d="M248 684 l-4.5 7.5 h9 z M248 724 l-4.5 -7.5 h9 z"/>
-  <text class="f" x="260" y="708">llm.py · decide.py · asr.py · embed.py</text>
-  <line class="arrow" x1="712" y1="690" x2="712" y2="718"/>
-  <path class="head" d="M712 684 l-4.5 7.5 h9 z M712 724 l-4.5 -7.5 h9 z"/>
-  <text class="f" x="724" y="708">connectors/ · apple.py · sources.py</text>
+  <line class="arrow" x1="248" y1="772" x2="248" y2="800"/>
+  <path class="head" d="M248 766 l-4.5 7.5 h9 z M248 806 l-4.5 -7.5 h9 z"/>
+  <text class="f" x="260" y="790">llm.py · decide.py · asr.py · embed.py · voice.py</text>
+  <line class="arrow" x1="712" y1="772" x2="712" y2="800"/>
+  <path class="head" d="M712 766 l-4.5 7.5 h9 z M712 806 l-4.5 -7.5 h9 z"/>
+  <text class="f" x="724" y="790">connectors/ · apple.py · sources.py</text>
 
   <!-- 模型 -->
-  <rect class="models" x="28" y="726" width="440" height="108" rx="14"/>
-  <text class="models-t" x="42" y="750">模型</text>
-  <rect class="box" x="42" y="762" width="130" height="58" rx="10"/>
-  <text class="t" x="54" y="786">DeepSeek</text>
-  <text class="s" x="54" y="806">听懂 · 措辞 · 上网查</text>
-  <rect class="box" x="182" y="762" width="130" height="58" rx="10"/>
-  <text class="t" x="194" y="786">Jev（可选）</text>
-  <text class="s" x="194" y="806">是不是 · 选哪个</text>
-  <rect class="box" x="322" y="762" width="130" height="58" rx="10"/>
-  <text class="t" x="334" y="786">本机模型</text>
-  <text class="s" x="334" y="806">Whisper · e5 向量</text>
+  <rect class="models" x="28" y="808" width="440" height="108" rx="14"/>
+  <text class="models-t" x="42" y="832">模型</text>
+  <rect class="box" x="42" y="844" width="130" height="58" rx="10"/>
+  <text class="t" x="54" y="868">DeepSeek</text>
+  <text class="s" x="54" y="888">听懂 · 措辞 · 上网查</text>
+  <rect class="box" x="182" y="844" width="130" height="58" rx="10"/>
+  <text class="t" x="194" y="868">Jev（可选）</text>
+  <text class="s" x="194" y="888">是不是 · 选哪个</text>
+  <rect class="box" x="322" y="844" width="130" height="58" rx="10"/>
+  <text class="t" x="334" y="868">本机模型</text>
+  <text class="s" x="334" y="888">转写 · 声纹 · e5</text>
 
   <!-- 外部来源 -->
-  <rect class="group" x="492" y="726" width="440" height="108" rx="14"/>
-  <text class="row" x="506" y="750">外部来源</text>
-  <rect class="box" x="506" y="762" width="130" height="58" rx="10"/>
-  <text class="t" x="518" y="786">邮箱</text>
-  <text class="s" x="518" y="806">Gmail · 163 · QQ</text>
-  <rect class="box" x="646" y="762" width="130" height="58" rx="10"/>
-  <text class="t" x="658" y="786">日历 · 提醒事项</text>
-  <text class="s" x="658" y="806">EventKit 读写</text>
-  <rect class="box" x="786" y="762" width="130" height="58" rx="10"/>
-  <text class="t" x="798" y="786">MCP 服务器</text>
-  <text class="s" x="798" y="806">特殊日子 · 新闻</text>
+  <rect class="group" x="492" y="808" width="440" height="108" rx="14"/>
+  <text class="row" x="506" y="832">外部来源</text>
+  <rect class="box" x="506" y="844" width="130" height="58" rx="10"/>
+  <text class="t" x="518" y="868">邮箱</text>
+  <text class="s" x="518" y="888">Gmail · 163 · QQ</text>
+  <rect class="box" x="646" y="844" width="130" height="58" rx="10"/>
+  <text class="t" x="658" y="868">日历 · 提醒事项</text>
+  <text class="s" x="658" y="888">EventKit 读写</text>
+  <rect class="box" x="786" y="844" width="130" height="58" rx="10"/>
+  <text class="t" x="798" y="868">MCP 服务器</text>
+  <text class="s" x="798" y="888">特殊日子 · 新闻</text>
 </svg>

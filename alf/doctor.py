@@ -122,6 +122,12 @@ def collect(cfg: Settings, status: dict | None, send_test: bool = False) -> list
     out.append(Check("embed", True if found["present"] else None, "按意思检索",
                      f"嵌入模型在本机（{found['model']}）" if found["present"]
                      else "嵌入模型还没下载：现在只按字面找。运行 `uv run alf index` 下载（约 490 MB）并建好索引"))
+    # 7. 听录音：同样只看模型在不在。没有的话别的照常用，只是手表传来的录音不会被听。
+    from . import voice
+
+    out.append(Check("hearing", True if voice.status()["present"] else None, "听录音",
+                     "语音模型在本机" if voice.status()["present"]
+                     else "语音模型还没下载：手表传来的录音不会被听。运行 `uv run alf hear --setup` 下载（约 200 MB）"))
     return out
 
 

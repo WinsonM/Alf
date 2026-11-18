@@ -9,7 +9,7 @@ import logging
 import re
 from datetime import datetime, timedelta
 
-from . import embed, followup, impressions, lessons, persona, prefs, retrieve, sources, timeparse
+from . import days, embed, followup, hearing, impressions, lessons, persona, prefs, retrieve, sources, timeparse, voice
 from .agent import duration, format_reminders
 from .calendar_sync import calendar_alerts_job, calendar_job
 from .config import Settings
@@ -27,6 +27,8 @@ log = logging.getLogger("alf.jobs")
 LATE_SECONDS = 600   # 晚了这么久才发出去的提醒，标成"补发"（多半是电脑当时在睡觉）
 # 只查本机数据库、几毫秒就跑完的任务走快车道：它们对时间敏感，不能被要联网、要等模型的任务拖住。
 FAST_JOBS = {"reminders", "followups", "calendar_alerts"}
+# 听录音自己走一条车道：转写一批要十几秒到几十秒，攒了一天的录音要连着听好一阵，不能让查邮件和每晚汇总跟着等。
+HEAVY_JOBS = {"hearing"}
 
 
 def reminder_text(r: Reminder, late: bool) -> str:
@@ -188,8 +190,10 @@ def digest_job(ctx: JobContext) -> str | None:
     facts = Memory(ctx.conn, ctx.decider, ctx.cfg.decision_threshold).recorded_since(since)
     ask = propose_rule(ctx, state)          # 同类的纠正攒够了：问他要不要定成规矩
     seen = impressions.digest_lines(ctx.conn, int(ctx.now.timestamp()))   # 新形成的印象：是推断，更要给他看一眼
+    # 手表录音里听到的事：机器听写加上认人，比聊天里记的更容易错，所以也在这里给他过一眼
+    heard = days.digest_lines(ctx.conn, ctx.now) if ctx.prefs.get("hearing.enabled", True) else None
     ctx.cursor = json.dumps(state)
-    if not facts and not ask and not seen:
+    if not facts and not ask and not seen and not heard:
         return None
     parts = []
     if facts:
@@ -202,12 +206,15 @@ def digest_job(ctx: JobContext) -> str | None:
         # 记下"第几条是哪条记忆"，用户回复"第2条不对"时对话那边要用。
         state.update(until=int(ctx.now.timestamp()), ids=[f.id for f in facts])
         ctx.cursor = json.dumps(state)
+    if heard:
+        parts.append(heard)
     if seen:
         parts.append(seen)
     if ask:
-        parts.append(("另外，" if facts or seen else "") + ask)
+        parts.append(("另外，" if facts or seen or heard else "") + ask)
     ctx.post("digest", "\n\n".join(parts))
-    done = ([f"汇总了 {len(facts)} 条新记忆"] if facts else []) + (["说了新形成的印象"] if seen else []) + (["提议了一条规矩"] if ask else [])
+    done = (([f"汇总了 {len(facts)} 条新记忆"] if facts else []) + (["说了今天听到的事"] if heard else [])
+            + (["说了新形成的印象"] if seen else []) + (["提议了一条规矩"] if ask else []))
     return "，".join(done)
 
 
@@ -634,6 +641,11 @@ def build_jobs(cfg: Settings, connectors: list[Connector], current: dict | None 
     if cfg.llm is not None and p["digest.enabled"]:   # 自动记忆只在有生成式模型时才有
         jobs.append(Job("digest", "今日记忆汇总", digest_job, daily_at=prefs.hhmm(p["digest.at"])))
     jobs.append(Job("index", "给记忆建检索索引", index_job, every=120))
+    if p.get("hearing.enabled", True) and voice.files() is not None:
+        # 本机有语音模型才排这两个任务：没有的话，任务表里不该挂着两个永远什么都不做的任务
+        jobs.append(Job("hearing", "听手表传来的录音", hearing.hearing_job, every=20))
+        if cfg.llm is not None:
+            jobs.append(Job("days", "把听到的话整理成每天的事", days.days_job, every=600))
     if any(p.get(f"sources.{name}") for name in sources.BUILTIN) or p.get("mcp.servers"):
         jobs.append(Job("sources", "信息汇总（MCP）", sources_job, every=1800))
     if cfg.llm is not None and p.get("proactive.enabled"):

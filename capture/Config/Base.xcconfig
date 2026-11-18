@@ -1,0 +1,4 @@
+// 签名信息放在 Local.xcconfig 里（不进仓库）。没有那个文件时用下面的占位值：能在模拟器里编译，装不到真机上。
+ALF_TEAM =
+ALF_BUNDLE_PREFIX = com.example
+#include? "Local.xcconfig"

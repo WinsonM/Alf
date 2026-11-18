@@ -1,0 +1,5 @@
+// 抄成 Local.xcconfig，填上你自己的：
+// ALF_TEAM 是 Apple 开发者账号的 Team ID（Xcode → Settings → Accounts 里能看到，十位字母数字）
+// ALF_BUNDLE_PREFIX 是你自己的反向域名前缀
+ALF_TEAM = ABCDE12345
+ALF_BUNDLE_PREFIX = com.yourname
