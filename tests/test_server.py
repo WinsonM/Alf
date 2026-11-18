@@ -78,7 +78,7 @@ def test_status_reports_jobs_counts_and_connectors(client):
     assert s["backend"] == "offline" and s["tz"] == "Australia/Sydney"
     assert [(j["name"], j["schedule"], j["last_run"]) for j in s["jobs"]] == [
         ("reminders", "每 10 秒", None), ("followups", "每 1 分钟", None), ("calendar", "每 5 分钟", None),
-        ("calendar_alerts", "每 30 秒", None), ("sources", "每 30 分钟", None)]
+        ("calendar_alerts", "每 30 秒", None), ("index", "每 2 分钟", None), ("sources", "每 30 分钟", None)]
     assert s["counts"] == {"reminders": 1, "facts": 0, "inbox": 0}
     assert s["connectors"] == [{"name": "email", "label": "邮箱", "configured": False}]
     assert s["heartbeat"]["alive"] is False   # 这个测试没启动心跳线程

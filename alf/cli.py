@@ -53,6 +53,7 @@ def main(argv: list[str] | None = None) -> int:
     sub.add_parser("app", help="打开 Alf.app（原生窗口；第一次会先编译）")
     sub.add_parser("check-email", help="自检邮箱配置（只读）")
     sub.add_parser("organize", help="整理旧记忆：补上主题和到期日（只改归类，不改内容）")
+    sub.add_parser("index", help="下载按意思检索用的嵌入模型（约 490 MB），并给已有的记忆、对话、邮件建好索引")
     p = sub.add_parser("service", help="把 Alf 注册成登录自启的后台服务（macOS）")
     p.add_argument("action", choices=["install", "uninstall", "status"])
     p.add_argument("--port", type=int)
@@ -78,6 +79,8 @@ def main(argv: list[str] | None = None) -> int:
         return check_email(cfg)
     if args.command == "organize":
         return organize_memory(cfg, offline=args.offline)
+    if args.command == "index":
+        return build_index(cfg)
     if args.command == "service":
         from . import service
 
@@ -85,6 +88,38 @@ def main(argv: list[str] | None = None) -> int:
             return service.install(args.port or cfg.web_port, offline=args.offline, keep_awake=args.keep_awake)
         return service.uninstall() if args.action == "uninstall" else service.status()
     return chat(cfg, offline=args.offline)
+
+
+def build_index(cfg: Settings) -> int:
+    """下载嵌入模型（没有的话），把库里现有的东西全部建好检索索引。后台服务平时会自己跟上新增的；这条命令用在第一次。"""
+    from datetime import datetime
+
+    from . import embed, retrieve
+
+    if embed.files() is None:
+        print(f"下载嵌入模型 {embed.MODEL}（约 490 MB，存到 ~/.cache/huggingface）……")
+        try:
+            embed.files(download=True)
+        except Exception as e:
+            print(f"没下载成：{e}")
+            return 1
+    embedder = embed.default()
+    if embedder is None:
+        print("嵌入模型用不了（缺 onnxruntime？运行 uv sync 试试）。")
+        return 1
+    conn = db.connect(cfg.db_path)
+    try:
+        while True:
+            done = retrieve.sync(conn, embedder, int(datetime.now(cfg.tz).timestamp()))
+            if done["embedded"]:
+                print(f"  算了 {done['embedded']} 条，还剩 {done['left']} 条")
+            if not done["left"]:
+                break
+        label = {"fact": "记忆", "chunk": "对话片段", "mail": "邮件"}
+        print("索引好了：" + "，".join(f"{label[k]} {v['embedded']}/{v['total']}" for k, v in retrieve.coverage(conn, embedder.name).items()))
+    finally:
+        conn.close()
+    return 0
 
 
 def organize_memory(cfg: Settings, offline: bool) -> int:

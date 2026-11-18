@@ -1,0 +1,200 @@
+{"id": "f1", "kind": "fact", "text": "对芒果过敏", "category": "health", "day": -80}
+{"id": "f2", "kind": "fact", "text": "乳糖不耐，喝牛奶会拉肚子", "category": "health", "day": -80}
+{"id": "f3", "kind": "fact", "text": "女朋友叫小满，在上海工作", "category": "relationship", "day": -79}
+{"id": "f4", "kind": "fact", "text": "小满的生日是3月9日", "category": "important_date", "day": -79}
+{"id": "f5", "kind": "fact", "text": "室友叫阿哲，学土木的", "category": "relationship", "day": -78}
+{"id": "f6", "kind": "fact", "text": "妈妈的生日是12月2日", "category": "important_date", "day": -77}
+{"id": "f7", "kind": "fact", "text": "导师是 Brooks 教授，每周二下午开组会", "category": "study_work", "day": -77}
+{"id": "f8", "kind": "fact", "text": "这学期在上 COMP9101 和 STAT8802", "category": "study_work", "day": -76}
+{"id": "f9", "kind": "fact", "text": "在读数据科学硕士，明年七月毕业", "category": "study_work", "day": -76}
+{"id": "f10", "kind": "fact", "text": "住在 Carlton，离学校走路十五分钟", "category": "location", "day": -75}
+{"id": "f11", "kind": "fact", "text": "养了一只橘猫叫年糕", "category": "other", "day": -75}
+{"id": "f12", "kind": "fact", "text": "喜欢喝冰美式，不加糖", "category": "preference", "day": -74}
+{"id": "f13", "kind": "fact", "text": "不吃香菜", "category": "preference", "day": -74}
+{"id": "f14", "kind": "fact", "text": "每周六上午在补习机构教高中数学", "category": "study_work", "day": -73}
+{"id": "f15", "kind": "fact", "text": "在学吉他，老师每周四晚上来上课", "category": "preference", "day": -72}
+{"id": "f16", "kind": "fact", "text": "护照明年四月到期", "category": "important_date", "day": -71}
+{"id": "f17", "kind": "fact", "text": "银行卡主要用 ANZ", "category": "other", "day": -70}
+{"id": "f18", "kind": "fact", "text": "学生签证到 2027 年 8 月", "category": "important_date", "day": -70}
+{"id": "f19", "kind": "fact", "text": "高中同学 Kai 在悉尼工作，是做前端的", "category": "relationship", "day": -69}
+{"id": "f20", "kind": "fact", "text": "爸爸有高血压，在吃降压药", "category": "relationship", "day": -68}
+{"id": "f21", "kind": "fact", "text": "手机用的是 Optus 的套餐，每月 45 刀", "category": "other", "day": -66}
+{"id": "f22", "kind": "fact", "text": "电脑是 14 寸的 MacBook Pro", "category": "other", "day": -65}
+{"id": "f23", "kind": "fact", "text": "睡得晚，一般一点以后才睡", "category": "preference", "day": -64}
+{"id": "f24", "kind": "fact", "text": "近视 450 度，平时戴隐形", "category": "health", "day": -63}
+{"id": "f25", "kind": "fact", "text": "房租每两周交一次，每次 520 刀", "category": "other", "day": -62}
+{"id": "f26", "kind": "fact", "text": "喜欢看科幻小说，最喜欢《三体》", "category": "preference", "day": -60}
+{"id": "f27", "kind": "fact", "text": "膝盖去年打球受过伤，不能跑太久", "category": "health", "day": -58}
+{"id": "f28", "kind": "fact", "text": "想毕业后留在本地找数据分析的工作", "category": "study_work", "day": -50}
+{"id": "f29", "kind": "fact", "text": "小满打算明年春天辞职出来读书", "category": "relationship", "day": -40}
+{"id": "f30", "kind": "fact", "text": "阿哲的女朋友叫 Mia", "category": "relationship", "day": -35}
+{"id": "f31", "kind": "fact", "text": "深蹲做组用 80kg", "category": "health", "day": -55, "topic": "健身", "slot": "深蹲"}
+{"id": "f32", "kind": "fact", "text": "卧推做组用 60kg", "category": "health", "day": -55, "topic": "健身", "slot": "卧推"}
+{"id": "f33", "kind": "fact", "text": "硬拉最重拉过 100kg", "category": "health", "day": -30, "topic": "健身", "slot": "硬拉"}
+{"id": "f34", "kind": "fact", "text": "引体向上一次能做 8 个", "category": "health", "day": -54, "topic": "健身", "slot": "引体向上"}
+{"id": "f35", "kind": "fact", "text": "高位下拉用 50kg", "category": "health", "day": -54, "topic": "健身", "slot": "高位下拉"}
+{"id": "f36", "kind": "fact", "text": "哑铃肩推单边 16kg", "category": "health", "day": -53, "topic": "健身", "slot": "哑铃肩推"}
+{"id": "f37", "kind": "fact", "text": "每周练四次：胸、背、腿、肩各一天", "category": "health", "day": -53, "topic": "健身", "slot": "训练安排"}
+{"id": "f38", "kind": "fact", "text": "蛋白粉每天一勺，训练后喝", "category": "health", "day": -52, "topic": "健身", "slot": "蛋白粉"}
+{"id": "f39", "kind": "fact", "text": "COMP9101 期末考在11月24日上午九点", "category": "study_work", "day": -20, "topic": "COMP9101", "slot": "期末考"}
+{"id": "f40", "kind": "fact", "text": "COMP9101 大作业和阿澜、Jo 一组", "category": "study_work", "day": -45, "topic": "COMP9101", "slot": "分组"}
+{"id": "f41", "kind": "fact", "text": "COMP9101 的助教是 Priya，周三下午答疑", "category": "study_work", "day": -44, "topic": "COMP9101", "slot": "助教"}
+{"id": "f42", "kind": "fact", "text": "COMP9101 大作业做的是推荐系统", "category": "study_work", "day": -43, "topic": "COMP9101", "slot": "大作业"}
+{"id": "f43", "kind": "fact", "text": "COMP9101 期中考了 78 分", "category": "study_work", "day": -25, "topic": "COMP9101", "slot": "期中成绩"}
+{"id": "f44", "kind": "fact", "text": "12月15日晚上的航班回上海", "category": "other", "day": -15, "topic": "回国", "slot": "去程"}
+{"id": "f45", "kind": "fact", "text": "回国要给小满带一瓶香水", "category": "other", "day": -14, "topic": "回国", "slot": "要带的东西"}
+{"id": "f46", "kind": "fact", "text": "1月20日回墨尔本", "category": "other", "day": -15, "topic": "回国", "slot": "返程"}
+{"id": "f47", "kind": "fact", "text": "回国要去办港澳通行证", "category": "other", "day": -10, "topic": "回国", "slot": "要办的事"}
+{"id": "f48", "kind": "fact", "text": "在练《天空之城》的指弹", "category": "preference", "day": -33, "topic": "吉他", "slot": "在练的曲子"}
+{"id": "f49", "kind": "fact", "text": "吉他是雅马哈 FG800", "category": "preference", "day": -70, "topic": "吉他", "slot": "琴"}
+{"id": "f50", "kind": "fact", "text": "F 和弦一直按不响", "category": "preference", "day": -32, "topic": "吉他", "slot": "卡住的地方"}
+{"id": "m1", "kind": "moment", "text": "9月5日和阿哲去大洋路自驾，在十二门徒看了日落", "day": -74, "importance": 6}
+{"id": "m2", "kind": "moment", "text": "10月19日第一次硬拉上了 100kg", "day": -30, "importance": 6}
+{"id": "m3", "kind": "moment", "text": "10月24日 COMP9101 期中考完，感觉一般", "day": -25, "importance": 5}
+{"id": "m4", "kind": "moment", "text": "9月20日年糕半夜把水杯打翻了，键盘进了水", "day": -59, "importance": 4}
+{"id": "m5", "kind": "moment", "text": "9月28日和小满视频的时候吵了一架，因为忘了纪念日", "day": -51, "importance": 7}
+{"id": "m6", "kind": "moment", "text": "10月3日补习班的学生考了全班第一，家长送了一盒巧克力", "day": -46, "importance": 5}
+{"id": "m7", "kind": "moment", "text": "10月8日第一次在吉他课上完整弹完一首曲子", "day": -41, "importance": 5}
+{"id": "m8", "kind": "moment", "text": "10月13日组会上被 Brooks 教授夸了可视化做得好", "day": -36, "importance": 6}
+{"id": "m9", "kind": "moment", "text": "9月12日 Kai 来墨尔本出差，一起吃了火锅", "day": -67, "importance": 5}
+{"id": "m10", "kind": "moment", "text": "10月1日发烧到 39 度，在家躺了两天", "day": -48, "importance": 5}
+{"id": "m11", "kind": "moment", "text": "10月27日膝盖旧伤复发，停了一周练腿", "day": -22, "importance": 5}
+{"id": "m12", "kind": "moment", "text": "10月30日拿到暑期实习的面试邀请，是一家做物流的公司", "day": -19, "importance": 7}
+{"id": "m13", "kind": "moment", "text": "11月7日实习面试没过，挺失落的", "day": -11, "importance": 7}
+{"id": "m14", "kind": "moment", "text": "8月25日和阿哲一起搬进了现在的公寓", "day": -85, "importance": 7}
+{"id": "m15", "kind": "moment", "text": "9月16日手机在电车上被人偷了", "day": -63, "importance": 6}
+{"id": "m16", "kind": "moment", "text": "9月22日第一次做红烧肉，放咸了", "day": -57, "importance": 3}
+{"id": "m17", "kind": "moment", "text": "10月14日夸 Alf 提醒得及时，赶上了组会", "day": -35, "importance": 5, "ours": true}
+{"id": "m18", "kind": "moment", "text": "10月22日因为 Alf 把考试时间记错冲它发了火", "day": -27, "importance": 5, "ours": true}
+{"id": "m19", "kind": "moment", "text": "11月2日和阿哲通宵赶 STAT8802 的作业", "day": -16, "importance": 5}
+{"id": "m20", "kind": "moment", "text": "10月11日参加学校的黑客松，拿了三等奖", "day": -38, "importance": 7}
+{"id": "m21", "kind": "moment", "text": "9月29日到10月5日小满来墨尔本玩了一周，一起去了企鹅岛", "day": -44, "importance": 8}
+{"id": "m22", "kind": "moment", "text": "11月10日视频里给妈妈唱了生日歌，提前过的", "day": -8, "importance": 5}
+{"id": "s1a", "kind": "said", "text": "今天去了 Lygon 街那家意面店", "day": -58, "minute": 720, "burst": "s1"}
+{"id": "s1b", "kind": "said", "text": "叫 Tiamo", "day": -58, "minute": 721, "burst": "s1"}
+{"id": "s1c", "kind": "said", "text": "奶油培根面一般 但提拉米苏绝了", "day": -58, "minute": 722, "burst": "s1"}
+{"id": "s2a", "kind": "said", "text": "阿哲说他想换专业", "day": -57, "minute": 1290, "burst": "s2"}
+{"id": "s2b", "kind": "said", "text": "他觉得土木出来找不到工作", "day": -57, "minute": 1291, "burst": "s2"}
+{"id": "s2c", "kind": "said", "text": "我劝他再想想", "day": -57, "minute": 1292, "burst": "s2"}
+{"id": "s3a", "kind": "said", "text": "新买的降噪耳机到了", "day": -56, "minute": 600, "burst": "s3"}
+{"id": "s3b", "kind": "said", "text": "索尼的 XM5", "day": -56, "minute": 601, "burst": "s3"}
+{"id": "s3c", "kind": "said", "text": "电车上终于安静了", "day": -56, "minute": 602, "burst": "s3"}
+{"id": "s4a", "kind": "said", "text": "今天组会讲的那篇论文完全没看懂", "day": -55, "minute": 960, "burst": "s4"}
+{"id": "s4b", "kind": "said", "text": "是讲因果推断的", "day": -55, "minute": 961, "burst": "s4"}
+{"id": "s4c", "kind": "said", "text": "回去得补补课", "day": -55, "minute": 962, "burst": "s4"}
+{"id": "s5a", "kind": "said", "text": "年糕今天去打疫苗了", "day": -54, "minute": 1020, "burst": "s5"}
+{"id": "s5b", "kind": "said", "text": "兽医说它有点胖 要减到五公斤", "day": -54, "minute": 1021, "burst": "s5"}
+{"id": "s6a", "kind": "said", "text": "房东发消息说下个月要涨房租", "day": -52, "minute": 840, "burst": "s6"}
+{"id": "s6b", "kind": "said", "text": "一周涨二十刀", "day": -52, "minute": 841, "burst": "s6"}
+{"id": "s6c", "kind": "said", "text": "有点想搬", "day": -52, "minute": 842, "burst": "s6"}
+{"id": "s7a", "kind": "said", "text": "小满说她领导又让她周末加班", "day": -50, "minute": 1320, "burst": "s7"}
+{"id": "s7b", "kind": "said", "text": "她快撑不住了", "day": -50, "minute": 1321, "burst": "s7"}
+{"id": "s8a", "kind": "said", "text": "看完了沙丘2", "day": -49, "minute": 1380, "burst": "s8"}
+{"id": "s8b", "kind": "said", "text": "视觉效果炸裂", "day": -49, "minute": 1381, "burst": "s8"}
+{"id": "s8c", "kind": "said", "text": "但我觉得节奏比第一部慢", "day": -49, "minute": 1382, "burst": "s8"}
+{"id": "s9a", "kind": "said", "text": "今天练腿练吐了", "day": -47, "minute": 1140, "burst": "s9"}
+{"id": "s9b", "kind": "said", "text": "深蹲加到 85 做了两个就不行了", "day": -47, "minute": 1141, "burst": "s9"}
+{"id": "s10a", "kind": "said", "text": "我妈让我过年一定回去", "day": -45, "minute": 780, "burst": "s10"}
+{"id": "s10b", "kind": "said", "text": "说外婆想我了", "day": -45, "minute": 781, "burst": "s10"}
+{"id": "s11a", "kind": "said", "text": "学校图书馆三楼靠窗的位置最安静", "day": -43, "minute": 900, "burst": "s11"}
+{"id": "s11b", "kind": "said", "text": "以后就去那儿", "day": -43, "minute": 901, "burst": "s11"}
+{"id": "s12a", "kind": "said", "text": "Kai 说他们公司在招实习生", "day": -42, "minute": 1260, "burst": "s12"}
+{"id": "s12b", "kind": "said", "text": "让我把简历发他", "day": -42, "minute": 1261, "burst": "s12"}
+{"id": "s13a", "kind": "said", "text": "电费单来了 这季度三百多", "day": -40, "minute": 660, "burst": "s13"}
+{"id": "s13b", "kind": "said", "text": "空调开太狠了", "day": -40, "minute": 661, "burst": "s13"}
+{"id": "s14a", "kind": "said", "text": "今天第一次给学生讲导数", "day": -39, "minute": 780, "burst": "s14"}
+{"id": "s14b", "kind": "said", "text": "有个小孩一直问为什么", "day": -39, "minute": 781, "burst": "s14"}
+{"id": "s14c", "kind": "said", "text": "还挺有成就感的", "day": -39, "minute": 782, "burst": "s14"}
+{"id": "s15", "kind": "said", "text": "隐形眼镜又戴超时了 眼睛好红", "day": -37, "minute": 1350, "burst": "s15"}
+{"id": "s16a", "kind": "said", "text": "超市的牛油果打折 买了六个", "day": -36, "minute": 1080, "burst": "s16"}
+{"id": "s16b", "kind": "said", "text": "这周天天牛油果吐司", "day": -36, "minute": 1081, "burst": "s16"}
+{"id": "s17a", "kind": "said", "text": "STAT8802 的作业要用 R 写", "day": -34, "minute": 870, "burst": "s17"}
+{"id": "s17b", "kind": "said", "text": "我只会 Python", "day": -34, "minute": 871, "burst": "s17"}
+{"id": "s17c", "kind": "said", "text": "头大", "day": -34, "minute": 872, "burst": "s17"}
+{"id": "s18a", "kind": "said", "text": "吉他老师说我节奏感还行", "day": -33, "minute": 1260, "burst": "s18"}
+{"id": "s18b", "kind": "said", "text": "就是左手太僵", "day": -33, "minute": 1261, "burst": "s18"}
+{"id": "s19a", "kind": "said", "text": "和阿哲去看了澳网", "day": -31, "minute": 1410, "burst": "s19"}
+{"id": "s19b", "kind": "said", "text": "坐在最后一排", "day": -31, "minute": 1411, "burst": "s19"}
+{"id": "s19c", "kind": "said", "text": "但气氛真的好", "day": -31, "minute": 1412, "burst": "s19"}
+{"id": "s20a", "kind": "said", "text": "打算黑五买个显示器", "day": -29, "minute": 690, "burst": "s20"}
+{"id": "s20b", "kind": "said", "text": "看中了戴尔那款 27 寸 4K 的", "day": -29, "minute": 691, "burst": "s20"}
+{"id": "s21a", "kind": "said", "text": "今天电车又晚点二十分钟", "day": -28, "minute": 560, "burst": "s21"}
+{"id": "s21b", "kind": "said", "text": "差点迟到组会", "day": -28, "minute": 561, "burst": "s21"}
+{"id": "s22a", "kind": "said", "text": "小满给我寄了一箱零食", "day": -26, "minute": 1110, "burst": "s22"}
+{"id": "s22b", "kind": "said", "text": "有辣条和螺蛳粉", "day": -26, "minute": 1111, "burst": "s22"}
+{"id": "s22c", "kind": "said", "text": "阿哲闻到螺蛳粉差点搬走", "day": -26, "minute": 1112, "burst": "s22"}
+{"id": "s23a", "kind": "said", "text": "我想考个驾照", "day": -24, "minute": 930, "burst": "s23"}
+{"id": "s23b", "kind": "said", "text": "这边要先过理论考", "day": -24, "minute": 931, "burst": "s23"}
+{"id": "s23c", "kind": "said", "text": "听说很简单", "day": -24, "minute": 932, "burst": "s23"}
+{"id": "s24a", "kind": "said", "text": "昨晚梦到期末挂科了", "day": -23, "minute": 510, "burst": "s24"}
+{"id": "s24b", "kind": "said", "text": "吓醒了", "day": -23, "minute": 511, "burst": "s24"}
+{"id": "s25a", "kind": "said", "text": "补习班老板说下学期给我涨时薪", "day": -21, "minute": 1230, "burst": "s25"}
+{"id": "s25b", "kind": "said", "text": "从三十五涨到四十", "day": -21, "minute": 1231, "burst": "s25"}
+{"id": "s26a", "kind": "said", "text": "牙有点疼", "day": -20, "minute": 1300, "burst": "s26"}
+{"id": "s26b", "kind": "said", "text": "可能是智齿", "day": -20, "minute": 1301, "burst": "s26"}
+{"id": "s26c", "kind": "said", "text": "得约个牙医", "day": -20, "minute": 1302, "burst": "s26"}
+{"id": "s27a", "kind": "said", "text": "看牙要两百多刀 还不走保险", "day": -18, "minute": 1010, "burst": "s27"}
+{"id": "s27b", "kind": "said", "text": "心疼", "day": -18, "minute": 1011, "burst": "s27"}
+{"id": "s28a", "kind": "said", "text": "推荐系统的大作业 Jo 一直不回消息", "day": -17, "minute": 1330, "burst": "s28"}
+{"id": "s28b", "kind": "said", "text": "阿澜和我快把活干完了", "day": -17, "minute": 1331, "burst": "s28"}
+{"id": "s29a", "kind": "said", "text": "今天在唐人街发现一家很正的川菜", "day": -15, "minute": 1200, "burst": "s29"}
+{"id": "s29b", "kind": "said", "text": "叫蜀香园", "day": -15, "minute": 1201, "burst": "s29"}
+{"id": "s29c", "kind": "said", "text": "水煮鱼够辣", "day": -15, "minute": 1202, "burst": "s29"}
+{"id": "s30a", "kind": "said", "text": "我爸体检说血压控制得还行", "day": -13, "minute": 640, "burst": "s30"}
+{"id": "s30b", "kind": "said", "text": "松了口气", "day": -13, "minute": 641, "burst": "s30"}
+{"id": "s31a", "kind": "said", "text": "下周要交实习的 cover letter", "day": -12, "minute": 1370, "burst": "s31"}
+{"id": "s31b", "kind": "said", "text": "还没动笔", "day": -12, "minute": 1371, "burst": "s31"}
+{"id": "s32a", "kind": "said", "text": "年糕把我的吉他弦咬断了一根", "day": -9, "minute": 1150, "burst": "s32"}
+{"id": "s32b", "kind": "said", "text": "还是一弦", "day": -9, "minute": 1151, "burst": "s32"}
+{"id": "s33a", "kind": "said", "text": "最近在听一个播客叫忽左忽右", "day": -7, "minute": 530, "burst": "s33"}
+{"id": "s33b", "kind": "said", "text": "通勤的时候听", "day": -7, "minute": 531, "burst": "s33"}
+{"id": "s34a", "kind": "said", "text": "健身房的年卡下个月到期", "day": -6, "minute": 1090, "burst": "s34"}
+{"id": "s34b", "kind": "said", "text": "续的话一年六百八", "day": -6, "minute": 1091, "burst": "s34"}
+{"id": "s35a", "kind": "said", "text": "Mia 来我们家做了咖喱", "day": -5, "minute": 1250, "burst": "s35"}
+{"id": "s35b", "kind": "said", "text": "比阿哲做的好吃多了", "day": -5, "minute": 1251, "burst": "s35"}
+{"id": "s36a", "kind": "said", "text": "今天暴雨 伞被吹翻了", "day": -4, "minute": 570, "burst": "s36"}
+{"id": "s36b", "kind": "said", "text": "全身湿透上了一节课", "day": -4, "minute": 571, "burst": "s36"}
+{"id": "s37", "kind": "said", "text": "终于把 F 和弦按响了", "day": -3, "minute": 1340, "burst": "s37"}
+{"id": "s38a", "kind": "said", "text": "我在想要不要读博", "day": -2, "minute": 1290, "burst": "s38"}
+{"id": "s38b", "kind": "said", "text": "Brooks 说可以考虑他的项目", "day": -2, "minute": 1291, "burst": "s38"}
+{"id": "s38c", "kind": "said", "text": "但我想先工作", "day": -2, "minute": 1292, "burst": "s38"}
+{"id": "mail1", "kind": "mail", "sender": "University Fees Office <fees@uni.example>", "title": "Semester 2 tuition invoice", "gist": "第二学期学费 12,400 澳元，11月30日前交清，逾期收滞纳金", "day": -20, "tier": "now"}
+{"id": "mail2", "kind": "mail", "sender": "Harbourline Realty <leasing@harbourline.example>", "title": "Lease renewal offer", "gist": "12月租约到期，续签的话周租从 520 涨到 540，两周内答复", "day": -16, "tier": "now"}
+{"id": "mail3", "kind": "mail", "sender": "ANZ <statements@anz.example>", "title": "Your October statement is ready", "gist": "十月的对账单出了", "day": -17, "tier": "later"}
+{"id": "mail4", "kind": "mail", "sender": "Dr. Brooks <brooks@uni.example>", "title": "Group meeting moved", "gist": "下周组会从周二改到周四下午三点", "day": -9, "tier": "now"}
+{"id": "mail5", "kind": "mail", "sender": "COMP9101 Canvas <notifications@canvas.example>", "title": "Assignment deadline extended", "gist": "COMP9101 大作业的截止日期延到 11月20日 23:59", "day": -12, "tier": "later"}
+{"id": "mail6", "kind": "mail", "sender": "Skyward Air <noreply@skyward.example>", "title": "Booking confirmation MEL–PVG", "gist": "12月15日 21:40 墨尔本飞上海的行程确认，托运行李 30 公斤", "day": -15, "tier": "later"}
+{"id": "mail7", "kind": "mail", "sender": "FitYard <members@fityard.example>", "title": "Your membership expires soon", "gist": "健身房年卡 12月10日到期，续费一年 680 澳元", "day": -6, "tier": "later"}
+{"id": "mail8", "kind": "mail", "sender": "BrightSmile Dental <reception@brightsmile.example>", "title": "Appointment confirmation", "gist": "11月12日下午三点拔智齿的预约已确认，术前两小时不要吃东西", "day": -14, "tier": "now"}
+{"id": "mail9", "kind": "mail", "sender": "Optus <billing@optus.example>", "title": "Your bill is ready", "gist": "本月话费 45 澳元，自动扣款", "day": -11, "tier": "later"}
+{"id": "mail10", "kind": "mail", "sender": "Summit Tutoring <admin@summit.example>", "title": "Term 1 timetable", "gist": "下学期的排课表：周六上午两节高二数学，时薪调到 40", "day": -19, "tier": "later"}
+{"id": "mail11", "kind": "mail", "sender": "University Library <library@uni.example>", "title": "Overdue item", "gist": "借的《因果推断入门》逾期三天，请尽快归还", "day": -41, "tier": "later"}
+{"id": "mail12", "kind": "mail", "sender": "Northwind Logistics HR <talent@northwind.example>", "title": "Interview invitation", "gist": "暑期数据分析实习的面试邀请，11月5日上午十点，线上", "day": -19, "tier": "now"}
+{"id": "mail13", "kind": "mail", "sender": "Northwind Logistics HR <talent@northwind.example>", "title": "Update on your application", "gist": "很遗憾这次没有通过面试，简历会保留在人才库", "day": -11, "tier": "later"}
+{"id": "mail14", "kind": "mail", "sender": "Medisure OSHC <service@medisure.example>", "title": "Policy renewal reminder", "gist": "海外学生医保 2月到期，可以在线续保", "day": -30, "tier": "later"}
+{"id": "mail15", "kind": "mail", "sender": "Campus Hackathon <team@hack.example>", "title": "Results and prize", "gist": "黑客松获得三等奖，奖金 300 澳元将打到登记的账户", "day": -37, "tier": "later"}
+{"id": "mail16", "kind": "mail", "sender": "Carlton Body Corporate <notice@bodycorp.example>", "title": "Water shut-off notice", "gist": "周三上午九点到十二点整栋楼停水检修", "day": -33, "tier": "later"}
+{"id": "mail17", "kind": "mail", "sender": "ParcelPoint <track@parcelpoint.example>", "title": "Your parcel is ready for collection", "gist": "包裹已到自提柜，三天内取件", "day": -26, "tier": "skip"}
+{"id": "mail18", "kind": "mail", "sender": "Amazon <order@amazon.example>", "title": "Order confirmation", "gist": "戴尔 27 寸 4K 显示器的订单已确认，预计 11月28日送达", "day": -3, "tier": "later"}
+{"id": "mail19", "kind": "mail", "sender": "PawCare Vet <clinic@pawcare.example>", "title": "Vaccination record", "gist": "年糕的疫苗记录和体检结果：体重 6.1 公斤，建议控制饮食", "day": -54, "tier": "later"}
+{"id": "mail20", "kind": "mail", "sender": "Careers Centre <careers@uni.example>", "title": "Graduate fair next month", "gist": "下个月的毕业生招聘会开放报名", "day": -22, "tier": "later"}
+{"id": "mail21", "kind": "mail", "sender": "BrightGrid Energy <bills@brightgrid.example>", "title": "Quarterly electricity bill", "gist": "本季度电费 312 澳元，12月1日前支付", "day": -40, "tier": "later"}
+{"id": "mail22", "kind": "mail", "sender": "Dr. Okafor <okafor@uni.example>", "title": "STAT8802 exam format", "gist": "STAT8802 期末改成开卷，可以带一张 A4 笔记", "day": -10, "tier": "now"}
+{"id": "mail23", "kind": "mail", "sender": "Leon <leon.guitar@mail.example>", "title": "下周的课", "gist": "下周四的吉他课改到周五晚上七点", "day": -8, "tier": "now"}
+{"id": "mail24", "kind": "mail", "sender": "Medisure OSHC <claims@medisure.example>", "title": "Claim outcome", "gist": "牙科的理赔申请没有通过：拔智齿不在学生医保的范围内", "day": -5, "tier": "later"}
+{"id": "mail25", "kind": "mail", "sender": "小满 <xiaoman@mail.example>", "title": "帮我看看简历", "gist": "小满发来她申请学校用的简历，想让他提提意见", "day": -13, "tier": "now"}
+{"id": "mail26", "kind": "mail", "sender": "Kai <kai@mail.example>", "title": "内推链接", "gist": "Kai 发来他们公司实习岗位的内推链接，月底截止", "day": -41, "tier": "now"}
+{"id": "mail27", "kind": "mail", "sender": "University IT <it@uni.example>", "title": "Password expiring", "gist": "学校账号的密码十天后过期", "day": -18, "tier": "skip"}
+{"id": "mail28", "kind": "mail", "sender": "Uniqlo <news@uniqlo.example>", "title": "Black Friday starts now", "gist": "黑五全场七折", "day": -4, "tier": "skip"}
+{"id": "mail29", "kind": "mail", "sender": "MenuDash <deals@menudash.example>", "title": "20% off your next order", "gist": "外卖优惠券", "day": -7, "tier": "skip"}
+{"id": "mail30", "kind": "mail", "sender": "BulkFuel <shop@bulkfuel.example>", "title": "Protein sale", "gist": "蛋白粉买二送一", "day": -28, "tier": "skip"}
+{"id": "mail31", "kind": "mail", "sender": "Spotify <no-reply@spotify.example>", "title": "Your receipt", "gist": "本月会员扣款 6.99 澳元", "day": -21, "tier": "skip"}
+{"id": "mail32", "kind": "mail", "sender": "Steam <noreply@steam.example>", "title": "Autumn sale", "gist": "秋季特卖开始", "day": -2, "tier": "skip"}
+{"id": "mail33", "kind": "mail", "sender": "Apple <no_reply@apple.example>", "title": "Your receipt from Apple", "gist": "iCloud 50GB 月费收据", "day": -24, "tier": "skip"}
+{"id": "mail34", "kind": "mail", "sender": "Harbourline Realty <inspections@harbourline.example>", "title": "Routine inspection", "gist": "11月18日上午例行检查，中介会进屋拍照", "day": -9, "tier": "now"}
+{"id": "mail35", "kind": "mail", "sender": "VicRoads <bookings@vicroads.example>", "title": "Learner test booking", "gist": "驾照理论考试约在 12月3日上午九点半", "day": -6, "tier": "later"}
+{"id": "mail36", "kind": "mail", "sender": "Graduations Office <graduations@uni.example>", "title": "Register for your ceremony", "gist": "毕业典礼开放报名", "day": -29, "tier": "later"}
+{"id": "mail37", "kind": "mail", "sender": "Dr. Brooks <brooks@uni.example>", "title": "Reference submitted", "gist": "给实习申请写的推荐信已经提交了", "day": -23, "tier": "later"}
+{"id": "mail38", "kind": "mail", "sender": "ANZ <security@anz.example>", "title": "New sign-in to your account", "gist": "账户在一台新设备上登录，不是本人请立刻联系", "day": -32, "tier": "now"}
+{"id": "mail39", "kind": "mail", "sender": "Tax Office <noreply@tax.example>", "title": "Lodge your tax return", "gist": "报税截止日期提醒", "day": -60, "tier": "later"}
+{"id": "mail40", "kind": "mail", "sender": "Chinese Students Association <csa@uni.example>", "title": "Mid-Autumn night", "gist": "中秋晚会报名，有月饼", "day": -65, "tier": "skip"}

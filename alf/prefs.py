@@ -63,6 +63,7 @@ def defaults(cfg: Settings) -> dict:
         "digest.at": f"{cfg.digest_at:%H:%M}" if cfg.digest_at else "21:30",
         "notify.desktop": True,              # 提醒到点时是否同时弹 Mac 的系统通知
         "memory.auto": True,                 # 是否自动从聊天里记事
+        "memory.semantic": True,             # 是否按意思检索（要本机有嵌入模型；没有就自动只按字面找）
         "reminders.default_hour": cfg.default_hour,
         "reminders.check_every": int(cfg.reminder_every),
         "email.every": int(cfg.mailboxes[0].every) if cfg.mailboxes else 300,
@@ -121,7 +122,7 @@ def validate(key: str, value):
     def fail(why: str):
         raise ValueError(f"{key}：{why}")
 
-    if key in ("style.emoji", "briefing.enabled", "digest.enabled", "notify.desktop", "memory.auto", "calendar.alerts", "followup.enabled",
+    if key in ("style.emoji", "briefing.enabled", "digest.enabled", "notify.desktop", "memory.auto", "memory.semantic", "calendar.alerts", "followup.enabled",
                "email.report", "impressions.enabled", "search.enabled",
                "proactive.enabled", "sources.days", "sources.calendar", "sources.reminders", "sources.news"):
         if not isinstance(value, bool):

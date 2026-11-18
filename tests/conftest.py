@@ -177,6 +177,16 @@ def never_launch_the_calendar_helper(monkeypatch, tmp_path):
 
 
 @pytest.fixture(autouse=True)
+def no_real_embedding_model(monkeypatch):
+    """按意思检索要把一个几百 MB 的模型装进内存。测试里一律当它不在（只按字面找）；
+    专门测向量的用例自己把 embed.default 换成一个假的。"""
+    from alf import embed
+
+    monkeypatch.setattr(embed, "default", lambda: None)
+    monkeypatch.setattr(embed, "files", lambda download=False: None)
+
+
+@pytest.fixture(autouse=True)
 def no_real_sources(monkeypatch):
     """汇总信息会启动 MCP 服务器、上网取新闻、打开读日历的小 App。测试里默认换成空快照；
     专门测汇总的用例自己用 real_gather 取回真的函数。"""

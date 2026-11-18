@@ -251,13 +251,18 @@ def report_cost(conn) -> None:
 
 def main() -> int:
     parser = argparse.ArgumentParser(prog="evals.run")
-    parser.add_argument("suite", choices=["timeparse", "routing", "memory", "guards"])
+    parser.add_argument("suite", choices=["timeparse", "routing", "memory", "guards", "retrieval"])
+    parser.add_argument("--verbose", action="store_true", help="retrieval only: list the questions each mode missed")
     parser.add_argument("--reps", type=int, default=1, help="repeat each case to measure run-to-run variance")
     parser.add_argument("--threshold", type=float, default=0.6, help="confidence Alf needs before acting")
     parser.add_argument("--backend", choices=["jev", "deepseek"], default="jev", help="who answers the closed questions")
     parser.add_argument("--offline", action="store_true", help="use keyword rules instead of Jev (runner check only)")
     parser.add_argument("--kind", default="", help="guards only: run just these kinds (comma-separated) and print each kind's score ranges")
     args = parser.parse_args()
+    if args.suite == "retrieval":        # 不调任何远端模型：只用本机的全文索引和嵌入模型
+        from evals import retrieval
+
+        return retrieval.run(args)
     return {"timeparse": run_timeparse, "routing": run_routing, "memory": run_memory, "guards": run_guards}[args.suite](args)
 
 

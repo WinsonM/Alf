@@ -24,7 +24,8 @@ from fastapi.responses import HTMLResponse, JSONResponse
 from pydantic import BaseModel, Field
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 
-from . import affinity, apple, asr, connectors, db, doctor, feedback, impressions, lessons, pacts, persona, prefs, proactive, timeline, websearch
+from . import (affinity, apple, asr, connectors, db, doctor, embed, feedback, impressions, lessons, pacts, persona, prefs, proactive, retrieve,
+               timeline, websearch)
 from .agent import Reply, Turn
 from .chat import CATEGORY_LABELS, make_agent
 from .config import MAIL_PROVIDERS, Settings, env_file, normalize_handle, update_dotenv
@@ -482,6 +483,13 @@ def create_app(cfg: Settings, backend: Backend, *, llm_backend: LLMBackend | Non
                 rule = memory().write(proposal["text"], FEEDBACK, now=now, scope=lessons.scope_of(proposal["scope"])).fact.id
             lessons.settle_proposal(conn, proposal_id, rule_id=rule)
         return {"ok": True, "rule_id": rule}
+
+    @app.get("/api/retrieval")
+    def retrieval_status() -> dict:
+        """按意思检索的状态：嵌入模型在不在本机，每一类有多少条已经建好索引。只有数目，没有内容。"""
+        found = embed.status()
+        with lock:
+            return {**found, "coverage": retrieve.coverage(conn, found["model"] if found["present"] else None)}
 
     @app.get("/api/search/recent")
     def recent_searches() -> dict:

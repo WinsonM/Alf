@@ -1,0 +1,59 @@
+{"kind": "literal", "in": "fact", "q": "深蹲多少", "want": ["f31"]}
+{"kind": "literal", "in": "fact", "q": "年糕", "want": ["f11"]}
+{"kind": "literal", "in": "fact", "q": "COMP9101 期末", "want": ["f39"]}
+{"kind": "literal", "in": "fact", "q": "护照什么时候到期", "want": ["f16"]}
+{"kind": "literal", "in": "fact", "q": "我什么时候毕业", "want": ["f9"]}
+{"kind": "literal", "in": "said", "q": "螺蛳粉", "want": ["s22"]}
+{"kind": "literal", "in": "mail", "q": "ANZ 对账单", "want": ["mail3"]}
+{"kind": "literal", "in": "mail", "q": "显示器的订单", "want": ["mail18"]}
+{"kind": "literal", "in": "mail", "q": "推荐信", "want": ["mail37"]}
+{"kind": "literal", "in": "fact", "q": "我能喝牛奶吗", "want": ["f2"]}
+{"kind": "paraphrase", "in": "fact", "q": "我对象叫什么", "want": ["f3"]}
+{"kind": "paraphrase", "in": "fact", "q": "我舍友是学什么的", "want": ["f5"]}
+{"kind": "paraphrase", "in": "fact", "q": "我家猫叫什么名字", "want": ["f11"]}
+{"kind": "paraphrase", "in": "fact", "q": "我视力怎么样", "want": ["f24"]}
+{"kind": "paraphrase", "in": "fact", "q": "我每个月话费多少", "want": ["f21"]}
+{"kind": "paraphrase", "in": "fact", "q": "我兼职做什么", "want": ["f14"]}
+{"kind": "paraphrase", "in": "fact", "q": "我平时几点上床", "want": ["f23"]}
+{"kind": "paraphrase", "in": "fact", "q": "我爸身体有什么毛病", "want": ["f20"]}
+{"kind": "paraphrase", "in": "fact", "q": "我老板是谁", "want": ["f7"]}
+{"kind": "paraphrase", "in": "fact", "q": "我用什么笔记本", "want": ["f22"]}
+{"kind": "paraphrase", "in": "fact", "q": "上肢的力量练得怎么样", "want": ["f32", "f34", "f35", "f36"]}
+{"kind": "paraphrase", "in": "fact", "q": "我什么乐器在学", "want": ["f15"]}
+{"kind": "crosslingual", "in": "fact", "q": "what's my bench press", "want": ["f32"]}
+{"kind": "crosslingual", "in": "fact", "q": "when is my girlfriend's birthday", "want": ["f4"]}
+{"kind": "crosslingual", "in": "fact", "q": "leg day 的重量", "want": ["f31"]}
+{"kind": "crosslingual", "in": "fact", "q": "my visa expiry", "want": ["f18"]}
+{"kind": "crosslingual", "in": "fact", "q": "roommate's girlfriend", "want": ["f30"]}
+{"kind": "crosslingual", "in": "mail", "q": "the tutoring timetable email", "want": ["mail10"]}
+{"kind": "moment", "in": "fact", "q": "上次自驾去了哪", "want": ["m1"]}
+{"kind": "moment", "in": "fact", "q": "我什么时候生过病", "want": ["m10"]}
+{"kind": "moment", "in": "fact", "q": "那次东西被偷是怎么回事", "want": ["m15"]}
+{"kind": "moment", "in": "fact", "q": "我比赛拿过什么奖", "want": ["m20"]}
+{"kind": "moment", "in": "fact", "q": "我和女朋友闹过矛盾吗", "want": ["m5"]}
+{"kind": "moment", "in": "fact", "q": "实习面试后来怎么样了", "want": ["m13", "m12"]}
+{"kind": "said", "in": "said", "q": "我之前说过哪家意大利菜好吃", "want": ["s1"]}
+{"kind": "said", "in": "said", "q": "我买的耳机是什么牌子", "want": ["s3"]}
+{"kind": "said", "in": "said", "q": "那家川菜馆叫什么", "want": ["s29"]}
+{"kind": "said", "in": "said", "q": "我想买什么样的屏幕", "want": ["s20"]}
+{"kind": "said", "in": "said", "q": "阿哲想转专业是怎么回事", "want": ["s2"]}
+{"kind": "said", "in": "said", "q": "看牙医要花多少钱", "want": ["s27"]}
+{"kind": "said", "in": "said", "q": "我最近通勤在听什么", "want": ["s33"]}
+{"kind": "said", "in": "said", "q": "猫把什么弄坏了", "want": ["s32"]}
+{"kind": "said", "in": "said", "q": "图书馆哪里适合自习", "want": ["s11"]}
+{"kind": "said", "in": "said", "q": "补习的工资涨了多少", "want": ["s25"]}
+{"kind": "mail", "in": "mail", "q": "学费要交多少", "want": ["mail1"]}
+{"kind": "mail", "in": "mail", "q": "房租涨价的那封信", "want": ["mail2"]}
+{"kind": "mail", "in": "mail", "q": "拔牙约的是哪天", "want": ["mail8"]}
+{"kind": "mail", "in": "mail", "q": "机票的确认邮件", "want": ["mail6"]}
+{"kind": "mail", "in": "mail", "q": "保险赔不赔牙科", "want": ["mail24"]}
+{"kind": "mail", "in": "mail", "q": "电费多少钱", "want": ["mail21"]}
+{"kind": "mail", "in": "mail", "q": "面试被拒的那封邮件", "want": ["mail13"]}
+{"kind": "mail", "in": "mail", "q": "中介什么时候来检查房子", "want": ["mail34"]}
+{"kind": "none", "in": "fact", "q": "在吗", "want": []}
+{"kind": "none", "in": "fact", "q": "今天好累", "want": []}
+{"kind": "none", "in": "fact", "q": "哈哈哈哈", "want": []}
+{"kind": "none", "in": "fact", "q": "明天下午三点提醒我交作业", "want": []}
+{"kind": "none", "in": "fact", "q": "好的谢谢", "want": []}
+{"kind": "none", "in": "fact", "q": "帮我看看邮箱", "want": []}
+{"kind": "none", "in": "fact", "q": "晚安", "want": []}

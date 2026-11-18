@@ -312,9 +312,30 @@ CREATE TABLE IF NOT EXISTS web_searches (
     created_at INTEGER NOT NULL
 );
 
+-- 按意思检索用的两张表（见 retrieve.py、embed.py）。
+-- chunks：他说过的话按"一小段对话"切开——他的消息平均十来个字，单句没法按意思找。id 是这一段第一句话的编号。
+CREATE TABLE IF NOT EXISTS chunks (
+    id           INTEGER PRIMARY KEY,
+    last_episode INTEGER NOT NULL,
+    text         TEXT NOT NULL,         -- 这一段里他说的话，一句一行
+    started_at   INTEGER NOT NULL,
+    ended_at     INTEGER NOT NULL
+);
+-- embeddings：每条记忆、每一段对话、每封邮件的向量。hash 是算向量时那段文字的摘要：文字变了就重算。
+CREATE TABLE IF NOT EXISTS embeddings (
+    kind       TEXT NOT NULL,           -- fact 记忆（事实和经历）| chunk 一段对话 | mail 一封邮件
+    ref_id     INTEGER NOT NULL,
+    model      TEXT NOT NULL,
+    hash       TEXT NOT NULL,
+    vec        BLOB NOT NULL,           -- float32，已经归一化
+    created_at INTEGER NOT NULL,
+    PRIMARY KEY (kind, ref_id)
+);
+
 -- 全文索引里存的是预先切好的词（中文按二元组，见 fts.py）；rowid 等于源表的 id。
 CREATE VIRTUAL TABLE IF NOT EXISTS facts_fts USING fts5(tokens);
 CREATE VIRTUAL TABLE IF NOT EXISTS episodes_fts USING fts5(tokens);
+CREATE VIRTUAL TABLE IF NOT EXISTS inbox_fts USING fts5(tokens);      -- 邮件：发件人、主题、提要
 """
 
 

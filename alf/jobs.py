@@ -9,7 +9,7 @@ import logging
 import re
 from datetime import datetime, timedelta
 
-from . import followup, impressions, lessons, persona, prefs, sources, timeparse
+from . import embed, followup, impressions, lessons, persona, prefs, retrieve, sources, timeparse
 from .agent import duration, format_reminders
 from .calendar_sync import calendar_alerts_job, calendar_job
 from .config import Settings
@@ -142,6 +142,21 @@ def today_todos(snapshot: dict, now) -> list[str]:
             when = f"{due:%H:%M} " if r.get("has_time") and due.date() == now.date() else ""
             out.append(f"{when}{r.get('title', '')}" + ("（已过期）" if due.date() < now.date() else ""))
     return out[:8]
+
+
+def index_job(ctx: JobContext) -> str | None:
+    """给新记下的事、新说的话、新收到的邮件建检索索引。
+
+    对话切段和邮件的全文索引不用模型，每次都跟上；向量要本机有嵌入模型才算，一次最多算一批，剩下的下一轮接着算。
+    放在后台做，是因为它不该拖慢回复：最近几分钟的东西本来就在上下文里，晚两分钟能搜到没关系。
+    """
+    embedder = embed.default() if ctx.prefs.get("memory.semantic", True) else None
+    done = retrieve.sync(ctx.conn, embedder, int(ctx.now.timestamp()))
+    if embedder is not None and not done["left"]:
+        embedder.release_if_idle()          # 都算完了、又有一阵没人查：把模型从内存里放掉
+    if not done["embedded"]:
+        return None
+    return f"算了 {done['embedded']} 条向量" + (f"，还剩 {done['left']} 条" if done["left"] else "")
 
 
 def sources_job(ctx: JobContext) -> str | None:
@@ -618,6 +633,7 @@ def build_jobs(cfg: Settings, connectors: list[Connector], current: dict | None 
             jobs.append(Job("impressions", "从当天的话里形成印象", impressions.impressions_job, daily_at=middle))
     if cfg.llm is not None and p["digest.enabled"]:   # 自动记忆只在有生成式模型时才有
         jobs.append(Job("digest", "今日记忆汇总", digest_job, daily_at=prefs.hhmm(p["digest.at"])))
+    jobs.append(Job("index", "给记忆建检索索引", index_job, every=120))
     if any(p.get(f"sources.{name}") for name in sources.BUILTIN) or p.get("mcp.servers"):
         jobs.append(Job("sources", "信息汇总（MCP）", sources_job, every=1800))
     if cfg.llm is not None and p.get("proactive.enabled"):

@@ -54,10 +54,7 @@ LOOP_QUIET = 20 * 3600    # it came up within this long: no need to raise it aga
 LOOP_MAX_ASKS = 2         # Alf raised it this many times and he did not pick it up: stop
 DEFAULT_IMPORTANCE = 5
 _SQUASH = re.compile(r"[\W_]+")
-# Bigrams too common to mean that two sentences are about the same thing (used when recalling older moments).
-_COMMON = frozenset("今天 昨天 明天 前天 后天 一个 我们 你们 他们 什么 怎么 可以 没有 这个 那个 时候 觉得 一下 还是 就是 不是 已经 现在 然后 "
-                    "因为 所以 但是 感觉 有点 真的 自己 知道 这样 那样 一起 之后 之前 以后 以前 最近 上次 那次 这次 还有 应该 可能 "
-                    "其实 起来 出来 一点 很多 一直 时间 事情 东西".split())
+_COMMON = fts.COMMON     # bigrams too common to mean that two sentences are about the same thing
 
 
 def _importance(value) -> int | None:

@@ -102,9 +102,9 @@
   <text class="f" x="322" y="399">reminders.py · followup.py</text>
   <text class="s" x="322" y="417">到点叫你 · 没回音问一次</text>
   <rect class="box" x="516" y="358" width="194" height="72" rx="10"/>
-  <text class="t" x="528" y="381">记忆和经历</text>
-  <text class="f" x="528" y="399">memory.py · fts.py</text>
-  <text class="s" x="528" y="417">三层 · 写入前比对 · 联想</text>
+  <text class="t" x="528" y="381">记忆和检索</text>
+  <text class="f" x="528" y="399">memory.py · retrieve.py</text>
+  <text class="s" x="528" y="417">三层 · 按字面和按意思找</text>
   <rect class="box" x="722" y="358" width="194" height="72" rx="10"/>
   <text class="t" x="734" y="381">约定</text>
   <text class="f" x="734" y="399">pacts.py</text>
@@ -152,7 +152,7 @@
   <!-- 后台服务 ↔ 模型、外部来源 -->
   <line class="arrow" x1="248" y1="690" x2="248" y2="718"/>
   <path class="head" d="M248 684 l-4.5 7.5 h9 z M248 724 l-4.5 -7.5 h9 z"/>
-  <text class="f" x="260" y="708">llm.py · decide.py · asr.py</text>
+  <text class="f" x="260" y="708">llm.py · decide.py · asr.py · embed.py</text>
   <line class="arrow" x1="712" y1="690" x2="712" y2="718"/>
   <path class="head" d="M712 684 l-4.5 7.5 h9 z M712 724 l-4.5 -7.5 h9 z"/>
   <text class="f" x="724" y="708">connectors/ · apple.py · sources.py</text>
@@ -167,8 +167,8 @@
   <text class="t" x="194" y="786">Jev（可选）</text>
   <text class="s" x="194" y="806">是不是 · 选哪个</text>
   <rect class="box" x="322" y="762" width="130" height="58" rx="10"/>
-  <text class="t" x="334" y="786">Whisper</text>
-  <text class="s" x="334" y="806">本机 · 语音转文字</text>
+  <text class="t" x="334" y="786">本机模型</text>
+  <text class="s" x="334" y="806">Whisper · e5 向量</text>
 
   <!-- 外部来源 -->
   <rect class="group" x="492" y="726" width="440" height="108" rx="14"/>

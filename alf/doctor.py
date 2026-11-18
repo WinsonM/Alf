@@ -115,6 +115,13 @@ def collect(cfg: Settings, status: dict | None, send_test: bool = False) -> list
                 out.append(Check("calendar", None, "日历和提醒事项", "还没授权。在设置页点「授权日历和提醒事项」"))
             else:
                 out.append(Check("calendar", bool(cal.get("ok")), "日历", cal.get("error") or cal.get("result") or "正常"))
+    # 6. 按意思检索：只看模型在不在本机，不装它、也不联网。没有也能用，只是换了说法就找不到。
+    from . import embed
+
+    found = embed.status()
+    out.append(Check("embed", True if found["present"] else None, "按意思检索",
+                     f"嵌入模型在本机（{found['model']}）" if found["present"]
+                     else "嵌入模型还没下载：现在只按字面找。运行 `uv run alf index` 下载（约 490 MB）并建好索引"))
     return out
 
 

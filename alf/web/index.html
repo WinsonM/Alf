@@ -412,6 +412,8 @@
       <h2>记忆和提醒</h2>
       <div class="field"><span class="name">自动记忆</span><small>从聊天里自动记下关于你的长期信息；关掉后只在你纠正时才改记忆</small>
         <div class="control"><button class="switch" role="switch" data-pref="memory.auto" aria-label="自动记忆"></button></div></div>
+      <div class="field"><span class="name">按意思找</span><small id="semanticHint">翻旧记忆、旧对话、旧邮件时，换了说法也找得到。用的是本机的嵌入模型，内容不出这台 Mac</small>
+        <div class="control"><button class="switch" role="switch" data-pref="memory.semantic" aria-label="按意思找"></button></div></div>
       <div class="field"><label for="defaultHour">没说几点时，默认提醒时间</label><small>比如"明天提醒我交作业"</small>
         <div class="control"><select id="defaultHour"></select></div></div>
     </div>
@@ -1119,7 +1121,17 @@ async function loadSettings() {
     paintPrefs(); paintSetup();
     loadProactive();
     loadSearches();
+    loadRetrieval();
   } catch (e) { toast(friendly(e)); }
+}
+// 按意思找：模型在不在本机、索引建到哪了（只有数目）
+async function loadRetrieval() {
+  let r;
+  try { r = await api('GET', '/api/retrieval'); } catch (e) { return; }
+  const c = r.coverage, part = (k, name) => `${name} ${c[k].embedded}/${c[k].total}`;
+  $('semanticHint').textContent = r.present
+    ? `翻旧记忆、旧对话、旧邮件时，换了说法也找得到。内容不出这台 Mac。已建索引：${part('fact', '记忆')}，${part('chunk', '对话片段')}，${part('mail', '邮件')}`
+    : '嵌入模型还没下载，现在只按字面找。在终端运行 uv run alf index 下载（约 490 MB）并建好索引';
 }
 // 最近上网查过什么：问题、实际搜的词、看过的网页（只认 http/https 的链接，别的当普通文字）
 async function loadSearches() {
